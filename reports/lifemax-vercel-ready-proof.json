@@ -173,9 +173,9 @@
     "environment_variables": "none required for app shell and privacy page",
     "vercel_json": "not required"
   },
-  "commit_hash": null,
+  "commit_hash": "5a5aa89846311d6dd23661512445d1289959b50c",
   "commit_hash_note": "Final pushed commit hash is recorded in the final done packet. Embedding a same-commit hash inside a tracked file is self-referential and would change the hash.",
-  "push_status": "pending_before_commit",
+  "push_status": "pushed_to_origin_main",
   "residual_risks": [
     "No Vercel deployment was performed by request.",
     "WHOOP OAuth activation and live data connection were not performed.",
