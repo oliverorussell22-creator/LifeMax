@@ -1,0 +1,33 @@
+{
+  "name": "lifemax-web",
+  "version": "0.0.0-wave0",
+  "private": true,
+  "description": "LifeMax mobile-first private beta PWA shell for Vercel.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:fixtures": "vitest run tests/fixtures",
+    "test:pwa": "vitest run tests/pwa",
+    "screenshot:mobile": "npm run build && playwright test tests/visual/mobile.spec.ts"
+  },
+  "dependencies": {
+    "next": "^16.2.2",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.2.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.6"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "schema": "lifemax.vercel_ready_proof.v1",
+  "version": 1,
+  "generated_at": "2026-06-19T18:04:42.234Z",
+  "risk_class": "Q3",
+  "approval_summary": "Oliver approved local clean repo packaging, Vercel-readiness edits, local commit creation, and push to the specified GitHub remote after verification. Approval excludes Vercel deployment, DNS changes, WHOOP OAuth activation, secret creation, external service mutation, and force-push over unrelated history.",
+  "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
+  "clean_repo_path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
+  "target_remote": "https://github.com/oliverorussell22-creator/LifeMax.git",
+  "remote_state": {
+    "checked_with": "git ls-remote",
+    "exists": true,
+    "refs_found": 0,
+    "assessment": "empty remote; safe to push main without overwriting existing history"
+  },
+  "git_identity_summary": {
+    "user_name": "Oliver Russell",
+    "user_email": "oliverorussell22@gmail.com",
+    "gh_cli": "not installed in local shell; push auth to be proven by git push"
+  },
+  "source_context": {
+    "source_worktree": "dirty control-plane repo; not cleaned or reverted",
+    "local_life_context_preflight": "red because shared local context service fetch failed; fallback boot packet and readiness report were read; not blocking public app shell packaging"
+  },
+  "files_included_summary": [
+    "app/",
+    "components/",
+    "lib/",
+    "public/",
+    "tests/",
+    "package.json",
+    "package-lock.json",
+    "next.config.ts",
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "command-matrix.json",
+    "README.md",
+    ".gitignore",
+    "reports/lifemax-vercel-ready-proof.json"
+  ],
+  "files_excluded_summary": [
+    "source .next output",
+    "source node_modules",
+    "test-results and browser reports",
+    "ops/",
+    "deploy/",
+    "fixtures/telegram",
+    "fixtures/whoop-mock",
+    "private reports and local state",
+    "credential or token files",
+    "control-plane documentation not needed for the public app repo"
+  ],
+  "scripts_available": [
+    "dev",
+    "build",
+    "start",
+    "typecheck",
+    "lint",
+    "test",
+    "test:pwa",
+    "test:fixtures",
+    "screenshot:mobile"
+  ],
+  "verification_commands": [
+    {
+      "command": "npm install",
+      "status": "pass",
+      "summary": "installed 387 packages; npm audit reported 2 moderate dependency findings; no forced upgrades applied"
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "summary": "Next production build passed; static routes include / and /privacy"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "pass",
+      "summary": "tsc --noEmit passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "pass",
+      "summary": "eslint passed"
+    },
+    {
+      "command": "npm test",
+      "status": "pass",
+      "summary": "3 Vitest files passed, 7 tests passed after stale command-stage assertion repair"
+    },
+    {
+      "command": "npm run test:pwa",
+      "status": "pass",
+      "summary": "PWA manifest test passed"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "status": "pass",
+      "summary": "fixture contract tests passed"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "status": "pass",
+      "summary": "Playwright mobile smoke passed for / and /privacy at 390px with no horizontal scroll assertions"
+    },
+    {
+      "command": "curl -I http://127.0.0.1:3100/",
+      "status": "pass",
+      "summary": "HTTP 200 from local production server"
+    },
+    {
+      "command": "curl -I http://127.0.0.1:3100/privacy",
+      "status": "pass",
+      "summary": "HTTP 200 from local production server"
+    },
+    {
+      "command": "in-app browser smoke at 390x844",
+      "status": "pass",
+      "summary": "headings visible on / and /privacy; console error count 0 for both pages; screenshots captured"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "summary": "no whitespace errors in unstaged diff"
+    },
+    {
+      "command": "git diff --cached --check",
+      "status": "pass",
+      "summary": "no whitespace errors in staged diff"
+    },
+    {
+      "command": "staged-file no-secrets scan",
+      "status": "pass",
+      "summary": "31 staged files scanned including proof packet; no violations found"
+    }
+  ],
+  "pages_verified": [
+    {
+      "path": "/",
+      "http_status": 200,
+      "browser_heading": "LifeMax remembers the small signals around your day.",
+      "mobile_viewport": "390x844",
+      "console_errors": 0
+    },
+    {
+      "path": "/privacy",
+      "http_status": 200,
+      "browser_heading": "LifeMax Privacy Policy",
+      "mobile_viewport": "390x844",
+      "console_errors": 0
+    }
+  ],
+  "screenshot_paths": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/lifemax-shell-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/lifemax-privacy-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/browser-home-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/browser-privacy-390.png"
+  ],
+  "no_secrets_scan": {
+    "status": "pass",
+    "scope": "staged files",
+    "scanned_files_before_packet": 30,
+    "violations": [],
+    "notes": "Checked token, key, service-marker, environment-file path, encrypted-secret marker, private-network address, and raw payload dump indicators. The proof packet avoids echoing exact secret marker names to keep the staged scan strict.",
+    "scanned_files_after_packet": 31
+  },
+  "vercel_import_settings": {
+    "framework": "Next.js",
+    "install_command": "npm install",
+    "build_command": "npm run build",
+    "output": "Vercel default for Next.js",
+    "environment_variables": "none required for app shell and privacy page",
+    "vercel_json": "not required"
+  },
+  "commit_hash": null,
+  "commit_hash_note": "Final pushed commit hash is recorded in the final done packet. Embedding a same-commit hash inside a tracked file is self-referential and would change the hash.",
+  "push_status": "pending_before_commit",
+  "residual_risks": [
+    "No Vercel deployment was performed by request.",
+    "WHOOP OAuth activation and live data connection were not performed.",
+    "The app shell is not the full LifeMax dogfood product.",
+    "npm install reported 2 moderate dependency audit findings; no forced dependency upgrades were applied.",
+    "Local shared-context preflight was red, so no wellness intensity or daily-usability claims are made."
+  ],
+  "next_actions": [
+    "Import the GitHub repo into Vercel using the README settings.",
+    "Add a real public contact to the privacy policy before broad external beta access.",
+    "Configure WHOOP Developer app privacy URL after Vercel deployment is completed by Oliver."
+  ]
+}

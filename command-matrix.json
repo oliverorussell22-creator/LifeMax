@@ -1,0 +1,70 @@
+{
+  "schema_version": "lifemax.vercel_ready_command_matrix.v1",
+  "package_scope": "repo_root",
+  "package_manager": "npm",
+  "commands": [
+    {
+      "id": "install",
+      "command": "npm install",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "package-lock.json"
+    },
+    {
+      "id": "dev",
+      "command": "npm run dev",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "local server smoke"
+    },
+    {
+      "id": "build",
+      "command": "npm run build",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+    },
+    {
+      "id": "typecheck",
+      "command": "npm run typecheck",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+    },
+    {
+      "id": "lint",
+      "command": "npm run lint",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+    },
+    {
+      "id": "test",
+      "command": "npm test",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+    },
+    {
+      "id": "test_pwa",
+      "command": "npm run test:pwa",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+    },
+    {
+      "id": "test_fixtures",
+      "command": "npm run test:fixtures",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+    },
+    {
+      "id": "screenshot_mobile",
+      "command": "npm run screenshot:mobile",
+      "required_for_stage": "vercel_ready_shell",
+      "evidence_path": "reports/screenshots/"
+    }
+  ],
+  "not_claimed": [
+    "full LifeMax dogfood product",
+    "WHOOP OAuth activation",
+    "live WHOOP data",
+    "production auth",
+    "database persistence",
+    "AI coaching",
+    "medical advice"
+  ]
+}
