@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { ScreenHeader, StatusGrid } from "@/components/ui";
 import {
   createDayArchive,
+  createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
   deriveTodayView,
   formatShortTime,
@@ -138,6 +139,7 @@ export function TodayScreen() {
   const { state, storageStatus, storageMessage, setLocalState } = useLocalDemoState();
   const today = useMemo(() => deriveTodayView(state), [state]);
   const activePlan = state.daily_plan ?? today.suggested_plan;
+  const [planMessage, setPlanMessage] = useState("");
   const [draft, setDraft] = useState({
     energy: "ok" as SignalLevel,
     mood: "ok" as SignalLevel,
@@ -204,6 +206,22 @@ export function TodayScreen() {
       plan_done: Object.values(plan.item_statuses).every((status) => status === "done"),
       updated_at: now
     }));
+  }
+
+  function generateLocalPlan() {
+    if (today.plan_builder.status === "locked") {
+      setPlanMessage("Save a check-in before generating a browser-local plan.");
+      return;
+    }
+
+    const now = new Date().toISOString();
+    setLocalState((current) => ({
+      ...current,
+      daily_plan: createPlanFromLocalSignals(current, now),
+      plan_done: false,
+      updated_at: now
+    }));
+    setPlanMessage("Generated a browser-local plan from current local signals.");
   }
 
   function updatePlanItemStatus(slot: PlanSlot, status: PlanItemStatus) {
@@ -437,15 +455,33 @@ export function TodayScreen() {
                 <strong>History cue</strong>
                 {today.history_insight.next_action}
               </span>
+              <span>
+                <strong>Plan builder</strong>
+                {today.plan_builder.detail}
+              </span>
             </div>
             <div className="action-row">
               <button className="primary-action" type="button" onClick={saveCheckIn} data-testid="save-checkin">
                 Save check-in
               </button>
+              <button
+                className="secondary-action"
+                type="button"
+                disabled={today.plan_builder.status === "locked"}
+                onClick={generateLocalPlan}
+                data-testid="generate-local-plan"
+              >
+                Generate local plan
+              </button>
               <button className="secondary-action" type="button" onClick={lowerIntensity} data-testid="lower-intensity">
                 Lower intensity
               </button>
             </div>
+            {planMessage ? (
+              <p className="export-status export-status-success" role="status">
+                {planMessage}
+              </p>
+            ) : null}
           </section>
 
           <CheckInForm

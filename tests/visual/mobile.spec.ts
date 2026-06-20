@@ -18,6 +18,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
   await expect(page.getByText("Local cache ready")).toBeVisible();
   await expect(page.getByText("WHOOP, accounts, AI, and backend sync are not connected in this app shell.")).toBeVisible();
+  await expect(page.getByTestId("generate-local-plan")).toBeDisabled();
   const mobileContentBox = await page.locator("main.content").boundingBox();
   expect(mobileContentBox?.width).toBeGreaterThan(340);
 
@@ -33,6 +34,9 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("heading", { name: "Quick restart saved." })).toBeVisible();
   await expect(page.getByLabel("Restart: Open the client draft")).toBeVisible();
   await expect(page.getByLabel("Current state summary").getByText("Restart")).toBeVisible();
+  await page.getByTestId("generate-local-plan").click();
+  await expect(page.getByLabel("Today command center").getByRole("status")).toContainText("Generated a browser-local plan");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Open the client draft");
 
   await page.getByTestId("save-checkin").click();
   await expect(page.getByText("A lower intensity cap protects the day from turning into a productivity push.")).toBeVisible();
@@ -137,7 +141,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   });
 
   await page.goto("/today");
-  await expect(page.getByLabel("Today command center").getByText("History cue")).toBeVisible();
+  await expect(page.getByLabel("Today command center").getByText("History cue", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Today command center").getByText("Archive one more closed day")).toBeVisible();
   await page.locator('section[aria-label="Today command center"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
   await page.locator('section[aria-label="Today command center"]').screenshot({

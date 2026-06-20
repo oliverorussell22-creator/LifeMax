@@ -7,6 +7,7 @@ import {
   createDayArchive,
   createInitialLocalDemoState,
   createLocalDemoExport,
+  createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
   createSuggestedPlan,
   deriveTodayView,
@@ -75,6 +76,8 @@ describe("Wave 0 scaffold contract", () => {
 
     const signalView = deriveTodayView(withLocalSignals);
     expect(signalView.confidence).toBe("medium");
+    expect(signalView.plan_builder.status).toBe("ready");
+    expect(signalView.plan_builder.detail).toContain("1 capture");
     expect(signalView.pattern_summary.ready).toBe(true);
     expect(signalView.rescue_summary.status).toBe("open");
     expect(signalView.plan_summary.status).toBe("missing");
@@ -82,6 +85,78 @@ describe("Wave 0 scaffold contract", () => {
     expect(signalView.day_review.missing_inputs).toContain("saved plan");
     expect(signalView.pattern_cards[0]?.evidence_count).toBeGreaterThanOrEqual(2);
     expect(signalView.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+  });
+
+  test("generates a local plan from check-in, capture, restart, and history cues", () => {
+    const state: LocalDemoState = {
+      ...createInitialLocalDemoState(),
+      check_in: {
+        energy: "low",
+        mood: "ok",
+        stress: "high",
+        body: "rough",
+        friction_tags: ["low sleep", "too much input"],
+        note: "hard start",
+        saved_at: "2026-06-20T15:00:00.000Z"
+      },
+      captures: [
+        {
+          id: "capture-drained",
+          kind: "habit",
+          label: "late messages",
+          note: "drained the morning",
+          impact: "drained",
+          created_at: "2026-06-20T15:05:00.000Z",
+          updated_at: "2026-06-20T15:05:00.000Z"
+        },
+        {
+          id: "capture-helped",
+          kind: "habit",
+          label: "morning walk",
+          note: "helped once",
+          impact: "helped",
+          created_at: "2026-06-20T15:03:00.000Z",
+          updated_at: "2026-06-20T15:03:00.000Z"
+        }
+      ],
+      quick_restart: {
+        window: "three_days",
+        energy: "low",
+        sleep: "rough",
+        priority: "Open the client draft",
+        changed: "travel broke the loop",
+        reminder_stance: "evening_only",
+        saved_at: "2026-06-20T14:50:00.000Z"
+      },
+      day_archives: [
+        {
+          id: "archive-plan-builder",
+          archived_at: "2026-06-19T23:00:00.000Z",
+          day_label: "Jun 19",
+          review_title: "Local day archived",
+          review_summary: "One useful close.",
+          tomorrow_cue: "Walk before opening messages",
+          follow_through: "1/3 done",
+          evidence_count: 4,
+          confidence: "low",
+          plan_progress: "1/3 done",
+          capture_count: 1,
+          kept_memory_count: 0,
+          rejected_memory_count: 0,
+          experiment_status: "none",
+          experiment_observation_count: 0,
+          rescue_used: false,
+          restart_used: true
+        }
+      ]
+    };
+
+    const generatedPlan = createPlanFromLocalSignals(state, "2026-06-20T15:10:00.000Z");
+    expect(generatedPlan.must_do).toBe("Open the client draft");
+    expect(generatedPlan.optional_1).toBe("Repeat helped signal: morning walk");
+    expect(generatedPlan.optional_2).toBe("Use history cue: Walk before opening messages");
+    expect(generatedPlan.avoid_today).toBe("Do not repeat late messages without a pause");
+    expect(generatedPlan.item_statuses).toEqual({ must_do: "open", optional_1: "open", optional_2: "open" });
   });
 
   test("derives the higher-functionality local daily loop", () => {

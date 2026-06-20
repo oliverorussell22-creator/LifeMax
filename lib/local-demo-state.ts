@@ -221,6 +221,12 @@ export interface DerivedTodayView {
     avoid_today: string;
     shutdown_target: string;
   };
+  plan_builder: {
+    status: "locked" | "ready";
+    title: string;
+    detail: string;
+    evidence: string[];
+  };
   suggested_plan: LocalDailyPlan;
   evening_summary: {
     status: "open" | "closed";
@@ -458,6 +464,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const dayReview = buildDayReview(state, planSummary);
   const dayHistorySummary = summarizeDayHistory(state.day_archives);
   const historyInsight = summarizeHistoryInsight(state.day_archives);
+  const planBuilder = summarizePlanBuilder(state);
 
   if (!hasCheckIn) {
     return {
@@ -483,6 +490,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
         avoid_today: activePlan.avoid_today,
         shutdown_target: activePlan.shutdown_target
       },
+      plan_builder: planBuilder,
       suggested_plan: activePlan,
       evening_summary: summarizeEveningClose(state.evening_close),
       rescue_summary: rescueSummary,
@@ -532,6 +540,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       ? ["Pick one must-do", "Capture symptoms, supplements, or friction", "Close the loop tonight"]
       : ["Pick one useful task", "Capture what changes energy", "Review patterns after repeated signals"],
     plan_summary: planSummary,
+    plan_builder: planBuilder,
     suggested_plan: activePlan,
     evening_summary: summarizeEveningClose(state.evening_close),
     rescue_summary: rescueSummary,
@@ -646,6 +655,53 @@ export function createSuggestedPlan(protective = false, timestamp: string | null
     },
     accepted_at: now,
     updated_at: now
+  };
+}
+
+export function createPlanFromLocalSignals(state: LocalDemoState, timestamp: string): LocalDailyPlan {
+  const checkIn = state.check_in;
+  const latestCapture = state.captures[0] ?? null;
+  const helpedCapture = state.captures.find((capture) => capture.impact === "helped");
+  const drainingCapture = state.captures.find((capture) => capture.impact === "drained");
+  const latestArchive = state.day_archives[0] ?? null;
+  const protective =
+    state.lowered_today ||
+    checkIn?.energy === "low" ||
+    checkIn?.stress === "high" ||
+    checkIn?.body === "rough" ||
+    state.quick_restart?.sleep === "rough";
+  const restartPriority = state.quick_restart?.priority.trim();
+  const historyCue = latestArchive?.tomorrow_cue.trim();
+  const mustDo =
+    restartPriority ||
+    historyCue ||
+    (protective ? "Protect one small recovery block" : "Finish one useful task before adding more input");
+  const optionalOne =
+    state.midday_rescue?.next_move.trim() ||
+    (helpedCapture ? `Repeat helped signal: ${helpedCapture.label}` : latestCapture ? `Track ${latestCapture.label} once more` : "Capture one signal if the day changes");
+  const optionalTwo = historyCue && historyCue !== mustDo ? `Use history cue: ${historyCue}` : "Close the loop tonight";
+  const avoidToday =
+    drainingCapture
+      ? `Do not repeat ${drainingCapture.label} without a pause`
+      : checkIn?.stress === "high"
+        ? "Do not add a second priority while stress is high"
+        : protective
+          ? "Do not turn a low-signal day into a productivity push"
+          : "Do not add a second major priority";
+
+  return {
+    must_do: mustDo,
+    optional_1: optionalOne,
+    optional_2: optionalTwo,
+    avoid_today: avoidToday,
+    shutdown_target: state.daily_plan?.shutdown_target || "8:30 PM",
+    item_statuses: {
+      must_do: "open",
+      optional_1: "open",
+      optional_2: "open"
+    },
+    accepted_at: timestamp,
+    updated_at: timestamp
   };
 }
 
@@ -963,6 +1019,34 @@ function summarizePlan(plan: LocalDailyPlan | null): DerivedTodayView["plan_summ
     next_item: nextItem,
     avoid_today: plan.avoid_today,
     shutdown_target: plan.shutdown_target
+  };
+}
+
+function summarizePlanBuilder(state: LocalDemoState): DerivedTodayView["plan_builder"] {
+  const evidence = [
+    state.check_in ? "check-in" : null,
+    state.quick_restart ? "restart" : null,
+    state.captures.length ? `${state.captures.length} capture${state.captures.length === 1 ? "" : "s"}` : null,
+    state.midday_rescue ? "rescue" : null,
+    state.day_archives.length ? "history cue" : null
+  ].filter((item): item is string => Boolean(item));
+
+  if (!state.check_in) {
+    return {
+      status: "locked",
+      title: "Local plan builder locked.",
+      detail: "Save a check-in before LifeMax drafts a browser-local plan.",
+      evidence
+    };
+  }
+
+  return {
+    status: "ready",
+    title: state.daily_plan ? "Plan can be refreshed from local signals." : "Local plan can be generated.",
+    detail: evidence.length
+      ? `Uses ${evidence.join(", ")}. Nothing leaves this browser.`
+      : "Uses the current check-in. Nothing leaves this browser.",
+    evidence
   };
 }
 
