@@ -580,7 +580,7 @@ export function TodayScreen() {
               { label: "Restart", value: today.restart_summary.status }
             ]}
           />
-          <WorkflowRail state={state} today={today} />
+          <DailyProgressBoard state={state} today={today} />
 
           <section className="panel command-panel" aria-label="Today command center">
             <div>
@@ -792,57 +792,136 @@ function TodayWeeklyBoardSummary({
   );
 }
 
-function WorkflowRail({
+function DailyProgressBoard({
   state,
   today
 }: Readonly<{ state: LocalDemoState; today: ReturnType<typeof deriveTodayView> }>) {
-  const steps = [
+  const captureCount = state.captures.length;
+  const archivedCount = state.day_archives.length;
+  const reviewComplete = today.day_review.status === "saved" || archivedCount > 0;
+  const learnReady = today.weekly_board.status === "ready" || today.experiment_summary.status === "active";
+  const steps: Array<{
+    label: string;
+    value: string;
+    detail: string;
+    href: string;
+    tone: "good" | "attention" | "active" | "muted";
+    complete: boolean;
+    nextAction: string;
+  }> = [
     {
       label: "Check-in",
       value: state.check_in ? "saved" : "needed",
-      detail: state.check_in ? formatShortTime(state.check_in.saved_at) : "Start here",
+      detail: state.check_in ? `Saved ${formatShortTime(state.check_in.saved_at)}` : "Manual signal required",
       href: "/today",
-      tone: state.check_in ? "good" : "attention"
+      tone: state.check_in ? "good" : "attention",
+      complete: Boolean(state.check_in),
+      nextAction: "Save a manual check-in."
     },
     {
       label: "Plan",
       value: today.plan_summary.progress_label,
       detail: today.plan_summary.next_item ?? today.plan_summary.avoid_today,
       href: "/today",
-      tone: today.plan_summary.status === "complete" ? "good" : today.plan_summary.status === "missing" ? "attention" : "active"
+      tone: today.plan_summary.status === "complete" ? "good" : today.plan_summary.status === "missing" ? "attention" : "active",
+      complete: Boolean(state.daily_plan),
+      nextAction:
+        today.plan_summary.status === "missing"
+          ? "Generate or save a local plan."
+          : today.plan_summary.next_item
+            ? `Move the next plan item: ${today.plan_summary.next_item}.`
+            : "Review the saved plan."
     },
     {
-      label: "Close",
-      value: today.evening_summary.status,
-      detail: today.evening_summary.status === "closed" ? "memory ready" : "tonight",
-      href: "/today",
-      tone: today.evening_summary.status === "closed" ? "good" : "active"
+      label: "Capture",
+      value: captureCount ? `${captureCount} saved` : "empty",
+      detail: captureCount ? state.captures[0]?.label ?? "local signal saved" : "Add one signal",
+      href: "/capture",
+      tone: captureCount ? "good" : state.check_in ? "active" : "muted",
+      complete: captureCount > 0,
+      nextAction: "Capture one useful local signal."
     },
     {
-      label: "Rescue",
-      value: today.rescue_summary.status,
-      detail: today.rescue_summary.status === "saved" ? today.rescue_summary.reset_label : "if drift hits",
+      label: "Close/review",
+      value: reviewComplete ? (archivedCount ? `${archivedCount} archived` : "review saved") : today.day_review.status,
+      detail:
+        today.day_review.status === "locked"
+          ? `Needs ${today.day_review.missing_inputs[0] ?? "local evidence"}`
+          : reviewComplete
+            ? "Day checkpoint exists"
+            : "Save review tonight",
       href: "/today",
-      tone: today.rescue_summary.status === "saved" ? "good" : today.rescue_summary.status === "locked" ? "muted" : "active"
+      tone: reviewComplete ? "good" : today.day_review.status === "ready" ? "active" : "muted",
+      complete: reviewComplete,
+      nextAction:
+        today.day_review.status === "locked"
+          ? `Unlock review: add ${today.day_review.missing_inputs[0] ?? "local evidence"}.`
+          : reviewComplete
+            ? "Use the archived cue or keep building history."
+            : "Save the local day review."
     },
     {
       label: "Learn",
-      value: today.experiment_summary.status,
-      detail: today.pattern_summary.ready ? "patterns ready" : "needs capture",
-      href: today.pattern_summary.ready ? "/patterns" : "/capture",
-      tone: today.experiment_summary.status === "active" ? "good" : today.pattern_summary.ready ? "active" : "muted"
+      value: today.weekly_board.status === "ready" ? "weekly board" : today.experiment_summary.status === "active" ? "experiment" : today.pattern_summary.ready ? "watching" : "locked",
+      detail: today.weekly_board.status === "ready" ? today.weekly_board.primary_cue : today.pattern_summary.ready ? "review local signals" : "needs capture",
+      href: today.pattern_summary.ready || today.weekly_board.status === "ready" ? "/patterns" : "/capture",
+      tone: learnReady ? "good" : today.pattern_summary.ready ? "active" : "muted",
+      complete: learnReady,
+      nextAction: today.pattern_summary.ready ? "Review the local pattern evidence." : "Build enough local evidence for Patterns."
     }
   ];
+  const completeCount = steps.filter((step) => step.complete).length;
+  const percent = Math.round((completeCount / steps.length) * 100);
+  const currentStep = steps.find((step) => !step.complete) ?? steps[steps.length - 1];
+  const evidenceLabel = [
+    state.check_in ? "check-in" : null,
+    state.daily_plan ? "plan" : null,
+    captureCount ? `${captureCount} capture${captureCount === 1 ? "" : "s"}` : null,
+    state.evening_close ? "close" : null,
+    archivedCount ? `${archivedCount} archive${archivedCount === 1 ? "" : "s"}` : null
+  ].filter((item): item is string => Boolean(item));
 
   return (
-    <section className="workflow-rail" aria-label="Daily workflow map">
-      {steps.map((step) => (
-        <a className={`workflow-step workflow-step-${step.tone}`} href={step.href} key={step.label}>
-          <span className="workflow-step-label">{step.label}</span>
-          <strong>{step.value}</strong>
-          <span>{step.detail}</span>
-        </a>
-      ))}
+    <section className="daily-progress-board" aria-label="Daily progress board">
+      <div className="progress-board-top">
+        <div>
+          <p className="kicker">Daily loop</p>
+          <h2 className="compact-title">{completeCount}/5 anchors complete</h2>
+          <p className="panel-copy">Current: {currentStep.nextAction}</p>
+        </div>
+        <div className="progress-score" aria-label={`Daily progress ${completeCount} of ${steps.length}`}>
+          <strong>{percent}%</strong>
+          <span>local</span>
+        </div>
+      </div>
+      <div className="progress-meter" aria-hidden="true">
+        <span style={{ width: `${percent}%` }} />
+      </div>
+      <div className="progress-evidence-strip" aria-label="Daily progress evidence">
+        <span>
+          <strong>Evidence</strong>
+          {evidenceLabel.length ? evidenceLabel.join(" / ") : "none yet"}
+        </span>
+        <span>
+          <strong>Next review</strong>
+          {today.day_review.status === "locked" ? `locked: ${today.day_review.missing_inputs.join(", ")}` : today.day_review.status}
+        </span>
+        <span>
+          <strong>Learning</strong>
+          {today.weekly_board.status === "ready" ? "weekly board ready" : today.history_insight.status}
+        </span>
+      </div>
+      <div className="workflow-rail" aria-label="Daily workflow map">
+        {steps.map((step, index) => (
+          <a className={`workflow-step workflow-step-${step.tone}`} href={step.href} key={step.label} aria-label={`${step.label}: ${step.value}`}>
+            <span className="workflow-step-index">{index + 1}</span>
+            <span className="workflow-step-label">{step.label}</span>
+            <strong>{step.value}</strong>
+            <span>{step.detail}</span>
+          </a>
+        ))}
+      </div>
+      <p className="field-help">Statuses come from this browser only. No live health integration, assistant, reminder, or backend write is running here.</p>
     </section>
   );
 }

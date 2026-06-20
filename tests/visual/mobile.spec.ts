@@ -18,6 +18,10 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
   await expect(page.getByText("Local cache ready")).toBeVisible();
   await expect(page.getByText("WHOOP, accounts, AI, and backend sync are not connected in this app shell.")).toBeVisible();
+  const progressBoard = page.getByLabel("Daily progress board");
+  await expect(progressBoard.getByRole("heading", { name: "0/5 anchors complete" })).toBeVisible();
+  await expect(progressBoard.getByLabel("Daily progress 0 of 5")).toBeVisible();
+  await expect(progressBoard.getByText("Current: Save a manual check-in.")).toBeVisible();
   await expect(page.getByTestId("generate-local-plan")).toBeDisabled();
   const mobileContentBox = await page.locator("main.content").boundingBox();
   expect(mobileContentBox?.width).toBeGreaterThan(340);
@@ -37,6 +41,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.getByTestId("generate-local-plan").click();
   await expect(page.getByLabel("Today command center").getByRole("status")).toContainText("Generated a browser-local plan");
   await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Open the client draft");
+  await expect(progressBoard.getByRole("heading", { name: "2/5 anchors complete" })).toBeVisible();
+  await expect(progressBoard.getByLabel("Plan: 0/3 done")).toBeVisible();
 
   await page.getByTestId("save-checkin").click();
   await expect(page.getByText("A lower intensity cap protects the day from turning into a productivity push.")).toBeVisible();
@@ -389,8 +395,13 @@ test("today can save and archive a full local day review", async ({ page }) => {
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
 
+  const progressBoard = page.getByLabel("Daily progress board");
+  await expect(progressBoard.getByRole("heading", { name: "0/5 anchors complete" })).toBeVisible();
+  await expect(progressBoard.getByText("Current: Save a manual check-in.")).toBeVisible();
   await page.getByTestId("save-checkin").click();
   await page.getByTestId("generate-local-plan").click();
+  await expect(progressBoard.getByRole("heading", { name: "2/5 anchors complete" })).toBeVisible();
+  await expect(progressBoard.getByText("Current: Capture one useful local signal.")).toBeVisible();
   await page.goto("/capture");
   await page.getByTestId("capture-kind-habit").click();
   await page.getByRole("button", { name: "Helped" }).click();
@@ -399,6 +410,9 @@ test("today can save and archive a full local day review", async ({ page }) => {
   await page.getByTestId("save-capture").click();
 
   await page.goto("/today");
+  await expect(progressBoard.getByRole("heading", { name: "3/5 anchors complete" })).toBeVisible();
+  await expect(progressBoard.getByLabel("Capture: 1 saved")).toBeVisible();
+  await expect(progressBoard.getByText("first block protected")).toBeVisible();
   await page.getByLabel("What got done").fill("Kept the first block small");
   await page.getByLabel("What slipped").fill("Second optional move moved");
   await page.getByLabel("Why").fill("Energy was steady but messages pulled attention.");
@@ -411,8 +425,11 @@ test("today can save and archive a full local day review", async ({ page }) => {
   await review.getByTestId("archive-day").click();
   await expect(review.getByRole("status")).toContainText("Day saved to browser-local history from Today");
   await expect(review.getByText("1 archived local day")).toBeVisible();
+  await expect(progressBoard.getByRole("heading", { name: "4/5 anchors complete" })).toBeVisible();
+  await expect(progressBoard.getByLabel("Close/review: 1 archived")).toBeVisible();
   await page.reload();
   await expect(page.getByLabel("Local day review").getByText("1 archived local day")).toBeVisible();
+  await expect(page.getByLabel("Daily progress board").getByRole("heading", { name: "4/5 anchors complete" })).toBeVisible();
   await page.locator('section[aria-label="Local day review"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
   await page.locator('section[aria-label="Local day review"]').screenshot({
     path: path.join(highFunctionalityDir, "local-today-day-review-archive-mobile-390.png")
@@ -482,7 +499,8 @@ test("sample week loader makes high-level local state visible and persistent", a
   await expect(page.getByLabel("Experiment result").getByText("Decision: keep")).toBeVisible();
 
   await page.goto("/capture");
-  await expect(page.getByLabel("Captures: 3")).toBeVisible();
+  await expect(page.getByLabel("Capture list").getByRole("heading", { name: "Local captures" })).toBeVisible();
+  await expect(page.getByLabel("Capture list").locator(".state-pill")).toHaveText("3");
   await expect(page.getByLabel("Capture list").getByLabel("Capture: protected first block")).toBeVisible();
   await expect(page.getByLabel("Capture list").getByLabel("Capture: messages before plan")).toBeVisible();
   await page.locator('section[aria-label="Capture list"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
@@ -495,7 +513,7 @@ test("sample week loader makes high-level local state visible and persistent", a
   await expect(page.getByLabel("Day history: 3")).toBeVisible();
   await expect(page.getByLabel("Experiment observations: 2")).toBeVisible();
   await expect(page.getByText("View local export preview")).toBeVisible();
-  await expect(page.getByText("WHOOP")).toBeVisible();
+  await expect(page.getByLabel("Source status").getByText("WHOOP", { exact: true })).toBeVisible();
 
   await page.goto("/privacy");
   await expect(page.getByRole("heading", { name: "Privacy policy and local data boundary." })).toBeVisible();
