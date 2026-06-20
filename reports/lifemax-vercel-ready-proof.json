@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T07:58:31Z",
+  "generated_at": "2026-06-20T08:01:11Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -409,11 +409,38 @@
   },
   "latest_cycle": {
     "id": "capture-correction-local-evidence",
-    "generated_at": "2026-06-20T07:58:31Z",
-    "status": "checkpoint_local_proof_passed_pending_deploy",
+    "generated_at": "2026-06-20T08:01:11Z",
+    "status": "checkpoint_deployed_and_smoked",
     "proof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-capture-correction-proof-2026-06-20.json",
     "local_checks_passed": true,
-    "deploy_status": "pending"
+    "deploy_status": "production_deployed_and_smoked",
+    "deployment": {
+      "status": "production_deployed_and_smoked",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+      "lifemax_web": {
+        "alias": "https://lifemax-web.vercel.app",
+        "deployment_id": "dpl_FJFyGz2aZDuqr3sudEhNmsXN7Avw",
+        "deployment_url": "https://lifemax-d8373mjsf-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "life_max_omega": {
+        "alias": "https://life-max-omega.vercel.app",
+        "deployment_id": "dpl_HSe9TWdGCULT2ob1nFmrBZpneL8Y",
+        "deployment_url": "https://life-elzsxk772-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "live_smoke": {
+        "result": "pass",
+        "generated_at": "2026-06-20T08:01:11Z",
+        "targets": [
+          "https://life-max-omega.vercel.app/capture",
+          "https://lifemax-web.vercel.app/capture"
+        ],
+        "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
+        "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+        "errors": []
+      }
+    }
   },
   "memory_inbox_repair": {
     "status": "checkpoint_deployed_and_smoked",
@@ -506,7 +533,7 @@
     }
   },
   "capture_correction_repair": {
-    "status": "checkpoint_local_proof_passed_pending_deploy",
+    "status": "checkpoint_deployed_and_smoked",
     "proof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-capture-correction-proof-2026-06-20.json",
     "files_changed": [
       "lib/local-demo-state.ts",
@@ -561,7 +588,36 @@
     "screenshots": [
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-capture-correction-mobile-390.png",
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
-      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
-    ]
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-capture-correction-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-capture-correction-mobile-390.png"
+    ],
+    "deployment": {
+      "status": "production_deployed_and_smoked",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+      "lifemax_web": {
+        "alias": "https://lifemax-web.vercel.app",
+        "deployment_id": "dpl_FJFyGz2aZDuqr3sudEhNmsXN7Avw",
+        "deployment_url": "https://lifemax-d8373mjsf-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "life_max_omega": {
+        "alias": "https://life-max-omega.vercel.app",
+        "deployment_id": "dpl_HSe9TWdGCULT2ob1nFmrBZpneL8Y",
+        "deployment_url": "https://life-elzsxk772-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "live_smoke": {
+        "result": "pass",
+        "generated_at": "2026-06-20T08:01:11Z",
+        "targets": [
+          "https://life-max-omega.vercel.app/capture",
+          "https://lifemax-web.vercel.app/capture"
+        ],
+        "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
+        "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+        "errors": []
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.capture_correction_checkpoint_proof.v1",
-  "generated_at": "2026-06-20T07:58:31Z",
-  "status": "checkpoint_local_proof_passed_pending_deploy",
+  "generated_at": "2026-06-20T08:01:11Z",
+  "status": "checkpoint_deployed_and_smoked",
   "objective": "Make Capture feel like credible local evidence by allowing saved entries to be corrected, repeated, and deleted without backend claims.",
   "scope": "LifeMax-vercel-ready browser-local app only",
   "truth_boundary": [
@@ -95,8 +95,21 @@
     "screenshots": [
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-capture-correction-mobile-390.png",
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
-      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
-    ]
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-capture-correction-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-capture-correction-mobile-390.png"
+    ],
+    "deployed_smoke": {
+      "result": "pass",
+      "generated_at": "2026-06-20T08:01:11Z",
+      "targets": [
+        "https://life-max-omega.vercel.app/capture",
+        "https://lifemax-web.vercel.app/capture"
+      ],
+      "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
+      "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+      "errors": []
+    }
   },
   "lab_truth_boundary": {
     "local_preflight_ok": false,
@@ -111,9 +124,32 @@
     ]
   },
   "deployment": {
-    "status": "pending_after_local_proof",
-    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread."
+    "status": "production_deployed_and_smoked",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_FJFyGz2aZDuqr3sudEhNmsXN7Avw",
+      "deployment_url": "https://lifemax-d8373mjsf-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_HSe9TWdGCULT2ob1nFmrBZpneL8Y",
+      "deployment_url": "https://life-elzsxk772-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "live_smoke": {
+      "result": "pass",
+      "generated_at": "2026-06-20T08:01:11Z",
+      "targets": [
+        "https://life-max-omega.vercel.app/capture",
+        "https://lifemax-web.vercel.app/capture"
+      ],
+      "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
+      "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+      "errors": []
+    }
   },
   "proof_hygiene_note": "This proof packet supersedes older checkpoint-audit deployment fields where later Vercel IDs changed after proof-only redeploys.",
-  "stop_continue_decision": "continue: local proof passed, next action is git commit/push, Vercel production deploy, live smoke, proof update, independent verifier."
+  "stop_continue_decision": "checkpoint, not complete: capture correction product code is pushed/deployed/smoked on both public aliases; shared-context/Wave 1 readiness remains red and unproved."
 }
