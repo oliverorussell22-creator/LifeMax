@@ -1,0 +1,225 @@
+{
+  "schema": "lifemax.proof_packet.v1",
+  "generated_at": "2026-06-20T09:09:58Z",
+  "objective": "Make the LifeMax public app visibly more functional and credible by adding a browser-local experiment decision loop that turns observations into a local keep/adjust/drop/inconclusive decision, preserves truth boundaries, proves the flow locally and in production, and checkpoints remaining backend/shared-context blockers.",
+  "riskClass": "Q2 app/frontend product-functionality upgrade with Q3 production deployment already approved by PRODUCTION_DEPLOY_APPROVED=true promote",
+  "status": "checkpoint_deployed_smoked_independently_verified",
+  "completion_ok": false,
+  "completion_blocker": "The public app slice is deployed and smoke-tested, but the separate LifeMax lab/shared-context boot packet remains red, so this cannot be claimed as full LifeMax daily usability.",
+  "repo": {
+    "path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
+    "branch": "main",
+    "commit": "7ae64ad422f41df4eb8eee3e932bbf9a88f59da4",
+    "feature_commit": "7ae64ad feat: add local experiment decisions",
+    "pushed_to": "origin/main"
+  },
+  "deployed": {
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_3LaZhEQp1sB5DeJ9J1ejQt571jTr",
+      "deployment_url": "https://lifemax-e6oh8za9t-olivers-projects-25fda214.vercel.app",
+      "status": "Ready"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_8YVaC6JfNLvwkBro6xWrPyNoETKa",
+      "deployment_url": "https://life-eutdjgihn-olivers-projects-25fda214.vercel.app",
+      "status": "Ready"
+    }
+  },
+  "changes": [
+    {
+      "path": "lib/local-demo-state.ts",
+      "summary": "Adds browser-local experiment decisions, decision export status, observation signal counts, and honest next-action summaries."
+    },
+    {
+      "path": "components/screens.tsx",
+      "summary": "Adds an Experiment decision panel, saves a local decision note, creates a local memory candidate, updates result copy, and discloses decision-note storage in Privacy."
+    },
+    {
+      "path": "app/globals.css",
+      "summary": "Adds compact decision-panel styling consistent with existing operational UI."
+    },
+    {
+      "path": "tests/scaffold-smoke.test.ts",
+      "summary": "Covers active observation counts and saved experiment decision derivation/export."
+    },
+    {
+      "path": "tests/visual/mobile.spec.ts",
+      "summary": "Covers observation logging, decision save, result panel, memory count changes, export preview, and screenshot proof."
+    }
+  ],
+  "functional_flows_proven": [
+    "Experiment builder unlocks after local check-in and capture evidence.",
+    "Active experiment accepts a manual observation and shows signal counts.",
+    "Experiment decision can be saved as keep/adjust/drop/inconclusive with a local note.",
+    "Saved decision changes the result panel and persists after refresh.",
+    "Saved decision creates a browser-local memory candidate visible from Today.",
+    "Profile export preview includes experiment_decision and the decision note.",
+    "Privacy states that the local experiment decision note is browser-local."
+  ],
+  "truth_boundaries_preserved": [
+    "No reminders, external sends, AI coaching, dosage automation, medical decisioning, or backend writes are claimed.",
+    "Experiment decisions are browser-local notes only.",
+    "Decision copy avoids causal, readiness, recovery, strain, or medical claims.",
+    "WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, and backend writes remain explicitly unconnected."
+  ],
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "details": "3 files, 15 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "passed",
+      "details": "1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "passed",
+      "details": "1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "details": "Routes generated: /, /capture, /experiments, /manifest.webmanifest, /patterns, /privacy, /profile, /today"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "passed",
+      "details": "First failed on ambiguous status locator; second failed on replaced success status; repaired both and final rerun passed 2 Playwright visual tests."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "secret-pattern scan over app/components/lib/tests/reports/package surfaces",
+      "result": "passed",
+      "details": "No matches for common token/secret patterns"
+    }
+  ],
+  "browser_evidence": {
+    "local_playwright": {
+      "result": "passed",
+      "screenshots": [
+        "reports/screenshots/high-functionality/local-experiment-observation-mobile-390.png",
+        "reports/screenshots/high-functionality/local-experiment-decision-mobile-390.png",
+        "reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
+      ]
+    },
+    "production_playwright": {
+      "result": "passed",
+      "targets": [
+        {
+          "name": "omega",
+          "base": "https://life-max-omega.vercel.app",
+          "proved": [
+            "check-in",
+            "plan save/update",
+            "capture save",
+            "experiment start",
+            "observation save",
+            "experiment decision save",
+            "refresh persistence",
+            "Today memory candidate",
+            "Profile export preview",
+            "Privacy route and local decision-note copy"
+          ],
+          "console_errors": []
+        },
+        {
+          "name": "lifemax-web",
+          "base": "https://lifemax-web.vercel.app",
+          "proved": [
+            "check-in",
+            "plan save/update",
+            "capture save",
+            "experiment start",
+            "observation save",
+            "experiment decision save",
+            "refresh persistence",
+            "Today memory candidate",
+            "Profile export preview",
+            "Privacy route and local decision-note copy"
+          ],
+          "console_errors": []
+        }
+      ],
+      "screenshots": [
+        "reports/screenshots/deployed-production/omega-experiment-decision-mobile-390.png",
+        "reports/screenshots/deployed-production/lifemax-web-experiment-decision-mobile-390.png"
+      ]
+    }
+  },
+  "loop_evidence": [
+    {
+      "cycle": "inspect",
+      "result": "Found the highest visible gap in Experiments: observations could be logged and stopped, but no explicit local decision fed back into memory/export."
+    },
+    {
+      "cycle": "functionality",
+      "result": "Added local experiment decision data, UI, memory candidate creation, export status, and privacy disclosure."
+    },
+    {
+      "cycle": "verification_repair",
+      "defects_found": [
+        "Visual smoke had an ambiguous role=status locator after adding a second status message.",
+        "Visual smoke expected a transient success status after the active panel was replaced by the result panel.",
+        "First production smoke attempted an unnecessary Patterns shortcut and timed out before the target decision flow."
+      ],
+      "repairs_made": [
+        "Scoped observation status assertion to the log form.",
+        "Changed decision proof to assert the persistent result panel instead of a transient status.",
+        "Changed production smoke to start the experiment from the Experiments builder after check-in/capture, matching the supported user path."
+      ],
+      "checks_rerun": [
+        "npm run screenshot:mobile",
+        "production Playwright smoke on both aliases"
+      ]
+    }
+  ],
+  "residual_risks": [
+    "This remains browser-local demo functionality only.",
+    "No real backend, WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, or Postgres integration was connected or verified.",
+    "Lab boot/preflight remains red and blocks full LifeMax daily-usability completion.",
+    "Vercel reported 2 moderate npm audit findings during remote install; no dependency changes were made in this slice.",
+    "Screenshots are local ignored artifacts and referenced by path rather than committed binary files."
+  ],
+  "next_exact_action": "Commit and push this independently verified proof packet, inspect public aliases after the proof-only push, then continue either with another visible browser-local product workflow or the separate lab shared-context/MCP repair lane.",
+  "independent_verification": {
+    "agent_id": "019ee44d-37e8-7972-9c9a-dc172bf1a51b",
+    "verified_at": "2026-06-20T09:22:17Z",
+    "verdict": "PASS_CHECKPOINT_FAIL_COMPLETE",
+    "slice_checkpoint_ok": true,
+    "complete_ok": false,
+    "summary": "Independent quality_verifier accepted the experiment-decision public-app slice as a proven checkpoint and rejected broader COMPLETE status because the lab/shared-context boot packet and preflight remain red.",
+    "rerun_evidence": [
+      "npm run typecheck pass",
+      "npm run lint pass",
+      "npm test pass: 3 files, 15 tests",
+      "npm run test:fixtures pass: 1 file, 2 tests",
+      "npm run test:pwa pass: 1 file, 1 test",
+      "npm run build pass",
+      "npm run screenshot:mobile pass: 2 Playwright tests",
+      "vercel inspect pass: life-max-omega and lifemax-web aliases Ready on proof-packet deployment IDs",
+      "fresh headless production smoke pass on both aliases: observation, decision save, refresh persistence, Today memory, Profile export preview, Privacy disclosure",
+      "no console/page/HTTP 500 errors reported by verifier"
+    ],
+    "blocker_evidence": [
+      "Lab boot packet safe_to_claim_daily_usable is false.",
+      "Local preflight is red: MCP health unknown, get_life_safety_state did not load, and get_grok_context_brief did not load.",
+      "Full LifeMax daily usability still requires green shared-context/backend/public-MCP/Grok proof."
+    ],
+    "stop_continue_decision": "Continue as CHECKPOINT. Do not claim COMPLETE until the lab/shared-context lane is green."
+  }
+}
