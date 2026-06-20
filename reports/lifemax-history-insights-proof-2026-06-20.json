@@ -1,0 +1,182 @@
+{
+  "schema": "lifemax.proof_packet.v1",
+  "generated_at": "2026-06-20T08:48:55Z",
+  "objective": "Make the LifeMax public app visibly more functional and credible by adding browser-local history insights from archived local days, preserving truth boundaries, proving the flow locally and in production, and checkpointing remaining backend/shared-context blockers.",
+  "riskClass": "Q2 app/frontend product-functionality upgrade with Q3 production deployment already approved by PRODUCTION_DEPLOY_APPROVED=true promote",
+  "status": "checkpoint_deployed_smoked_and_verified",
+  "completion_ok": false,
+  "completion_blocker": "The public app slice is deployed and smoke-tested, but the separate LifeMax lab/shared-context boot packet remains red, so this cannot be claimed as full LifeMax daily usability.",
+  "independent_verification": {
+    "agent_id": "019ee439-57a8-7673-8b80-a7e7a3ec3e8e",
+    "verdict": "PASS as CHECKPOINT; FAIL as COMPLETE",
+    "summary": "Verifier reran checks and a production mobile day-loop smoke on both public aliases, accepted the history-insights slice, found no fake backend-readiness claims, and blocked completion because the June 20 lab/shared-context boot packet is red."
+  },
+  "repo": {
+    "path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
+    "branch": "main",
+    "commit": "de49e419e21851e1211bd34ff03122579454cdc1",
+    "feature_commit": "de49e41 feat: add local history insights",
+    "pushed_to": "origin/main"
+  },
+  "deployed": {
+    "production_deploy_id": "dpl_9b915kLEpAfMsYBB6UTaCP9PcGAB",
+    "production_deploy_url": "https://lifemax-56ldzw7th-olivers-projects-25fda214.vercel.app",
+    "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/9b915kLEpAfMsYBB6UTaCP9PcGAB",
+    "aliases": [
+      "https://lifemax-web.vercel.app",
+      "https://life-max-omega.vercel.app"
+    ],
+    "omega_inspect": {
+      "deployment_id": "dpl_ARS1RN1WSTBRZdwdNzbC6D17hm6v",
+      "project": "life-max",
+      "status": "Ready",
+      "created": "Sat Jun 20 2026 01:45:17 GMT-0700"
+    }
+  },
+  "changes": [
+    {
+      "path": "lib/local-demo-state.ts",
+      "summary": "Adds derived browser-local history_insight states: empty, checkpoint, emerging, trend. True trend now requires at least three recent checkpoints, repeated cue evidence, enough evidence, and enough captures."
+    },
+    {
+      "path": "components/screens.tsx",
+      "summary": "Surfaces a History cue in Today, plus a Local history insight panel in Patterns and Profile."
+    },
+    {
+      "path": "app/globals.css",
+      "summary": "Adds compact, mobile-safe styles for history insight metrics and callout copy."
+    },
+    {
+      "path": "tests/scaffold-smoke.test.ts",
+      "summary": "Covers empty, one-checkpoint, emerging, and trend history insight derivation and export status."
+    },
+    {
+      "path": "tests/visual/mobile.spec.ts",
+      "summary": "Covers visible insight panel, refresh persistence, Today history cue, Profile summary/export, and screenshots."
+    }
+  ],
+  "functional_flows_proven": [
+    "Today command center shows an actionable browser-local History cue.",
+    "Patterns can save a review checkpoint, archive a local day, and show 'One checkpoint, not a trend yet'.",
+    "History insight persists after refresh through browser-local storage.",
+    "Profile shows History insight in local data summary and export preview records history_insight status.",
+    "Privacy route is reachable from app navigation and deployed aliases."
+  ],
+  "truth_boundaries_preserved": [
+    "No WHOOP, account, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, or backend write is claimed.",
+    "History insight is derived from browser-local archives only.",
+    "One checkpoint is explicitly not a trend.",
+    "Two checkpoints are an emerging signal, not a trend.",
+    "Trend language requires at least three recent local checkpoints with repeated cue evidence and supporting local captures."
+  ],
+  "checks": [
+    { "command": "npm run typecheck", "result": "passed" },
+    { "command": "npm run lint", "result": "passed" },
+    { "command": "npm test", "result": "passed", "details": "3 files, 14 tests" },
+    { "command": "npm run test:fixtures", "result": "passed", "details": "1 file, 2 tests" },
+    { "command": "npm run test:pwa", "result": "passed", "details": "1 file, 1 test" },
+    { "command": "npm run build", "result": "passed", "details": "Routes generated: /, /capture, /experiments, /manifest.webmanifest, /patterns, /privacy, /profile, /today" },
+    { "command": "npm run screenshot:mobile", "result": "passed", "details": "2 Playwright visual tests passed after final cleanup" },
+    { "command": "git diff --check", "result": "passed" },
+    { "command": "secret-pattern scan over app/components/lib/tests/reports/package surfaces", "result": "passed", "details": "No matches for common token/secret patterns" },
+    { "command": "node /Users/oliverrussell/.agents/skills/codex-quality-gate/scripts/quality_gate.mjs reports/lifemax-history-insights-proof-2026-06-20.json", "result": "passed", "details": "Initial run failed missing objective/riskClass; proof packet repaired and rerun passed." }
+  ],
+  "browser_evidence": {
+    "local_in_app_browser": {
+      "url": "http://127.0.0.1:3000/today",
+      "result": "passed",
+      "observed": [
+        "Today title rendered",
+        "Today command center contained History cue",
+        "Patterns rendered Local history insight empty state",
+        "Privacy policy page reachable",
+        "No severe console errors"
+      ]
+    },
+    "local_playwright": {
+      "result": "passed",
+      "screenshots": [
+        "reports/screenshots/high-functionality/local-today-history-cue-mobile-390.png",
+        "reports/screenshots/high-functionality/local-history-insight-mobile-390.png",
+        "reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
+      ]
+    },
+    "production_playwright": {
+      "result": "passed",
+      "targets": [
+        {
+          "name": "omega",
+          "base": "https://life-max-omega.vercel.app",
+          "proved": [
+            "check-in",
+            "plan save/update",
+            "evening close",
+            "capture save",
+            "review checkpoint",
+            "archive local day",
+            "history insight render",
+            "refresh persistence",
+            "Today history cue",
+            "Privacy route"
+          ],
+          "console_errors": []
+        },
+        {
+          "name": "lifemax-web",
+          "base": "https://lifemax-web.vercel.app",
+          "proved": [
+            "check-in",
+            "plan save/update",
+            "evening close",
+            "capture save",
+            "review checkpoint",
+            "archive local day",
+            "history insight render",
+            "refresh persistence",
+            "Today history cue",
+            "Privacy route"
+          ],
+          "console_errors": []
+        }
+      ],
+      "screenshots": [
+        "reports/screenshots/deployed-production/omega-history-insight-mobile-390.png",
+        "reports/screenshots/deployed-production/omega-today-history-cue-mobile-390.png",
+        "reports/screenshots/deployed-production/lifemax-web-history-insight-mobile-390.png",
+        "reports/screenshots/deployed-production/lifemax-web-today-history-cue-mobile-390.png"
+      ]
+    }
+  },
+  "loop_evidence": [
+    {
+      "cycle": "inspect",
+      "result": "Found public repo clean at start and lab preflight/boot packet red."
+    },
+    {
+      "cycle": "functionality",
+      "result": "Added derived history insights and visible panels."
+    },
+    {
+      "cycle": "critic_repair",
+      "defects_found": [
+        "Trend label was too eager at two archives.",
+        "Today originally gained only a shallow status chip."
+      ],
+      "repairs_made": [
+        "Added emerging state and required stronger evidence for trend.",
+        "Moved Today surface to an actionable History cue in the command center."
+      ]
+    },
+    {
+      "cycle": "verification",
+      "result": "Reran fast checks, final screenshot flow, local in-app smoke, production deploy, production alias smoke."
+    }
+  ],
+  "residual_risks": [
+    "This remains browser-local demo functionality only.",
+    "No real backend, WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, or Postgres integration was connected or verified.",
+    "Lab boot/preflight remains red and blocks full LifeMax daily-usability completion.",
+    "Vercel reported 2 moderate npm audit findings during remote install; no dependency changes were made in this slice."
+  ],
+  "next_exact_action": "Continue either by adding another visible local product flow or by opening the separate lab shared-context/MCP service repair lane until the LifeMax boot packet is green."
+}
