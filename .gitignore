@@ -13,5 +13,6 @@ reports/browser-smoke.json
 .env
 .env.*
 !.env.example
+.vercel/
 next-env.d.ts
 tsconfig.tsbuildinfo
