@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T10:49:01Z",
+  "generated_at": "2026-06-20T11:24:12Z",
   "objective": "Make the public LifeMax app visibly functional and credible through browser-local flows, proof artifacts, Git push, and Vercel deployment while preserving the truth boundary that backend/shared-context readiness remains unproved.",
   "risk_class": "Q3",
   "riskClass": "Q3",
@@ -23,7 +23,10 @@
     "reports/lifemax-focus-block-proof-2026-06-20.json",
     "reports/lifemax-focus-block-production-smoke-2026-06-20.json",
     "reports/lifemax-focus-block-completion-audit-2026-06-20.json",
-    "reports/lifemax-focus-block-verifier-2026-06-20.json"
+    "reports/lifemax-focus-block-verifier-2026-06-20.json",
+    "next.config.ts",
+    "reports/lifemax-experiment-plan-handoff-proof-2026-06-20.json",
+    "reports/lifemax-experiment-plan-production-smoke-2026-06-20.json"
   ],
   "postActionEvidence": [
     "Capture correction code was committed and pushed in 4df3dec.",
@@ -34,7 +37,9 @@
     "Both public aliases were production-smoked for save review, archive day, refresh persistence, Profile summary, export preview, and no mobile overflow.",
     "Independent verifier 019ee424-454b-75e3-92f7-908a1b539433 accepted CHECKPOINT_OK for Day History and rejected COMPLETE_OK for broader LifeMax.",
     "Focus block product slice commit 50c9e48 was pushed to origin/main.",
-    "Focus block production deploy/smoke passed on lifemax-web and life-max-omega aliases."
+    "Focus block production deploy/smoke passed on lifemax-web and life-max-omega aliases.",
+    "Experiment plan handoff commit b7c94b2 was pushed to origin/main.",
+    "Experiment plan handoff production deploy/smoke passed on both https://life-max-omega.vercel.app and https://lifemax-web.vercel.app."
   ],
   "verification": [
     "npm run typecheck pass",
@@ -55,7 +60,10 @@
     "in-app browser local Today/Capture/Privacy smoke pass for focus block surface and local boundary",
     "production focus block smoke pass on both public aliases after hydration-aware smoke repair",
     "focus block completion-disproof audit pass: checkpoint OK, full completion false",
-    "quality_verifier sidecar pass for focus-block checkpoint; COMPLETE_OK false; stale proof findings repaired"
+    "quality_verifier sidecar pass for focus-block checkpoint; COMPLETE_OK false; stale proof findings repaired",
+    "experiment plan handoff local proof pass: save check-in, capture, start/log/keep experiment, use decision in Today plan, reload persistence, privacy boundary, no console errors, no 390px overflow",
+    "experiment plan handoff production smoke pass on life-max-omega and lifemax-web aliases",
+    "npm run screenshot:mobile blocked for this slice by repeated local Chromium launch timeout before app interaction; in-app browser proof used as the fallback"
   ],
   "residualRisks": [
     "Public LifeMax remains browser-local demo behavior and does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, or cross-device sync.",
@@ -67,7 +75,8 @@
     "This remains browser-local demo behavior only; it does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, timers, or cross-device sync.",
     "LifeMax lab preflight and boot packet remain red, so full daily shared-context usability is not complete.",
     "Vercel npm install reported 2 moderate vulnerabilities; no package/runtime upgrade was performed in this slice.",
-    "Successful production focus smoke proves browser-local behavior on two public aliases, not backend/shared-context readiness."
+    "Successful production focus smoke proves browser-local behavior on two public aliases, not backend/shared-context readiness.",
+    "Standalone headless Playwright mobile screenshot command was blocked in this continuation by repeated Chromium startup timeout; in-app browser proof and production smoke were used instead."
   ],
   "rollbackPath": "Use Git/Vercel to redeploy the previous public app commit if needed; no credentials, auth settings, DNS, custom-domain settings, or backend services were changed by this checkpoint.",
   "secretsRedacted": true,
@@ -83,16 +92,20 @@
     "pushed_commits": [
       "92dbdfc docs: record local plan builder proof",
       "50c9e48f6e14c2439aa817ebf40d6e8d6b1b8081 feat: add local focus block workflow"
+      ,
+      "b7c94b2471f39fe3ac7f6fdc63b5cb9186c65f6c feat: turn experiment decisions into local plans"
     ],
     "deployment": {
       "lifemax_web": {
         "alias": "https://lifemax-web.vercel.app",
         "deployment_id": "dpl_HnJDor8w7aVRATN4ECCprMCpa7QZ",
+        "latest_experiment_plan_handoff_deployment_id": "dpl_GhNpCugqjyDQ4zjCRA9YyDHQxkv4",
         "status": "Ready"
       },
       "life_max_omega": {
         "alias": "https://life-max-omega.vercel.app",
         "deployment_id": "dpl_EiH9MaWHQibE4fK1pJ65E9H6HC3c",
+        "latest_experiment_plan_handoff_deployment_id": "dpl_G5SyJsurYr1YdkVMx2Ejg9sfN3xh",
         "status": "Ready"
       }
     }

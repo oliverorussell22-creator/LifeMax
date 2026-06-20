@@ -3,7 +3,7 @@
   "objective": "Make the Experiments surface higher-functionality by letting a saved browser-local experiment decision create a cautious Today plan, while preserving the truth boundary that no backend, medical automation, reminders, WHOOP, accounts, AI, Telegram, n8n, public MCP, Grok, Postgres, or cross-device sync is connected.",
   "riskClass": "Q3 because this checkpoint is intended for Git push and Vercel production deployment under prior explicit production approval; no credentials, auth settings, DNS, backend services, or destructive service state are changed.",
   "approvalStatus": "Production promotion was explicitly approved earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote. This report covers browser-local demo behavior only.",
-  "status": "local_proven_deploy_pending_not_complete",
+  "status": "production_deployed_and_smoked_not_complete",
   "generatedAt": "2026-06-20T11:20:23Z",
   "changedFiles": [
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/components/screens.tsx",
@@ -11,7 +11,8 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/next.config.ts",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/scaffold-smoke.test.ts",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/visual/mobile.spec.ts",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-experiment-plan-handoff-proof-2026-06-20.json"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-experiment-plan-handoff-proof-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-experiment-plan-production-smoke-2026-06-20.json"
   ],
   "changedBehavior": [
     "A saved local experiment decision now exposes a real Use decision in Today plan control.",
@@ -116,15 +117,28 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/iab-experiment-plan-today-top-mobile-390.png"
   ],
   "deployment": {
-    "status": "pending_after_local_proof",
+    "status": "production_deployed_and_smoked",
     "productionApproved": true,
-    "nextStep": "Commit and push this slice, deploy/promote under the recorded approval, then live-smoke the public aliases and update proof."
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_GhNpCugqjyDQ4zjCRA9YyDHQxkv4",
+      "deployment_url": "https://lifemax-js175cwq0-olivers-projects-25fda214.vercel.app",
+      "status": "Ready"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_G5SyJsurYr1YdkVMx2Ejg9sfN3xh",
+      "deployment_url": "https://life-glq7z9t8j-olivers-projects-25fda214.vercel.app",
+      "status": "Ready"
+    },
+    "productionSmokeReport": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-experiment-plan-production-smoke-2026-06-20.json"
   },
   "residualRisks": [
     "This proves browser-local demo behavior only.",
     "The LifeMax lab/control-plane preflight and boot packet remain red, so full LifeMax daily shared-context usability is not complete.",
     "Standalone headless Playwright mobile screenshots remain blocked by local Chromium launch timeout; in-app browser proof is the current visible fallback.",
+    "Vercel install reported 2 moderate npm audit vulnerabilities; no dependency upgrades were performed in this slice.",
     "No backend, account, WHOOP, AI, Telegram, n8n, public MCP, Grok, Postgres, reminder, timer, or cross-device sync behavior is proven."
   ],
-  "completionDecision": "checkpoint, not complete: local experiment-to-plan behavior is proven and ready to deploy, but deployment/live smoke and independent verifier audit still need to run."
+  "completionDecision": "checkpoint, not complete: experiment-to-plan behavior is proven locally and on both production aliases, but full LifeMax shared-context readiness is still false and independent verifier audit still needs to run for this slice."
 }

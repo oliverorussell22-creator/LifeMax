@@ -1,0 +1,124 @@
+{
+  "schema": "lifemax.experiment_plan_production_smoke.v1",
+  "objective": "Prove the deployed public LifeMax aliases expose the browser-local experiment decision to Today plan handoff without claiming backend or medical automation readiness.",
+  "status": "production_deployed_and_smoked_not_complete",
+  "generatedAt": "2026-06-20T11:24:12Z",
+  "productionApproval": "PRODUCTION_DEPLOY_APPROVED=true promote was explicitly provided earlier in this goal thread.",
+  "deployment": {
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_GhNpCugqjyDQ4zjCRA9YyDHQxkv4",
+      "deployment_url": "https://lifemax-js175cwq0-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready",
+      "created": "2026-06-20T04:21:45-07:00"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_G5SyJsurYr1YdkVMx2Ejg9sfN3xh",
+      "deployment_url": "https://life-glq7z9t8j-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready",
+      "created": "2026-06-20T04:21:32-07:00"
+    }
+  },
+  "smokeFlow": [
+    "Open Profile and reset browser-local demo data.",
+    "Open Today and save manual check-in.",
+    "Open Capture and save one helped habit capture.",
+    "Open Experiments and start the local experiment.",
+    "Log one Better observation.",
+    "Save a Keep decision with a note.",
+    "Click Use decision in Today plan.",
+    "Open Today and verify the derived plan.",
+    "Reload Today and verify persistence.",
+    "Open Privacy and verify the WHOOP/backend boundary copy.",
+    "Verify 390px client width equals scroll width.",
+    "Read console errors; none reported."
+  ],
+  "results": [
+    {
+      "base": "https://life-max-omega.vercel.app",
+      "label": "omega",
+      "resultPanelContains": [
+        "Experiment decision saved.",
+        "Plan handoff",
+        "Experiment decision moved into Today's browser-local plan.",
+        "This replaces the browser-local Today plan, clears any active focus block, and resets plan items to open."
+      ],
+      "planAfterReload": [
+        "Repeat kept part: protect first useful block",
+        "Capture one before/after signal",
+        "Close the loop without adding another rule",
+        "Do not scale beyond one block",
+        "8:30 PM"
+      ],
+      "privacyBoundaryVisible": true,
+      "viewport": {
+        "width": 390,
+        "scrollWidth": 390
+      },
+      "consoleErrors": [],
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-experiment-plan-handoff-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-experiment-plan-today-mobile-390.png"
+      ]
+    },
+    {
+      "base": "https://lifemax-web.vercel.app",
+      "label": "lifemax-web",
+      "resultPanelContains": [
+        "Experiment decision saved.",
+        "Plan handoff",
+        "Experiment decision moved into Today's browser-local plan.",
+        "This replaces the browser-local Today plan, clears any active focus block, and resets plan items to open."
+      ],
+      "planAfterReload": [
+        "Repeat kept part: protect first useful block",
+        "Capture one before/after signal",
+        "Close the loop without adding another rule",
+        "Do not scale beyond one block",
+        "8:30 PM"
+      ],
+      "privacyBoundaryVisible": true,
+      "viewport": {
+        "width": 390,
+        "scrollWidth": 390
+      },
+      "consoleErrors": [],
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-experiment-plan-handoff-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-experiment-plan-today-mobile-390.png"
+      ]
+    }
+  ],
+  "verificationCommands": [
+    {
+      "command": "git push origin main",
+      "result": "pass: a119bed..b7c94b2 pushed to main"
+    },
+    {
+      "command": "npx --yes vercel deploy --prod --yes",
+      "result": "pass: lifemax-web production deployment dpl_GhNpCugqjyDQ4zjCRA9YyDHQxkv4 Ready and aliased to lifemax-web.vercel.app"
+    },
+    {
+      "command": "npx --yes vercel inspect lifemax-web.vercel.app",
+      "result": "pass: Ready, dpl_GhNpCugqjyDQ4zjCRA9YyDHQxkv4"
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "result": "pass: Ready, dpl_G5SyJsurYr1YdkVMx2Ejg9sfN3xh"
+    },
+    {
+      "command": "in-app browser production smoke",
+      "result": "pass: both aliases completed experiment decision to Today plan handoff, reload persistence, Privacy boundary, no console errors, and no 390px horizontal overflow"
+    }
+  ],
+  "residualRisks": [
+    "Vercel install reported 2 moderate npm audit vulnerabilities; no dependency upgrades were performed in this goal slice.",
+    "This proves browser-local production behavior only, not backend/shared-context readiness.",
+    "No WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, timers, or cross-device sync are connected or proven.",
+    "LifeMax lab/control-plane boot and preflight remain red from this continuation's initial inspection."
+  ],
+  "completionDecision": "checkpoint, not complete: deployed browser-local function is proven on both public aliases, but full LifeMax readiness remains false and independent verifier audit still needs to run for this slice."
+}
