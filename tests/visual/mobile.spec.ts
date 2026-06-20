@@ -67,11 +67,32 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.goto("/capture");
   await page.getByTestId("capture-kind-habit").click();
   await page.getByRole("button", { name: "Helped" }).click();
-  await page.getByLabel("Label").fill("morning walk");
-  await page.getByLabel("Note").fill("felt easier after breakfast");
+  await page.getByLabel("Label", { exact: true }).fill("morning walk");
+  await page.getByLabel("Note", { exact: true }).fill("felt easier after breakfast");
   await page.getByTestId("save-capture").click();
-  await expect(page.getByText("morning walk")).toBeVisible();
-  await expect(page.getByLabel("Capture list").getByText("helped")).toBeVisible();
+  const captureList = page.getByLabel("Capture list");
+  const firstCapture = captureList.getByLabel("Capture: morning walk");
+  await expect(firstCapture).toBeVisible();
+  await expect(firstCapture.locator(".event-impact")).toHaveText("helped");
+  await firstCapture.getByLabel("Capture label: morning walk").fill("morning walk after breakfast");
+  await firstCapture.getByLabel("Capture note: morning walk").fill("felt easier after breakfast; less friction");
+  await firstCapture.getByRole("button", { name: "Save edit" }).click();
+  await expect(captureList.getByRole("status")).toContainText("Capture edit saved locally");
+  await expect(captureList.getByLabel("Capture: morning walk after breakfast")).toBeVisible();
+  await page.getByLabel("Label", { exact: true }).fill("delete proof");
+  await page.getByLabel("Note", { exact: true }).fill("remove this local mistake");
+  await page.getByTestId("save-capture").click();
+  const deleteCapture = captureList.getByLabel("Capture: delete proof");
+  await expect(deleteCapture).toBeVisible();
+  await deleteCapture.getByRole("button", { name: "Delete" }).click();
+  await expect(captureList.getByLabel("Capture: delete proof")).toHaveCount(0);
+  await page.reload();
+  await expect(captureList.getByLabel("Capture: morning walk after breakfast")).toBeVisible();
+  await expect(captureList.getByLabel("Capture: delete proof")).toHaveCount(0);
+  await page.locator('section[aria-label="Capture list"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Capture list"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-capture-correction-mobile-390.png")
+  });
 
   await page.goto("/patterns");
   await expect(page.getByRole("heading", { name: "Manual evidence worth watching" })).toBeVisible();
@@ -208,6 +229,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Local export preview").getByText("Missed yesterday after travel")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("midday_rescue")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Messages scattered the plan")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("morning walk after breakfast")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("less friction")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("reviewed_at")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Morning block felt cleaner")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("experiment_observations")).toBeVisible();

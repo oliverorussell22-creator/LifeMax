@@ -1,0 +1,119 @@
+{
+  "schema": "lifemax.capture_correction_checkpoint_proof.v1",
+  "generated_at": "2026-06-20T07:58:31Z",
+  "status": "checkpoint_local_proof_passed_pending_deploy",
+  "objective": "Make Capture feel like credible local evidence by allowing saved entries to be corrected, repeated, and deleted without backend claims.",
+  "scope": "LifeMax-vercel-ready browser-local app only",
+  "truth_boundary": [
+    "Capture corrections are browser-local demo records only.",
+    "No WHOOP, account sync, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, or cross-device sync are connected by this slice.",
+    "The LifeMax lab boot/preflight remains red, so daily shared-context usability is not claimed."
+  ],
+  "implementation_summary": [
+    "Added updated_at to CaptureEvent and normalized legacy captures with updated_at defaulting to created_at.",
+    "Normalized malformed capture kind/impact values back to safe local defaults.",
+    "Added inline Capture list editor with editable type, impact, label, note, plus Save edit, Repeat, and Delete controls.",
+    "Capture corrections now persist in localStorage and update downstream Patterns/Profile/export state.",
+    "Added unit migration coverage for legacy and malformed capture records.",
+    "Extended Playwright smoke to save a capture, edit it, save/delete a bad capture, refresh, and verify corrected evidence appears in Profile export."
+  ],
+  "files_changed": [
+    "lib/local-demo-state.ts",
+    "components/screens.tsx",
+    "app/globals.css",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts"
+  ],
+  "defects_found_and_repaired": [
+    {
+      "defect": "Running build and screenshot:mobile concurrently caused a Next build lock.",
+      "repair": "Reran screenshot:mobile by itself after the build completed.",
+      "rerun": "npm run screenshot:mobile reached Playwright assertions."
+    },
+    {
+      "defect": "Capture impact text became ambiguous after adding editable impact controls.",
+      "repair": "Scoped Playwright assertion to the saved .event-impact badge.",
+      "rerun": "npm run screenshot:mobile rerun."
+    },
+    {
+      "defect": "Capture form Label/Note became ambiguous with row-level Capture label/note inputs.",
+      "repair": "Changed browser proof to use exact form labels for new captures.",
+      "rerun": "npm run screenshot:mobile passed."
+    }
+  ],
+  "commands_run": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "npm run test",
+      "result": "pass: 3 files, 13 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass: 1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "pass: build plus 2 Playwright tests"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "redacted changed-file scan for secret-shaped strings",
+      "result": "pass"
+    }
+  ],
+  "browser_evidence": {
+    "playwright_smoke": {
+      "result": "pass",
+      "flow": [
+        "open Today and complete restart/check-in/plan/rescue/close",
+        "open Capture and save a local event",
+        "edit saved capture label and note",
+        "save a second incorrect capture and delete it",
+        "refresh Capture and verify edited evidence remains while deleted evidence is gone",
+        "continue to Patterns, Experiments, Privacy, Today, Profile export",
+        "verify export includes edited capture evidence and not the deleted correction item"
+      ]
+    },
+    "screenshots": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-capture-correction-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
+    ]
+  },
+  "lab_truth_boundary": {
+    "local_preflight_ok": false,
+    "boot_packet_ok": false,
+    "failures": [
+      "local-mcp-health-red",
+      "life-safety-state-not-loaded",
+      "grok-context-brief-not-loaded",
+      "status_summary_current",
+      "local_agent_preflight_green",
+      "abnormally_tired_readiness_current"
+    ]
+  },
+  "deployment": {
+    "status": "pending_after_local_proof",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread."
+  },
+  "proof_hygiene_note": "This proof packet supersedes older checkpoint-audit deployment fields where later Vercel IDs changed after proof-only redeploys.",
+  "stop_continue_decision": "continue: local proof passed, next action is git commit/push, Vercel production deploy, live smoke, proof update, independent verifier."
+}

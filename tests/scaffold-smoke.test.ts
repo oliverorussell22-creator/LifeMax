@@ -50,7 +50,8 @@ describe("Wave 0 scaffold contract", () => {
           label: "morning walk",
           note: "",
           impact: "helped",
-          created_at: "2026-06-19T18:05:00.000Z"
+          created_at: "2026-06-19T18:05:00.000Z",
+          updated_at: "2026-06-19T18:05:00.000Z"
         }
       ],
       daily_plan: null,
@@ -98,7 +99,8 @@ describe("Wave 0 scaffold contract", () => {
           label: "morning walk",
           note: "felt easier after breakfast",
           impact: "helped",
-          created_at: "2026-06-19T18:05:00.000Z"
+          created_at: "2026-06-19T18:05:00.000Z",
+          updated_at: "2026-06-19T18:05:00.000Z"
         }
       ],
       daily_plan: {
@@ -222,7 +224,8 @@ describe("Wave 0 scaffold contract", () => {
           label: "export proof",
           note: "",
           impact: "uncertain",
-          created_at: "2026-06-19T18:05:00.000Z"
+          created_at: "2026-06-19T18:05:00.000Z",
+          updated_at: "2026-06-19T18:05:00.000Z"
         }
       ],
       updated_at: "2026-06-19T18:05:00.000Z"
@@ -240,6 +243,39 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
     expect(localExport.state.captures[0]?.label).toBe("export proof");
+  });
+
+  test("normalizes legacy and malformed capture records into editable local evidence", () => {
+    const stored = readStoredLocalDemoState(
+      JSON.stringify({
+        ...createInitialLocalDemoState(),
+        captures: [
+          {
+            id: "legacy-capture",
+            kind: "habit",
+            label: "legacy walk",
+            note: "old record without updated_at",
+            impact: "helped",
+            created_at: "2026-06-19T18:05:00.000Z"
+          },
+          {
+            id: "malformed-capture",
+            kind: "mystery",
+            label: "",
+            note: "kept from note",
+            impact: "huge",
+            created_at: "2026-06-19T18:10:00.000Z"
+          }
+        ],
+        updated_at: "2026-06-19T18:10:00.000Z"
+      })
+    );
+
+    expect(stored.captures[0]?.updated_at).toBe("2026-06-19T18:05:00.000Z");
+    expect(stored.captures[1]?.kind).toBe("note");
+    expect(stored.captures[1]?.impact).toBe("uncertain");
+    expect(stored.captures[1]?.label).toBe("Note");
+    expect(deriveTodayView(stored).freshness_summary.find((source) => source.label === "Local captures")?.detail).toContain("2 events");
   });
 
   test("normalizes and summarizes local memory review state without backend claims", () => {

@@ -10,6 +10,7 @@ import {
   readStoredLocalDemoState,
   serializeLocalDemoExport,
   type BodyLevel,
+  type CaptureEvent,
   type CaptureImpact,
   type CaptureKind,
   type DayReview,
@@ -1226,7 +1227,8 @@ export function CaptureScreen() {
           label: cleanLabel || labelForKind(kind),
           note: cleanNote,
           impact,
-          created_at: now
+          created_at: now,
+          updated_at: now
         },
         ...current.captures
       ].slice(0, 25),
@@ -1234,6 +1236,61 @@ export function CaptureScreen() {
     }));
     setLabel("");
     setNote("");
+  }
+
+  function updateCapture(captureId: string, patch: Pick<CaptureEvent, "kind" | "label" | "note" | "impact">) {
+    const now = new Date().toISOString();
+    const cleanLabel = patch.label.trim();
+    const cleanNote = patch.note.trim();
+    if (!cleanLabel && !cleanNote) return;
+
+    setLocalState((current) => ({
+      ...current,
+      captures: current.captures.map((event) =>
+        event.id === captureId
+          ? {
+              ...event,
+              kind: patch.kind,
+              label: cleanLabel || labelForKind(patch.kind),
+              note: cleanNote,
+              impact: patch.impact,
+              updated_at: now
+            }
+          : event
+      ),
+      updated_at: now
+    }));
+  }
+
+  function deleteCapture(captureId: string) {
+    const now = new Date().toISOString();
+    setLocalState((current) => ({
+      ...current,
+      captures: current.captures.filter((event) => event.id !== captureId),
+      updated_at: now
+    }));
+  }
+
+  function repeatCapture(captureId: string) {
+    const now = new Date().toISOString();
+    setLocalState((current) => {
+      const event = current.captures.find((item) => item.id === captureId);
+      if (!event) return current;
+
+      return {
+        ...current,
+        captures: [
+          {
+            ...event,
+            id: `capture-repeat-${Date.now()}`,
+            created_at: now,
+            updated_at: now
+          },
+          ...current.captures
+        ].slice(0, 25),
+        updated_at: now
+      };
+    });
   }
 
   return (
@@ -1320,13 +1377,13 @@ export function CaptureScreen() {
             {state.captures.length ? (
               <ul className="event-list">
                 {state.captures.map((event) => (
-                  <li key={event.id} className="event-item">
-                    <span className="event-kind">{labelForKind(event.kind)}</span>
-                    <strong>{event.label}</strong>
-                    {event.note ? <span>{event.note}</span> : null}
-                    <span className="event-impact">{event.impact}</span>
-                    <time>{formatShortTime(event.created_at)}</time>
-                  </li>
+                  <CaptureEventItem
+                    event={event}
+                    key={event.id}
+                    onDelete={deleteCapture}
+                    onRepeat={repeatCapture}
+                    onUpdate={updateCapture}
+                  />
                 ))}
               </ul>
             ) : (
@@ -1336,6 +1393,112 @@ export function CaptureScreen() {
         </aside>
       </section>
     </AppShell>
+  );
+}
+
+function CaptureEventItem({
+  event,
+  onUpdate,
+  onRepeat,
+  onDelete
+}: Readonly<{
+  event: CaptureEvent;
+  onUpdate: (captureId: string, patch: Pick<CaptureEvent, "kind" | "label" | "note" | "impact">) => void;
+  onRepeat: (captureId: string) => void;
+  onDelete: (captureId: string) => void;
+}>) {
+  const [draft, setDraft] = useState({
+    kind: event.kind,
+    label: event.label,
+    note: event.note,
+    impact: event.impact
+  });
+  const [message, setMessage] = useState("");
+  const labelId = `capture-label-${event.id}`;
+  const noteId = `capture-note-${event.id}`;
+  const edited = event.updated_at !== event.created_at;
+
+  function saveEdit() {
+    const cleanLabel = draft.label.trim();
+    const cleanNote = draft.note.trim();
+    if (!cleanLabel && !cleanNote) {
+      setMessage("Keep at least a label or note before saving.");
+      return;
+    }
+
+    onUpdate(event.id, {
+      kind: draft.kind,
+      label: cleanLabel || labelForKind(draft.kind),
+      note: cleanNote,
+      impact: draft.impact
+    });
+    setMessage("Capture edit saved locally.");
+  }
+
+  function repeatEvent() {
+    onRepeat(event.id);
+    setMessage("Capture repeated locally.");
+  }
+
+  return (
+    <li className="event-item capture-edit-item" aria-label={`Capture: ${event.label}`}>
+      <div className="section-heading-row">
+        <span className="event-kind">{labelForKind(event.kind)}</span>
+        <span className="event-impact">{event.impact}</span>
+      </div>
+      <label className="stacked-input" htmlFor={labelId}>
+        <span>Capture label</span>
+        <input
+          id={labelId}
+          aria-label={`Capture label: ${event.label}`}
+          className="text-input"
+          value={draft.label}
+          onChange={(item) => setDraft((current) => ({ ...current, label: item.target.value }))}
+        />
+      </label>
+      <label className="stacked-input" htmlFor={noteId}>
+        <span>Capture note</span>
+        <textarea
+          id={noteId}
+          aria-label={`Capture note: ${event.label}`}
+          className="text-area compact-text-area"
+          value={draft.note}
+          onChange={(item) => setDraft((current) => ({ ...current, note: item.target.value }))}
+        />
+      </label>
+      <SegmentedControl
+        label="Saved type"
+        value={draft.kind}
+        options={captureKinds.map((item) => ({ value: item.value, label: item.label }))}
+        onChange={(kind) => setDraft((current) => ({ ...current, kind }))}
+      />
+      <SegmentedControl
+        label="Saved impact"
+        value={draft.impact}
+        options={impactOptions}
+        onChange={(impact) => setDraft((current) => ({ ...current, impact }))}
+      />
+      <div className="action-row">
+        <button className="secondary-action" type="button" onClick={saveEdit}>
+          Save edit
+        </button>
+        <button className="secondary-action" type="button" onClick={repeatEvent}>
+          Repeat
+        </button>
+        <button className="secondary-action" type="button" onClick={() => onDelete(event.id)}>
+          Delete
+        </button>
+      </div>
+      <p className="field-help">
+        {edited ? `Edited ${formatShortTime(event.updated_at)}. ` : ""}
+        Created {formatShortTime(event.created_at)}. Capture corrections stay in this browser.
+      </p>
+      {message ? (
+        <p className="field-help" role="status">
+          {message}
+        </p>
+      ) : null}
+    </li>
   );
 }
 

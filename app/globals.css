@@ -828,6 +828,18 @@ button:disabled {
   font-size: 12px;
 }
 
+.capture-edit-item {
+  gap: 9px;
+}
+
+.capture-edit-item .segmented-control {
+  grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
+}
+
+.capture-edit-item .text-area {
+  min-height: 68px;
+}
+
 .memory-panel {
   display: grid;
   gap: 10px;

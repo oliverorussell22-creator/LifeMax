@@ -37,6 +37,7 @@ export interface CaptureEvent {
   note: string;
   impact: CaptureImpact;
   created_at: string;
+  updated_at: string;
 }
 
 export interface LocalDailyPlan {
@@ -319,16 +320,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
     return {
       schema_version: "lifemax.local_demo.v1",
       check_in: parsed.check_in ?? null,
-      captures: Array.isArray(parsed.captures)
-        ? parsed.captures.slice(0, 50).map((capture) => ({
-            id: capture.id,
-            kind: capture.kind,
-            label: capture.label,
-            note: capture.note ?? "",
-            impact: capture.impact ?? "uncertain",
-            created_at: capture.created_at
-          }))
-        : [],
+      captures: normalizeCaptures(parsed.captures),
       daily_plan: normalizeDailyPlan(parsed.daily_plan),
       midday_rescue: normalizeMiddayRescue(parsed.midday_rescue),
       quick_restart: normalizeQuickRestart(parsed.quick_restart),
@@ -519,6 +511,52 @@ function normalizeDailyPlan(value: unknown): LocalDailyPlan | null {
     accepted_at: plan.accepted_at,
     updated_at: plan.updated_at
   };
+}
+
+function normalizeCaptures(value: unknown): CaptureEvent[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .slice(0, 50)
+    .map((item) => item as Partial<CaptureEvent>)
+    .filter((item) => item.id && (item.label || item.note) && item.created_at)
+    .map((item) => {
+      const createdAt = item.created_at as string;
+
+      return {
+        id: item.id as string,
+        kind: normalizeCaptureKind(item.kind),
+        label: item.label?.trim() || labelForCaptureKind(normalizeCaptureKind(item.kind)),
+        note: item.note?.trim() ?? "",
+        impact: normalizeCaptureImpact(item.impact),
+        created_at: createdAt,
+        updated_at: item.updated_at ?? createdAt
+      };
+    });
+}
+
+function normalizeCaptureKind(value: unknown): CaptureKind {
+  return value === "supplement" || value === "habit" || value === "symptom" || value === "hydration" || value === "note" ? value : "note";
+}
+
+function normalizeCaptureImpact(value: unknown): CaptureImpact {
+  return value === "helped" || value === "neutral" || value === "drained" || value === "uncertain" ? value : "uncertain";
+}
+
+function labelForCaptureKind(kind: CaptureKind) {
+  switch (kind) {
+    case "supplement":
+      return "Supplement";
+    case "habit":
+      return "Habit";
+    case "symptom":
+      return "Symptom";
+    case "hydration":
+      return "Hydration";
+    case "note":
+    default:
+      return "Note";
+  }
 }
 
 function normalizeEveningClose(value: unknown): EveningClose | null {
