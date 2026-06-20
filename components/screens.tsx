@@ -9,6 +9,7 @@ import {
   createPlanFromExperimentDecision,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
+  createPlanFromWeeklyBoard,
   createSampleWeekDemoState,
   deriveTodayView,
   formatShortTime,
@@ -1741,6 +1742,7 @@ export function PatternsScreen() {
   const today = useMemo(() => deriveTodayView(state), [state]);
   const [archiveMessage, setArchiveMessage] = useState("");
   const [historyMessage, setHistoryMessage] = useState("");
+  const [weeklyMessage, setWeeklyMessage] = useState("");
 
   function setPatternDecision(patternId: string, status: PatternDecisionStatus) {
     const now = new Date().toISOString();
@@ -1832,6 +1834,34 @@ export function PatternsScreen() {
     setHistoryMessage(`Moved "${archive.tomorrow_cue}" into Today's browser-local plan.`);
   }
 
+  function useWeeklyBoardPlan() {
+    if (today.weekly_board.status !== "ready") return;
+
+    const now = new Date().toISOString();
+    const board = today.weekly_board;
+    setLocalState((current) => ({
+      ...current,
+      daily_plan: createPlanFromWeeklyBoard(board, current.daily_plan, now),
+      focus_session: null,
+      plan_done: false,
+      memory_candidates: [
+        {
+          id: `memory-weekly-board-${Date.now()}`,
+          title: `Weekly board: ${board.primary_cue}`,
+          detail: `${board.detail} ${board.truth_boundary}`,
+          source: "pattern" as const,
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
+        },
+        ...current.memory_candidates.filter((candidate) => !candidate.title.startsWith("Weekly board:"))
+      ].slice(0, 20),
+      updated_at: now
+    }));
+    setWeeklyMessage(`Moved weekly board cue "${board.primary_cue}" into Today's browser-local plan.`);
+  }
+
   return (
     <AppShell active="patterns">
       <section className="screen two-column-screen" data-screen="patterns-functional">
@@ -1911,6 +1941,7 @@ export function PatternsScreen() {
           )}
         </div>
         <aside className="screen-aside">
+          <WeeklyBoardPanel board={today.weekly_board} cueMessage={weeklyMessage} onUsePlan={useWeeklyBoardPlan} />
           <HistoryInsightPanel insight={today.history_insight} />
           <DayHistoryPanel
             archives={state.day_archives}
@@ -2027,6 +2058,72 @@ function HistoryInsightPanel({ insight }: Readonly<{ insight: ReturnType<typeof 
         <span>{insight.next_action}</span>
       </div>
       <p className="field-help">{insight.truth_boundary}</p>
+    </section>
+  );
+}
+
+function WeeklyBoardPanel({
+  board,
+  cueMessage,
+  onUsePlan
+}: Readonly<{
+  board: ReturnType<typeof deriveTodayView>["weekly_board"];
+  cueMessage?: string;
+  onUsePlan?: () => void;
+}>) {
+  const ready = board.status === "ready";
+
+  return (
+    <section className="panel history-insight-panel" aria-label="Weekly operating board">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Weekly board</p>
+          <h2 className="panel-title">{board.title}</h2>
+        </div>
+        <span className={ready ? "state-pill state-pill-good" : "state-pill"}>{board.status}</span>
+      </div>
+      <p className="panel-copy">{board.detail}</p>
+      <div className="history-insight-grid" aria-label="Weekly board metrics">
+        {board.metrics.map((metric) => (
+          <span key={metric.label}>
+            <strong>{metric.value}</strong>
+            {metric.label}
+          </span>
+        ))}
+      </div>
+      <div className="insight-callout">
+        <strong>Primary cue</strong>
+        <span>{board.primary_cue}</span>
+      </div>
+      <div className="command-grid review-grid" aria-label="Weekly plan preview">
+        <span>
+          <strong>Must-do</strong>
+          {board.plan_preview.must_do}
+        </span>
+        <span>
+          <strong>Keep</strong>
+          {board.keep_doing}
+        </span>
+        <span>
+          <strong>Close</strong>
+          {board.plan_preview.optional_2}
+        </span>
+        <span>
+          <strong>Reduce</strong>
+          {board.reduce}
+        </span>
+      </div>
+      <div className="action-row data-action-row">
+        <button className="primary-action" type="button" disabled={!ready} onClick={onUsePlan} data-testid="use-weekly-board-plan">
+          Use week plan in Today
+        </button>
+      </div>
+      <p className="field-help">{board.truth_boundary}</p>
+      {cueMessage ? (
+        <p className="export-status export-status-success" role="status">
+          {cueMessage}
+        </p>
+      ) : null}
     </section>
   );
 }

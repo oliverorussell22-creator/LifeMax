@@ -402,8 +402,25 @@ test("sample week loader makes high-level local state visible and persistent", a
   });
 
   await page.goto("/patterns");
+  await expect(page.getByLabel("Weekly operating board").getByRole("heading", { name: "Weekly board ready from local history." })).toBeVisible();
+  await expect(page.getByLabel("Weekly operating board").getByText("browser-local operating board")).toBeVisible();
+  await expect(page.getByLabel("Weekly plan preview").getByText("Protect first useful block")).toBeVisible();
+  await page.getByTestId("use-weekly-board-plan").click();
+  await expect(page.getByLabel("Weekly operating board").getByRole("status")).toContainText("Moved weekly board cue");
+  await page.goto("/today");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Protect first useful block");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 2")).toHaveValue("Close and archive one more local day");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Avoid today")).toHaveValue("Do not start with messages before plan");
+  await page.reload();
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 2")).toHaveValue("Close and archive one more local day");
+  await page.goto("/patterns");
   await expect(page.getByLabel("Local history insight").getByRole("heading", { name: "3 checkpoints form a local trend" })).toBeVisible();
   await expect(page.getByLabel("Local day history").getByRole("heading", { name: "3 local days archived" })).toBeVisible();
+  await page.locator('section[aria-label="Weekly operating board"]').evaluate((node) => node.scrollIntoView({ block: "start" }));
+  await page.screenshot({
+    path: path.join(highFunctionalityDir, "local-sample-week-weekly-board-mobile-390.png"),
+    fullPage: false
+  });
   await page.screenshot({
     path: path.join(highFunctionalityDir, "local-sample-week-patterns-mobile-390.png"),
     fullPage: false

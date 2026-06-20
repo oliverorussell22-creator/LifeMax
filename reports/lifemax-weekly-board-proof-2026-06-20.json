@@ -1,0 +1,203 @@
+{
+  "createdAt": "2026-06-20T12:12:56.968Z",
+  "localUrl": "http://127.0.0.1:3000",
+  "weeklyBefore": {
+    "clientWidth": 390,
+    "h1": "Only show patterns the local data can support.",
+    "labels": {
+      "Local history insight": "Insight3 checkpoints form a local trendlocal trend4.3 evidence points per checkpoint; 5 plan items completed; 1 rescue and 1 restart records.3Checkpoints4.3Evidence/day4Captures3ObservationsNext actionRepeat \"Protect first useful block\" once more before changing the experiment.This is a browser-local trend summary, not a causal or medical claim.",
+      "Weekly board metrics": "local trendSignal13Evidence5Plan itemskeepExperiment",
+      "Weekly operating board": "Weekly boardWeekly board ready from local history.ready3 browser-local checkpoints, 13 evidence points, and 3 captures support a cautious weekly board.local trendSignal13Evidence5Plan itemskeepExperimentPrimary cueProtect first useful blockMust-doProtect first useful blockKeepRepeat helped signal: protected first blockCloseClose and archive one more local dayReduceDo not start with messages before planUse week plan in TodayKeep only the smallest useful experiment result. This is a browser-local operating board, not connected AI or medical advice.",
+      "Weekly plan preview": "Must-doProtect first useful blockKeepRepeat helped signal: protected first blockCloseClose and archive one more local dayReduceDo not start with messages before plan"
+    },
+    "path": "/patterns",
+    "scrollWidth": 390,
+    "url": "http://127.0.0.1:3000/patterns"
+  },
+  "weeklyAfter": {
+    "clientWidth": 390,
+    "h1": "Only show patterns the local data can support.",
+    "labels": {
+      "Weekly operating board": "Weekly boardWeekly board ready from local history.ready3 browser-local checkpoints, 13 evidence points, and 3 captures support a cautious weekly board.local trendSignal13Evidence5Plan itemskeepExperimentPrimary cueProtect first useful blockMust-doProtect first useful blockKeepRepeat helped signal: protected first blockCloseClose and archive one more local dayReduceDo not start with messages before planUse week plan in TodayKeep only the smallest useful experiment result. This is a browser-local operating board, not connected AI or medical advice.Moved weekly board cue \"Protect first useful block\" into Today's browser-local plan."
+    },
+    "path": "/patterns",
+    "scrollWidth": 390,
+    "url": "http://127.0.0.1:3000/patterns"
+  },
+  "todayAfterPlan": {
+    "clientWidth": 390,
+    "h1": "Check in, then keep the day honest.",
+    "labels": {
+      "Daily plan editor": "Daily planOne must-do, two optional moves, one boundary0/3 doneMust-doOptional move 1Optional move 2Avoid todayShutdown targetMust-doopendoneskippedOptional 1opendoneskippedOptional 2opendoneskippedSave day planPlan edits stay local. Completion changes Today, Patterns, and the evening close context.",
+      "Source freshness": "FreshnessSource statusManual check-inSaved locally 5:12 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled",
+      "Today command center": "What nowKeep the plan small.A lower intensity cap protects the day from turning into a productivity push.WhyManual check-in points to a smaller day. No wearable data was used.Next itemProtect first useful blockBoundaryDo not start with messages before planRescueTen minute walk without messagesRestartProtect first useful blockClose loopTomorrow hint: Protect first useful blockHistory cueRepeat \"Protect first useful block\" once more before changing the experiment.Plan builderUses check-in, restart, 3 captures, rescue, history cue. Nothing leaves this browser.Save check-inGenerate local planLower intensityLoad sample week"
+    },
+    "path": "/today",
+    "scrollWidth": 390,
+    "url": "http://127.0.0.1:3000/today"
+  },
+  "planValues": [
+    "Protect first useful block",
+    "Repeat helped signal: protected first block",
+    "Close and archive one more local day",
+    "Do not start with messages before plan",
+    "8:30 PM"
+  ],
+  "planValuesAfterReload": [
+    "Protect first useful block",
+    "Repeat helped signal: protected first block",
+    "Close and archive one more local day",
+    "Do not start with messages before plan",
+    "8:30 PM"
+  ],
+  "desktopWeekly": {
+    "clientWidth": 1280,
+    "h1": "Only show patterns the local data can support.",
+    "labels": {
+      "Primary sections": "TodayCapturePatternsExperimentsProfile",
+      "Weekly operating board": "Weekly boardWeekly board ready from local history.ready3 browser-local checkpoints, 13 evidence points, and 3 captures support a cautious weekly board.local trendSignal13Evidence5Plan itemskeepExperimentPrimary cueProtect first useful blockMust-doProtect first useful blockKeepRepeat helped signal: protected first blockCloseClose and archive one more local dayReduceDo not start with messages before planUse week plan in TodayKeep only the smallest useful experiment result. This is a browser-local operating board, not connected AI or medical advice."
+    },
+    "path": "/patterns",
+    "scrollWidth": 1280,
+    "url": "http://127.0.0.1:3000/patterns"
+  },
+  "logs": {
+    "mobile": [],
+    "desktop": []
+  },
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-today-plan-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-patterns-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-full-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-today-plan-fields-mobile-390.png"
+  ],
+  "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-weekly-board-proof-2026-06-20.json",
+  "visualInspectionAddendum": {
+    "addedAt": "2026-06-20T12:13:26.152Z",
+    "reason": "Added tighter mobile screenshots after visual QA found the first captures did not show the weekly board heading and Today plan fields clearly.",
+    "addedScreenshots": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-full-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-today-plan-fields-mobile-390.png"
+    ]
+  },
+  "schema": "lifemax.high-functionality-proof.v1",
+  "riskClass": "Q3",
+  "status": "local_proven_deploy_pending",
+  "objective": "Add a higher-level browser-local Weekly operating board that turns local day history, captures, and experiment decisions into a cautious plan handoff back to Today.",
+  "changedFiles": [
+    "lib/local-demo-state.ts",
+    "components/screens.tsx",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts",
+    "reports/lifemax-weekly-board-proof-2026-06-20.json"
+  ],
+  "truthBoundary": [
+    "Weekly board is derived only from browser-local demo history, captures, and experiment records.",
+    "No WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Postgres, backend writes, reminders, timers, or cross-device sync are connected or claimed.",
+    "Lab/source boot reports remain red, so connected LifeMax daily usability is not claimed."
+  ],
+  "localChecks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "detail": "3 files, 19 tests"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "detail": "Next.js static routes generated for /, /today, /capture, /patterns, /experiments, /profile, /privacy, /manifest.webmanifest"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "passed",
+      "detail": "1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "passed",
+      "detail": "1 file, 1 test"
+    }
+  ],
+  "verification": {
+    "static": [
+      "npm run typecheck passed",
+      "npm test passed: 3 files / 19 tests",
+      "npm run lint passed",
+      "npm run build passed: 10 static pages generated",
+      "npm run test:fixtures passed",
+      "npm run test:pwa passed"
+    ],
+    "browser": {
+      "localServer": "next start on http://127.0.0.1:3000 after production build",
+      "flow": "visible reset -> load sample week -> Patterns weekly board ready -> Use week plan in Today -> Today plan fields update -> refresh persistence -> desktop Patterns check",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-today-plan-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-patterns-desktop-1280.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-full-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-weekly-board-today-plan-fields-mobile-390.png"
+      ],
+      "mobileConsoleErrors": [],
+      "desktopConsoleErrors": [],
+      "noHorizontalOverflow": true
+    },
+    "labBoundary": {
+      "localPreflight": "red at 2026-06-20T12:07:34Z: local MCP health unknown; life safety state and Grok context brief not loaded; fetch failed",
+      "bootPacket": "red at 2026-06-20T12:07:40Z: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports"
+    }
+  },
+  "approvalStatus": "Production promotion was previously approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote. This slice does not edit credentials/auth/DNS/backend services.",
+  "preActionEvidence": {
+    "gitStatusBeforeWork": "main...origin/main clean at f36e633",
+    "priorProof": "sample-week production proof existed and was pushed before this slice",
+    "bootBoundary": "LifeMax lab/source boot reports are red; public app work remains browser-local only."
+  },
+  "rollbackPath": [
+    "Git rollback: revert the weekly-board commit and redeploy the prior production commit if needed.",
+    "Runtime rollback: promote the previous Vercel production deployment; no database/auth/credential migration is part of this slice.",
+    "User data rollback is not needed for backend records because this feature writes only browser-local demo state."
+  ],
+  "postActionEvidence": {
+    "local": "Local browser smoke passed; production deployment pending.",
+    "deployment": {
+      "status": "pending"
+    }
+  },
+  "secretsRedacted": true,
+  "noSecretsHandling": "No secrets printed or edited. Strict diff credential-shape scan will be run before commit.",
+  "lifecycleEvidence": {
+    "defectsFound": [
+      "History existed but did not yet provide a higher-level weekly operating surface.",
+      "Initial local screenshots did not clearly show the weekly board heading or Today plan fields."
+    ],
+    "repairsMade": [
+      "Added derived weekly_board state and createPlanFromWeeklyBoard handoff.",
+      "Added Weekly operating board panel on Patterns with a real Use week plan in Today action.",
+      "Extended unit and visual tests for locked/ready board and plan handoff.",
+      "Captured tighter mobile screenshots after visual QA."
+    ],
+    "rerunChecks": [
+      "typecheck",
+      "unit tests",
+      "lint",
+      "build",
+      "fixtures",
+      "PWA",
+      "local browser smoke"
+    ],
+    "stopContinueDecision": "continue_to_diff_review_commit_push_and_approved_vercel_production_deploy"
+  },
+  "environmentBlockers": [
+    "Standalone Playwright/Chromium visual test command remains unsuitable in this desktop environment because the Codex parent process has a large defunct child backlog; in-app browser smoke is used as current browser proof."
+  ],
+  "updatedAt": "2026-06-20T12:14:09.280Z"
+}

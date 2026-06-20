@@ -313,6 +313,23 @@ export interface DerivedTodayView {
     truth_boundary: string;
     metrics: Array<{ label: string; value: string }>;
   };
+  weekly_board: {
+    status: "locked" | "ready";
+    title: string;
+    detail: string;
+    primary_cue: string;
+    keep_doing: string;
+    reduce: string;
+    plan_preview: {
+      must_do: string;
+      optional_1: string;
+      optional_2: string;
+      avoid_today: string;
+      shutdown_target: string;
+    };
+    metrics: Array<{ label: string; value: string }>;
+    truth_boundary: string;
+  };
 }
 
 export interface PatternCard {
@@ -698,6 +715,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const dayReview = buildDayReview(state, planSummary);
   const dayHistorySummary = summarizeDayHistory(state.day_archives);
   const historyInsight = summarizeHistoryInsight(state.day_archives);
+  const weeklyBoard = summarizeWeeklyBoard(state, historyInsight);
   const planBuilder = summarizePlanBuilder(state);
   const focusSummary = summarizeFocusSession(state, planSummary);
 
@@ -749,7 +767,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       experiment_summary: summarizeExperiment(state.experiment, false),
       day_review: dayReview,
       day_history_summary: dayHistorySummary,
-      history_insight: historyInsight
+      history_insight: historyInsight,
+      weekly_board: weeklyBoard
     };
   }
 
@@ -807,7 +826,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
     experiment_summary: summarizeExperiment(state.experiment, captureCount > 0),
     day_review: dayReview,
     day_history_summary: dayHistorySummary,
-    history_insight: historyInsight
+    history_insight: historyInsight,
+    weekly_board: weeklyBoard
   };
 }
 
@@ -850,6 +870,27 @@ export function createPlanFromHistoryArchive(
     optional_2: "Close the loop and archive the result",
     avoid_today: "Do not treat one archived day as a trend",
     shutdown_target: currentPlan?.shutdown_target || "8:30 PM",
+    item_statuses: {
+      must_do: "open",
+      optional_1: "open",
+      optional_2: "open"
+    },
+    accepted_at: timestamp,
+    updated_at: timestamp
+  };
+}
+
+export function createPlanFromWeeklyBoard(
+  board: DerivedTodayView["weekly_board"],
+  currentPlan: LocalDailyPlan | null,
+  timestamp: string
+): LocalDailyPlan {
+  return {
+    must_do: board.plan_preview.must_do,
+    optional_1: board.plan_preview.optional_1,
+    optional_2: board.plan_preview.optional_2,
+    avoid_today: board.plan_preview.avoid_today,
+    shutdown_target: currentPlan?.shutdown_target || board.plan_preview.shutdown_target,
     item_statuses: {
       must_do: "open",
       optional_1: "open",
@@ -1875,6 +1916,87 @@ function summarizeHistoryInsight(archives: LocalDayArchive[]): DerivedTodayView[
       { label: "Captures", value: String(totalCaptures) },
       { label: "Observations", value: String(totalObservations) }
     ]
+  };
+}
+
+function summarizeWeeklyBoard(
+  state: LocalDemoState,
+  insight: DerivedTodayView["history_insight"]
+): DerivedTodayView["weekly_board"] {
+  const recent = state.day_archives.slice(0, 5);
+  const archiveCount = recent.length;
+  const latestArchive = recent[0] ?? null;
+  const totalEvidence = recent.reduce((sum, archive) => sum + archive.evidence_count, 0);
+  const planCompletedTotal = recent.reduce((sum, archive) => sum + parseCompletedPlanItems(archive.plan_progress), 0);
+  const rescueCount = recent.filter((archive) => archive.rescue_used).length;
+  const restartCount = recent.filter((archive) => archive.restart_used).length;
+  const helpedCapture = state.captures.find((capture) => capture.impact === "helped") ?? null;
+  const drainedCapture = state.captures.find((capture) => capture.impact === "drained") ?? null;
+  const repeatedCue = archiveCount ? mostFrequent(recent.map((archive) => archive.tomorrow_cue)) : "Archive three local days";
+  const baseShutdown = state.daily_plan?.shutdown_target || "8:30 PM";
+
+  if (archiveCount < 3) {
+    const missingCount = 3 - archiveCount;
+    return {
+      status: "locked",
+      title: "Weekly board needs more local history.",
+      detail: `Archive ${missingCount} more local day${missingCount === 1 ? "" : "s"} before LifeMax drafts a browser-local weekly board.`,
+      primary_cue: latestArchive?.tomorrow_cue ?? "No weekly cue yet",
+      keep_doing: helpedCapture ? `Keep watching ${helpedCapture.label}` : "Complete and archive the local day loop",
+      reduce: "Do not convert thin data into a weekly routine.",
+      plan_preview: {
+        must_do: latestArchive?.tomorrow_cue ?? "Archive one local day",
+        optional_1: helpedCapture ? `Repeat helped signal: ${helpedCapture.label}` : "Save one useful capture",
+        optional_2: "Close the local loop tonight",
+        avoid_today: "Do not treat thin history as a trend",
+        shutdown_target: baseShutdown
+      },
+      metrics: [
+        { label: "Checkpoints", value: `${archiveCount}/3` },
+        { label: "Evidence", value: String(totalEvidence) },
+        { label: "Plan items", value: String(planCompletedTotal) },
+        { label: "Recovery aids", value: String(rescueCount + restartCount) }
+      ],
+      truth_boundary: "Weekly boards unlock only from browser-local history and are not AI coaching or medical guidance."
+    };
+  }
+
+  const keepDoing = helpedCapture
+    ? `Repeat helped signal: ${helpedCapture.label}`
+    : planCompletedTotal > 0
+      ? `Repeat cue: ${repeatedCue}`
+      : "Keep the first block small";
+  const reduce = drainedCapture ? `Do not start with ${drainedCapture.label}` : "Do not add another experiment until one more close.";
+  const experimentLine =
+    state.experiment?.decision === "keep"
+      ? "Keep only the smallest useful experiment result."
+      : state.experiment?.decision === "adjust"
+        ? "Adjust one experiment variable before repeating."
+        : state.experiment?.decision === "drop"
+          ? "Leave the dropped experiment out of the weekly plan."
+          : "Keep experiments reversible this week.";
+
+  return {
+    status: "ready",
+    title: "Weekly board ready from local history.",
+    detail: `${archiveCount} browser-local checkpoints, ${totalEvidence} evidence points, and ${state.captures.length} captures support a cautious weekly board.`,
+    primary_cue: repeatedCue,
+    keep_doing: keepDoing,
+    reduce,
+    plan_preview: {
+      must_do: repeatedCue,
+      optional_1: keepDoing,
+      optional_2: "Close and archive one more local day",
+      avoid_today: reduce,
+      shutdown_target: baseShutdown
+    },
+    metrics: [
+      { label: "Signal", value: insight.signal_label },
+      { label: "Evidence", value: String(totalEvidence) },
+      { label: "Plan items", value: String(planCompletedTotal) },
+      { label: "Experiment", value: state.experiment?.decision ? formatExperimentDecision(state.experiment.decision) : "none" }
+    ],
+    truth_boundary: `${experimentLine} This is a browser-local operating board, not connected AI or medical advice.`
   };
 }
 

@@ -11,6 +11,7 @@ import {
   createPlanFromExperimentDecision,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
+  createPlanFromWeeklyBoard,
   createSampleWeekDemoState,
   createSuggestedPlan,
   deriveTodayView,
@@ -39,6 +40,8 @@ describe("Wave 0 scaffold contract", () => {
     expect(emptyView.confidence).toBe("low");
     expect(emptyView.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
     expect(emptyView.history_insight.status).toBe("empty");
+    expect(emptyView.weekly_board.status).toBe("locked");
+    expect(emptyView.weekly_board.truth_boundary).toContain("browser-local history");
 
     const withLocalSignals: LocalDemoState = {
       schema_version: "lifemax.local_demo.v1",
@@ -176,6 +179,13 @@ describe("Wave 0 scaffold contract", () => {
     expect(sample.experiment?.decision).toBe("keep");
     expect(view.history_insight.status).toBe("trend");
     expect(view.history_insight.truth_boundary).toContain("browser-local trend summary");
+    expect(view.weekly_board.status).toBe("ready");
+    expect(view.weekly_board.primary_cue).toBe("Protect first useful block");
+    expect(view.weekly_board.reduce).toContain("messages before plan");
+    const weeklyPlan = createPlanFromWeeklyBoard(view.weekly_board, sample.daily_plan, "2026-06-20T18:10:00.000Z");
+    expect(weeklyPlan.must_do).toBe("Protect first useful block");
+    expect(weeklyPlan.optional_2).toBe("Close and archive one more local day");
+    expect(weeklyPlan.avoid_today).toContain("messages before plan");
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
     expect(localExport.summary.day_archives).toBe(3);
     expect(localExport.summary.experiment).toBe("stopped");
