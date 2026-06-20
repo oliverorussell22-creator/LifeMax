@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T02:00:14Z",
+  "generated_at": "2026-06-20T04:56:06Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel. This packet records the preview deployment path; production promotion, domain/alias mutation, credential changes, and backend/service activation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -124,6 +124,16 @@
       "command": "npx --yes vercel deploy -y",
       "status": "pass",
       "summary": "Vercel preview deployment reached READY"
+    },
+    {
+      "command": "in-app browser production smoke",
+      "status": "pass",
+      "summary": "life-max-omega production route smoke covered Today, Capture, Patterns, Experiments, Profile, Privacy, local flow persistence after refresh, desktop/mobile screenshots, and no LifeMax production console errors"
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "status": "pass",
+      "summary": "production target READY with life-max-omega alias"
     }
   ],
   "pages_verified": [
@@ -146,7 +156,10 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/lifemax-shell-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/lifemax-privacy-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/browser-home-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/browser-privacy-390.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/browser-privacy-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-flow-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-flow-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-privacy-mobile-390.png"
   ],
   "no_secrets_scan": {
     "status": "pass",
@@ -193,5 +206,31 @@
     "preview_url": "https://lifemax-ai67lebl1-olivers-projects-25fda214.vercel.app",
     "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/92KUjcgsByk83HsKqCureUw53Ty1",
     "cli_summary": "Build completed and Vercel CLI returned readyState READY for the preview deployment."
+  },
+  "public_production_browser_proof": {
+    "status": "pass",
+    "proof_packet": "reports/lifemax-production-browser-proof-2026-06-20.json",
+    "production_today_url": "https://life-max-omega.vercel.app/today",
+    "preview_url_status": "blocked_by_vercel_login_protection",
+    "route_smoke_paths": [
+      "/today",
+      "/capture",
+      "/patterns",
+      "/experiments",
+      "/profile",
+      "/privacy"
+    ],
+    "flow_proven": [
+      "manual check-in",
+      "day plan edit and save",
+      "plan item status update",
+      "evening close",
+      "capture save",
+      "pattern watch decision",
+      "experiment start and inconclusive end",
+      "privacy reachability",
+      "refresh persistence"
+    ],
+    "truth_boundary": "Public proof covers browser-local demo behavior only; backend/shared-context and live integrations remain unproved."
   }
 }

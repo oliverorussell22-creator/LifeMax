@@ -1,0 +1,147 @@
+{
+  "schema": "lifemax.production_browser_proof.v1",
+  "generated_at": "2026-06-20T04:56:06Z",
+  "scope": "Continuation proof for the public LifeMax production URL after the clean repo push and Vercel preview deploy.",
+  "risk_class": "Q3 observation only; no production mutation in this continuation pass.",
+  "urls": {
+    "preview": "https://lifemax-ai67lebl1-olivers-projects-25fda214.vercel.app",
+    "production_today": "https://life-max-omega.vercel.app/today",
+    "production_project_alias": "https://lifemax-web.vercel.app/today"
+  },
+  "preview_smoke": {
+    "status": "blocked_by_vercel_login_protection",
+    "observed_heading": "Log in to Vercel",
+    "meaning": "The preview deployment reached READY in Vercel CLI, but it is not usable as public browser proof without signed-in Vercel access."
+  },
+  "production_inspect": {
+    "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+    "status": "ready",
+    "target": "production",
+    "deployment_id": "dpl_F8PmavS9xBqBhpPLBLhj4dTgu113",
+    "deployment_url": "https://life-q51sda5ci-olivers-projects-25fda214.vercel.app",
+    "aliases": [
+      "https://life-max-omega.vercel.app",
+      "https://life-max-olivers-projects-25fda214.vercel.app",
+      "https://life-max-git-main-olivers-projects-25fda214.vercel.app"
+    ]
+  },
+  "production_flow_smoke": {
+    "viewport_mobile": "390x844",
+    "viewport_desktop": "1280x800",
+    "performed_actions": [
+      "opened /profile and reset browser-local demo state",
+      "clicked mobile shell navigation through Capture, Patterns, Experiments, and Profile",
+      "saved a manual Today check-in",
+      "edited and saved a day plan",
+      "marked one plan item done and one skipped",
+      "saved an evening close with tomorrow hint",
+      "saved a Capture entry",
+      "marked a Pattern as watching",
+      "started and ended a local Experiment as inconclusive",
+      "opened Privacy",
+      "refreshed Today and verified saved state persisted visibly"
+    ],
+    "final_today_evidence": {
+      "heading": "Check in, then keep the day honest.",
+      "state_visible": "steady",
+      "confidence_visible": "medium",
+      "plan_visible": "1/3 done",
+      "saved_plan_text": "Ship one real LifeMax proof loop",
+      "saved_tomorrow_hint": "Smoke the public route before polishing",
+      "truth_boundary_visible": "No WHOOP, account, hosted AI, or backend write is claimed.",
+      "fake_readiness_terms_absent": [
+        "readiness score",
+        "recovery score",
+        "strain score"
+      ],
+      "mobile_horizontal_overflow": false,
+      "desktop_horizontal_overflow": false
+    }
+  },
+  "route_smoke": [
+    {
+      "path": "/today",
+      "heading": "Check in, then keep the day honest.",
+      "buttons": 35,
+      "links": 16,
+      "privacy_link_visible": true,
+      "local_boundary_visible": true,
+      "saved_flow_evidence_visible": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/capture",
+      "heading": "Save the signal before it disappears.",
+      "buttons": 10,
+      "links": 12,
+      "privacy_link_visible": true,
+      "local_boundary_visible": true,
+      "saved_flow_evidence_visible": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/patterns",
+      "heading": "Only show patterns the local data can support.",
+      "buttons": 8,
+      "links": 12,
+      "privacy_link_visible": true,
+      "local_boundary_visible": true,
+      "saved_flow_evidence_visible": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/experiments",
+      "heading": "Turn a weak signal into a cautious local test.",
+      "buttons": 1,
+      "links": 12,
+      "privacy_link_visible": true,
+      "local_boundary_visible": true,
+      "saved_flow_evidence_visible": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/profile",
+      "heading": "Local app truth and data controls.",
+      "buttons": 1,
+      "links": 13,
+      "privacy_link_visible": true,
+      "local_boundary_visible": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/privacy",
+      "heading": "Privacy policy and local data boundary.",
+      "buttons": 0,
+      "links": 12,
+      "privacy_link_visible": true,
+      "local_boundary_visible": true,
+      "horizontal_overflow": false
+    }
+  ],
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/preview-today-mobile-initial-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-flow-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-flow-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-today-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-capture-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-patterns-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-experiments-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-profile-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-privacy-mobile-390.png"
+  ],
+  "console_errors": {
+    "production_url_errors": 0,
+    "note": "One captured console error was sourced to vercel.com login after opening the protected preview, not to the LifeMax production URL."
+  },
+  "truth_boundaries": [
+    "This proves visible public web/demo behavior only.",
+    "WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, database persistence, and backend writes are not connected.",
+    "The LifeMax lab repo boot/preflight remains red, so daily shared-context usability is not claimed.",
+    "No credentials, auth settings, DNS, domain aliases, production promotion, backend services, or external sends were changed in this continuation pass."
+  ],
+  "next_actions": [
+    "If another deployment is required, decide whether to promote the clean repo deployment or adjust preview protection.",
+    "If Oliver wants real high-level functionality beyond local demo, start the backend/shared-context/Wave 1 goal with green local MCP and explicit integration gates.",
+    "If keeping public proof in Git matters, unignore or selectively attach screenshots; currently screenshots are local ignored artifacts by design."
+  ]
+}
