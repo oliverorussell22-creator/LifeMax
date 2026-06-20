@@ -1,0 +1,84 @@
+{
+  "schema": "lifemax.production-smoke.v1",
+  "createdAt": "2026-06-20T13:10:00Z",
+  "objective": "Smoke the deployed Today day-review archive workflow on both public production aliases after git push and approved Vercel production deployment.",
+  "deployment": {
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote",
+    "command": "npm exec -- vercel deploy --prod -y",
+    "project": "lifemax-web",
+    "deploymentId": "dpl_Hxggi5ByvLC6idZWSbr359FVfAS4",
+    "deploymentUrl": "https://lifemax-564kf4c0q-olivers-projects-25fda214.vercel.app",
+    "alias": "https://lifemax-web.vercel.app",
+    "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/Hxggi5ByvLC6idZWSbr359FVfAS4",
+    "readyState": "READY",
+    "target": "production",
+    "lifeMaxOmegaAutoDeployment": {
+      "deploymentId": "dpl_C7Sx2qKN1MVQCcNg2LChNf6sT9F8",
+      "deploymentUrl": "https://life-2uxik761b-olivers-projects-25fda214.vercel.app",
+      "alias": "https://life-max-omega.vercel.app",
+      "readyState": "READY",
+      "target": "production",
+      "note": "life-max-omega was updated by the git-linked production deployment after pushing main."
+    }
+  },
+  "smoke": [
+    {
+      "baseUrl": "https://lifemax-web.vercel.app",
+      "label": "lifemax-web",
+      "flow": [
+        "Reset browser-local state through /profile.",
+        "Open /today, save check-in, and generate a browser-local plan.",
+        "Open /capture and save a helped habit capture.",
+        "Return to /today and save the evening close.",
+        "Verify Local day review ready on Today.",
+        "Save review checkpoint from Today and verify the browser-local status.",
+        "Save to history from Today and verify 1 archived local day.",
+        "Refresh /today and verify the archived count persists.",
+        "Open /patterns and verify Local day history shows 1 local day archived.",
+        "Verify mobile scrollWidth equals clientWidth."
+      ],
+      "result": "passed",
+      "metrics": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "url": "https://lifemax-web.vercel.app/patterns"
+      },
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-today-day-review-today-day-review-archive-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-today-day-review-patterns-day-history-mobile-390.png"
+      ]
+    },
+    {
+      "baseUrl": "https://life-max-omega.vercel.app",
+      "label": "life-max-omega",
+      "flow": [
+        "Reset browser-local state through /profile.",
+        "Open /today, save check-in, and generate a browser-local plan.",
+        "Open /capture and save a helped habit capture.",
+        "Return to /today and save the evening close.",
+        "Verify Local day review ready on Today.",
+        "Save review checkpoint from Today and verify the browser-local status.",
+        "Save to history from Today and verify 1 archived local day.",
+        "Refresh /today and verify the archived count persists.",
+        "Open /patterns and verify Local day history shows 1 local day archived.",
+        "Verify mobile scrollWidth equals clientWidth."
+      ],
+      "result": "passed",
+      "metrics": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "url": "https://life-max-omega.vercel.app/patterns"
+      },
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-today-day-review-today-day-review-archive-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-today-day-review-patterns-day-history-mobile-390.png"
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "truthBoundary": [
+    "Production smoke proves browser-local demo behavior only.",
+    "No backend, account, WHOOP, AI, Telegram, n8n, Postgres, public MCP, reminder, timer, or cross-device sync readiness is claimed."
+  ],
+  "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-today-day-review-production-smoke-2026-06-20.json"
+}

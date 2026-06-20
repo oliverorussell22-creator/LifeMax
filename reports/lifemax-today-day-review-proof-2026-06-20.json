@@ -1,15 +1,16 @@
 {
   "schema": "lifemax.high-functionality-proof.v1",
   "createdAt": "2026-06-20T13:06:24Z",
-  "updatedAt": "2026-06-20T13:06:24Z",
+  "updatedAt": "2026-06-20T13:10:00Z",
   "objective": "Make Today feel more like the full local daily loop by letting the user save a browser-local day review checkpoint and archive the day from Today, without navigating to Patterns.",
   "riskClass": "Q3 because this goal lane includes approved production deployment after local proof; app code itself is Q2 browser-local frontend state.",
-  "status": "local_verified_pending_git_push_and_vercel_deploy",
+  "status": "production_deployed_checkpoint_not_full_connected_lifemax",
   "approvalStatus": "Production promotion was previously approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote. This slice does not edit credentials, auth, DNS, backend services, n8n, Telegram, Postgres, public MCP, or WHOOP settings.",
   "changedFiles": [
     "components/screens.tsx",
     "tests/visual/mobile.spec.ts",
-    "reports/lifemax-today-day-review-proof-2026-06-20.json"
+    "reports/lifemax-today-day-review-proof-2026-06-20.json",
+    "reports/lifemax-today-day-review-production-smoke-2026-06-20.json"
   ],
   "truthBoundary": [
     "Today day review and archive are browser-local demo behavior only.",
@@ -96,18 +97,65 @@
       "bootPacket": "red at 2026-06-20T12:59:51.707Z: safe_to_claim_daily_usable false; local preflight red; shared-context reports stale"
     },
     "deployment": {
-      "status": "pending_after_local_proof"
+      "status": "production_deployed_and_smoked",
+      "git": {
+        "featureCommit": "259fd89",
+        "push": "origin/main updated from 088b634 to 259fd89"
+      },
+      "command": "npm exec -- vercel deploy --prod -y",
+      "lifemaxWeb": {
+        "deploymentId": "dpl_Hxggi5ByvLC6idZWSbr359FVfAS4",
+        "deploymentUrl": "https://lifemax-564kf4c0q-olivers-projects-25fda214.vercel.app",
+        "alias": "https://lifemax-web.vercel.app",
+        "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/Hxggi5ByvLC6idZWSbr359FVfAS4",
+        "readyState": "READY",
+        "target": "production"
+      },
+      "lifeMaxOmega": {
+        "deploymentId": "dpl_C7Sx2qKN1MVQCcNg2LChNf6sT9F8",
+        "deploymentUrl": "https://life-2uxik761b-olivers-projects-25fda214.vercel.app",
+        "alias": "https://life-max-omega.vercel.app",
+        "readyState": "READY",
+        "target": "production",
+        "note": "Updated by the git-linked production deployment after push."
+      },
+      "productionSmokePath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-today-day-review-production-smoke-2026-06-20.json",
+      "browserProduction": {
+        "result": "passed",
+        "targets": [
+          "https://lifemax-web.vercel.app",
+          "https://life-max-omega.vercel.app"
+        ],
+        "flow": "reset local state -> /today check-in and generated plan -> /capture save helped capture -> /today evening close -> save review checkpoint -> save to history -> refresh persistence -> /patterns history count",
+        "consoleErrors": [],
+        "mobileOverflow": {
+          "lifemaxWeb": {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "passed": true
+          },
+          "lifeMaxOmega": {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "passed": true
+          }
+        }
+      }
     }
   },
   "screenshots": [
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-day-review-archive-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-archive-patterns-history-mobile-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-day-review-archive-desktop-1280.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-day-review-archive-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-today-day-review-today-day-review-archive-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-today-day-review-patterns-day-history-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-today-day-review-today-day-review-archive-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-today-day-review-patterns-day-history-mobile-390.png"
   ],
   "residualRisks": [
     "This is still browser-local demo behavior; real backend/account/integration readiness is unverified and currently red in lab boot artifacts.",
     "Today is more end-to-end, but broader progress-board hierarchy and memory provenance are still candidate future improvements.",
-    "Production smoke is still pending in this packet and must be added before claiming the deployed slice is proven."
+    "The deployed browser-local slice is proven, but the larger LifeMax goal is not complete because connected shared-context services remain red and unverified."
   ],
   "rollbackPath": [
     "Git rollback: revert the Today day-review commit and redeploy the previous production commit if needed.",
@@ -122,5 +170,5 @@
     }
   },
   "secretsRedacted": true,
-  "stopContinueDecision": "checkpoint_not_complete_until_git_push_vercel_deploy_and_production_smoke_finish"
+  "stopContinueDecision": "checkpoint_not_complete: Today can now save and archive the local day; pushed, deployed, and smoked on both production aliases; broader connected LifeMax readiness remains red and unproved."
 }
