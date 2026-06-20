@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T06:47:06Z",
+  "generated_at": "2026-06-20T07:11:43Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -11,14 +11,15 @@
     "checked_with": "git push origin main, git rev-parse HEAD, and git ls-remote origin refs/heads/main",
     "exists": true,
     "branch": "main",
-    "status": "origin/main matched local main at db6dfd2f83deddb717dd2809158f57b34b78a714 before this proof refresh; proof-only commit still pending at packet write time",
+    "status": "origin/main matched local main at 718468d after quick restart code push; proof-only commit pending at packet write time",
     "pushed_commits": [
       "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9 feat: make LifeMax app shell functional",
       "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e chore: ignore local vercel linkage",
       "1fa968c700ddfab60d07996634795577be932d9d fix: keep daily plan editor in sync",
       "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 feat: add local data export controls",
       "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0 feat: add local day review checkpoint",
-      "db6dfd2f83deddb717dd2809158f57b34b78a714 feat: add local midday rescue flow"
+      "db6dfd2f83deddb717dd2809158f57b34b78a714 feat: add local midday rescue flow",
+      "718468d feat: add local quick restart flow"
     ]
   },
   "git_identity_summary": {
@@ -55,7 +56,8 @@
     "reports/lifemax-checkpoint-audit-2026-06-20.json",
     "reports/lifemax-day-review-proof-2026-06-20.json",
     "reports/lifemax-experiment-observation-proof-2026-06-20.json",
-    "reports/lifemax-midday-rescue-proof-2026-06-20.json"
+    "reports/lifemax-midday-rescue-proof-2026-06-20.json",
+    "reports/lifemax-quick-restart-proof-2026-06-20.json"
   ],
   "files_excluded_summary": [
     "source .next output",
@@ -190,6 +192,16 @@
       "command": "npx --yes vercel inspect life-max-omega.vercel.app and lifemax-web.vercel.app",
       "status": "pass",
       "summary": "Both production aliases resolved to READY deployments after the Midday Rescue production deploys."
+    },
+    {
+      "command": "local quick restart repair verification",
+      "status": "pass",
+      "summary": "Today now has a persisted missed-day Quick Restart workflow with restart priority, conservative plan creation, refresh persistence, Profile/export visibility, and regression coverage."
+    },
+    {
+      "command": "omega and lifemax-web production quick restart smoke",
+      "status": "pass",
+      "summary": "Both production aliases saved quick restart, preserved it after refresh, exposed it in Profile/export, reached Privacy, and showed no mobile horizontal overflow or serious browser errors."
     }
   ],
   "pages_verified": [
@@ -228,7 +240,9 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-midday-rescue-mobile-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-midday-rescue-mobile-390.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-midday-rescue-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-quick-restart-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-quick-restart-mobile-390.png"
   ],
   "no_secrets_scan": {
     "status": "pass",
@@ -256,7 +270,8 @@
     "npm install/build output reported 2 moderate dependency audit findings; no forced dependency upgrades were applied.",
     "The lab repo shared-context preflight has previously been red, so no broader daily-usability or wellness-intensity claims are made.",
     "Midday Rescue is browser-local only: it does not send reminders, write to a backend, change integrations, or provide medical advice.",
-    "The latest lab boot packet/preflight remain red; broader LifeMax shared-context daily usability is still not complete."
+    "The latest lab boot packet/preflight remain red; broader LifeMax shared-context daily usability is still not complete.",
+    "Quick Restart is browser-local only: it does not send reminders, mutate a recovery state, write to a backend, or change integrations."
   ],
   "next_actions": [
     "Resolve Vercel preview protection or project split hygiene if preview URLs need to be public proof surfaces.",
@@ -393,15 +408,15 @@
     "omega_deployment_id": "dpl_DgEtjTxxzRkxSCnnPGc9Ms4DLpdW"
   },
   "latest_cycle": {
-    "name": "midday-rescue-repair-and-deploy",
+    "name": "quick-restart-repair-and-deploy",
     "status": "checkpoint_ok_verified",
-    "proof": "reports/lifemax-midday-rescue-proof-2026-06-20.json",
-    "code_commit": "db6dfd2f83deddb717dd2809158f57b34b78a714",
-    "independent_verifier": "019ee3c8-a663-7003-add1-8478b90b5da5",
-    "complete_ok": false,
+    "proof": "reports/lifemax-quick-restart-proof-2026-06-20.json",
+    "code_commit": "718468d",
     "production_aliases": [
       "https://life-max-omega.vercel.app",
       "https://lifemax-web.vercel.app"
-    ]
+    ],
+    "independent_verifier": "019ee3df-6bcc-7cd3-95d4-70e8a76fe709",
+    "complete_ok": false
   }
 }

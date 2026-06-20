@@ -1,0 +1,229 @@
+{
+  "schema": "lifemax.quick_restart_proof.v1",
+  "generated_at": "2026-06-20T07:11:43Z",
+  "status": "checkpoint_ok_verified",
+  "goal_scope": "Add a higher-functionality browser-local missed-day Quick Restart workflow to the public-safe LifeMax app and deploy it to Vercel.",
+  "truth_boundary": [
+    "This proof covers browser-local demo behavior only.",
+    "No WHOOP, account, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend write, reminder send, or recovery-state mutation is connected or claimed.",
+    "Production deployment was previously approved in this goal with PRODUCTION_DEPLOY_APPROVED=true promote; no credential, auth setting, DNS/custom-domain, backend, Telegram, n8n, public MCP, Grok, Postgres, or WHOOP mutation was performed.",
+    "The latest LifeMax lab preflight and boot packet remain red, so broader shared-context/daily-usability readiness is not complete."
+  ],
+  "product_gap_evidence": [
+    "docs/LIFEMAX_HIGH_FUNCTIONING_ACCEPTANCE_TEST_MATRIX.md Wave 2 calls for missed-day re-entry: 1 missed day quick restart asks minimum fields, 3 missed days asks what changed, and 7 missed days has a reset path.",
+    "A live text probe against https://life-max-omega.vercel.app/today before this repair returned hasRestart:false while rescue/privacy were present.",
+    "The prior verifier said full backend/shared-context completion was not justified; this slice keeps improving the public browser-local app while preserving that boundary."
+  ],
+  "defects_found": [
+    "Today had no visible missed-day restart or re-entry workflow, so the app still behaved like a same-day demo after a gap.",
+    "First Playwright rerun found the restart priority appeared in multiple command-center cells, making the assertion and accessibility weak.",
+    "Second rerun found the expected command copy changed after restart lowered intensity; the test had to reflect the intentional protective state.",
+    "Third rerun found a loose State selector matched recovery-state copy; the assertion was tightened.",
+    "Fourth rerun found generic saved text became ambiguous after adding Restart; assertions now use explicit status tile labels."
+  ],
+  "repairs_made": [
+    {
+      "files": [
+        "lib/local-demo-state.ts"
+      ],
+      "summary": "Added QuickRestart types, storage normalization, export summary restart status, derived restart_summary, day-review evidence contribution, and quick restart risk flag."
+    },
+    {
+      "files": [
+        "components/screens.tsx"
+      ],
+      "summary": "Added Quick Restart panel with missed window, energy, sleep, one priority, what changed, and reminder boundary; saving creates a conservative check-in, one-priority plan, lowered intensity, and local memory candidate. Added Profile summary and Privacy copy."
+    },
+    {
+      "files": [
+        "app/globals.css"
+      ],
+      "summary": "Added restrained restart-panel styling consistent with the existing app shell."
+    },
+    {
+      "files": [
+        "tests/scaffold-smoke.test.ts",
+        "tests/visual/mobile.spec.ts"
+      ],
+      "summary": "Added unit and Playwright coverage for quick restart derivation, export summary, save flow, refresh persistence, Profile/export visibility, Privacy copy, and ambiguous-selector regressions."
+    }
+  ],
+  "local_checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass",
+      "summary": "tsc --noEmit passed after quick restart model/UI updates."
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass",
+      "summary": "eslint passed after quick restart model/UI updates."
+    },
+    {
+      "command": "npm run test",
+      "result": "pass",
+      "summary": "Vitest passed: 3 files, 10 tests."
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass",
+      "summary": "Fixture tests passed: 1 file, 2 tests."
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass",
+      "summary": "PWA tests passed: 1 file, 1 test."
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "fail_then_pass",
+      "summary": "Reruns exposed ambiguous selectors and intentional lowered-intensity copy after restart; after repairs, Next build plus Playwright visual smoke passed: 2 tests."
+    },
+    {
+      "command": "local production server browser probe",
+      "result": "pass",
+      "summary": "http://127.0.0.1:3000/today exposed Quick Restart, local-only/no-recovery-state-mutation copy, width 390/390, and no serious browser errors."
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass",
+      "summary": "No whitespace errors in the final code diff."
+    },
+    {
+      "command": "value-shaped credential scan over app/components/lib/tests/reports/package/vercel files",
+      "result": "pass",
+      "summary": "No secret-shaped values found."
+    }
+  ],
+  "browser_flows_proven": [
+    "Today exposes a Quick Restart panel above the daily plan, not hidden in Profile or docs.",
+    "User can choose missed window, energy, sleep, one restart priority, what changed, and reminder boundary.",
+    "Saving restart creates visible local state: Restart saved, lowered-intensity command center, conservative check-in, one-priority plan, and local memory candidate.",
+    "Restart state and form values persist after refresh through localStorage.",
+    "Profile shows Restart: saved and export preview includes quick_restart plus the restart note.",
+    "Privacy is reachable and names missed-day quick restart as browser-local data.",
+    "The copy says no reminder, Telegram message, backend write, or recovery-state mutation is sent.",
+    "Mobile viewport 390px had no horizontal overflow locally and on both production aliases."
+  ],
+  "screenshots": {
+    "local": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png"
+    ],
+    "production": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-quick-restart-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-quick-restart-mobile-390.png"
+    ]
+  },
+  "git": {
+    "branch": "main",
+    "code_commit": "718468d",
+    "origin_main_verified_at_code_commit": true,
+    "proof_commit_note": "This proof packet is written after the deployed code commit; final proof commit hash is reported in the Codex final response."
+  },
+  "vercel": {
+    "lifemax_web": {
+      "preview": {
+        "deployment_id": "dpl_H4YDXyApj91MtEvcseLZjW5ixrMW",
+        "url": "https://lifemax-3zry9tzl8-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "production": {
+        "deployment_id": "dpl_73f9xrCbQsWkPedj5kkHrE6WvRcV",
+        "deployment_url": "https://lifemax-cnc5lhj0x-olivers-projects-25fda214.vercel.app",
+        "alias": "https://lifemax-web.vercel.app",
+        "status": "READY"
+      }
+    },
+    "life_max_omega_target": {
+      "preview": {
+        "deployment_id": "dpl_BJhkQngdKtMTZ91qiqy2gGwe68Yc",
+        "url": "https://life-n3wonu9rc-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "production": {
+        "deployment_id": "dpl_4C54y4inAE9uE99bfN4yMmJDHpsW",
+        "deployment_url": "https://life-mt7pkarlw-olivers-projects-25fda214.vercel.app",
+        "alias": "https://life-max-omega.vercel.app",
+        "status": "READY"
+      }
+    }
+  },
+  "production_smoke": {
+    "status": "pass",
+    "targets": [
+      {
+        "name": "omega",
+        "origin": "https://life-max-omega.vercel.app",
+        "result": "pass",
+        "mobile_width": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-quick-restart-mobile-390.png"
+      },
+      {
+        "name": "lifemax-web",
+        "origin": "https://lifemax-web.vercel.app",
+        "result": "pass",
+        "mobile_width": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-quick-restart-mobile-390.png"
+      }
+    ],
+    "script_summary": "Playwright shell smoke drove Today quick restart save, refresh persistence, Profile/export preview, and Privacy on both production aliases; no serious browser errors were captured."
+  },
+  "vercel_inspect": {
+    "omega": {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "result": "pass",
+      "deployment_id": "dpl_4C54y4inAE9uE99bfN4yMmJDHpsW",
+      "target": "production",
+      "status": "Ready",
+      "alias": "https://life-max-omega.vercel.app"
+    },
+    "lifemax_web": {
+      "command": "npx --yes vercel inspect lifemax-web.vercel.app",
+      "result": "pass",
+      "deployment_id": "dpl_73f9xrCbQsWkPedj5kkHrE6WvRcV",
+      "target": "production",
+      "status": "Ready",
+      "alias": "https://lifemax-web.vercel.app"
+    }
+  },
+  "independent_verification": {
+    "status": "CHECKPOINT_OK",
+    "agent_id": "019ee3df-6bcc-7cd3-95d4-70e8a76fe709",
+    "complete_ok": false,
+    "note": "quality_verifier inspected the Quick Restart proof, source, checks, Vercel aliases, live production behavior, and lab boot truth. It passed this as a public browser-local checkpoint and explicitly rejected broader COMPLETE_OK because shared-context/backend/WHOOP/Telegram/n8n/public MCP/Grok/Postgres remain red or unproved.",
+    "commands_rerun_by_verifier": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run test",
+      "npm run test:fixtures",
+      "npm run test:pwa",
+      "npm run build",
+      "git diff --check",
+      "targeted no-secrets scan",
+      "fresh Playwright live smoke on life-max-omega and lifemax-web",
+      "vercel inspect for both production aliases"
+    ],
+    "verifier_findings": [
+      "Quick Restart was visible on Today, saved successfully, persisted after refresh, and appeared in Profile/export preview and Privacy on both production aliases.",
+      "The broader acceptance flow on omega also passed: Today state changes, Midday Rescue, Evening Close, Capture, Patterns review, Experiment observation persistence, mobile and desktop width, and no runtime errors.",
+      "Privacy boundary is honest; exact no-reminder/no-recovery-state-mutation copy appears on the Today Quick Restart panel rather than the Privacy page.",
+      "Proof files were still uncommitted before this update."
+    ],
+    "disqualifying_gaps_for_complete": [
+      "LifeMax lab boot/shared-context state remains red and safe_to_claim_daily_usable=false.",
+      "No current proof exists for WHOOP, accounts, backend/shared-context, Telegram, n8n, public MCP, Grok, Postgres, or daily shared-context usability.",
+      "get_life_safety_state and get_grok_context_brief are not loaded by a fresh green shared-context loop."
+    ]
+  },
+  "stop_continue_decision": "checkpoint, not complete: this continuation adds and deploys browser-local missed-day re-entry, but full LifeMax shared-context/backend/daily-use readiness remains red and unproved.",
+  "next_action": "Run independent verifier, commit and push proof; continue the broader goal with either another Wave 2 local workflow or the approval-gated shared-context/MCP repair path."
+}
