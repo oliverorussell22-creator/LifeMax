@@ -1,8 +1,9 @@
 {
   "schema": "lifemax.production_browser_proof.v1",
   "generated_at": "2026-06-20T04:56:06Z",
-  "scope": "Continuation proof for the public LifeMax production URL after the clean repo push and Vercel preview deploy.",
-  "risk_class": "Q3 observation only; no production mutation in this continuation pass.",
+  "scope": "Historical continuation proof for the public LifeMax production URL after the clean repo push and Vercel preview deploy; superseded for current deployment status by the later checkpoint audit.",
+  "risk_class": "Q3 observation only; no production mutation occurred during this specific 04:56Z continuation pass.",
+  "superseded_for_current_status_by": "reports/lifemax-checkpoint-audit-2026-06-20.json",
   "urls": {
     "preview": "https://lifemax-ai67lebl1-olivers-projects-25fda214.vercel.app",
     "production_today": "https://life-max-omega.vercel.app/today",
@@ -137,7 +138,7 @@
     "This proves visible public web/demo behavior only.",
     "WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, database persistence, and backend writes are not connected.",
     "The LifeMax lab repo boot/preflight remains red, so daily shared-context usability is not claimed.",
-    "No credentials, auth settings, DNS, domain aliases, production promotion, backend services, or external sends were changed in this continuation pass."
+    "During this specific 04:56Z continuation pass, no credentials, auth settings, DNS, domain aliases, production promotion, backend services, or external sends were changed. Later approved production/export deployment proof is recorded in reports/lifemax-local-export-proof-2026-06-20.json and reports/lifemax-checkpoint-audit-2026-06-20.json."
   ],
   "next_actions": [
     "If another deployment is required, decide whether to promote the clean repo deployment or adjust preview protection.",

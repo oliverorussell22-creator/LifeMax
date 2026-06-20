@@ -1,0 +1,180 @@
+{
+  "schema": "lifemax.local_export_proof.v1",
+  "generated_at": "2026-06-20T05:27:17Z",
+  "status": "checkpoint",
+  "risk_class": "Q2_local_code_Q3_deploy",
+  "objective": "Repair a trust and functionality gap by giving Profile a real browser-local JSON export flow, then push and deploy with proof.",
+  "truth_boundary": [
+    "This proof covers browser-local demo data controls only.",
+    "WHOOP, account sync, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, and shared-context daily usability are not claimed.",
+    "The LifeMax lab preflight remained red because the local MCP/shared-context fetch did not load life safety or Grok context state."
+  ],
+  "defects_found": [
+    "Profile exposed a local export preview but did not provide a real download or copy workflow, so the data-control surface looked more like explanatory copy than functional privacy tooling.",
+    "The first export smoke script used top-level await with CommonJS require syntax and had to be rerun inside an async wrapper.",
+    "The first desktop export smoke reloaded with the export details collapsed, so saved-plan proof was not visible until the preview was opened before capture.",
+    "A concurrent build/screenshot command collided with another Next build lock; the build and screenshot commands passed after rerunning sequentially."
+  ],
+  "repairs_made": [
+    {
+      "path": "lib/local-demo-state.ts",
+      "summary": "Added LocalDemoExport, createLocalDemoExport, and serializeLocalDemoExport with an explicit browser-local truth boundary."
+    },
+    {
+      "path": "components/screens.tsx",
+      "summary": "Added Profile Download local JSON, Copy JSON, export status messaging, and a structured local export preview."
+    },
+    {
+      "path": "app/globals.css",
+      "summary": "Added compact data action and export status styling."
+    },
+    {
+      "path": "tests/scaffold-smoke.test.ts",
+      "summary": "Added unit coverage proving the export schema and boundary text."
+    },
+    {
+      "path": "tests/visual/mobile.spec.ts",
+      "summary": "Added Playwright coverage for Profile export download, export preview schema, saved-plan content, and mobile screenshot proof."
+    }
+  ],
+  "git": {
+    "branch": "main",
+    "commit": "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3",
+    "commit_subject": "feat: add local data export controls",
+    "origin_main": "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3",
+    "push_status": "origin/main matched local main after push"
+  },
+  "commands_run": [
+    {
+      "command": "npm run typecheck",
+      "status": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "status": "pass"
+    },
+    {
+      "command": "npm run test",
+      "status": "pass",
+      "summary": "Vitest passed: 3 files, 10 tests."
+    },
+    {
+      "command": "npm run test:fixtures",
+      "status": "pass",
+      "summary": "Fixture contract tests passed: 1 file, 2 tests."
+    },
+    {
+      "command": "npm run test:pwa",
+      "status": "pass",
+      "summary": "PWA manifest test passed: 1 file, 1 test."
+    },
+    {
+      "command": "npm run build && npm run screenshot:mobile",
+      "status": "pass",
+      "summary": "Production build passed; screenshot/mobile Playwright suite passed after sequential rerun."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    },
+    {
+      "command": "changed-file value-shaped credential scan",
+      "status": "pass",
+      "summary": "No value-shaped credential patterns were found in changed or untracked public files."
+    },
+    {
+      "command": "npx --yes vercel deploy -y",
+      "status": "pass",
+      "summary": "Preview deployment reached READY."
+    },
+    {
+      "command": "npx --yes vercel deploy --prod -y",
+      "status": "pass",
+      "summary": "Linked Vercel project production deployment reached READY after explicit production approval."
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "status": "pass",
+      "summary": "Omega public production alias was READY at deployment dpl_3bM4rKBUDtue23QK3VWp1oeyVEFD."
+    }
+  ],
+  "vercel": {
+    "preview": {
+      "deployment_id": "dpl_EKRmsbmsSdKoxXnypxkq9q6nKkAm",
+      "url": "https://lifemax-hbc08wrss-olivers-projects-25fda214.vercel.app",
+      "status": "ready"
+    },
+    "linked_project_production": {
+      "deployment_id": "dpl_JADsLo4n4t7pptNAnZ2cBGQE2m1K",
+      "url": "https://lifemax-prn9tjexb-olivers-projects-25fda214.vercel.app",
+      "alias": "https://lifemax-web.vercel.app",
+      "status": "ready"
+    },
+    "omega_public_production": {
+      "deployment_id": "dpl_3bM4rKBUDtue23QK3VWp1oeyVEFD",
+      "url": "https://life-max-omega.vercel.app",
+      "target": "production",
+      "status": "ready",
+      "created": "Fri Jun 19 2026 22:21:44 GMT-0700"
+    }
+  },
+  "browser_smoke": {
+    "local_mobile": {
+      "route": "/profile",
+      "viewport": "390x844",
+      "download_tested": true,
+      "export_schema_visible": true,
+      "saved_plan_visible_in_export_preview": true,
+      "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
+    },
+    "omega_mobile": {
+      "url": "https://life-max-omega.vercel.app/profile",
+      "viewport": "390x844",
+      "download_filename": "lifemax-local-demo-export-2026-06-20.json",
+      "status_message": "Download prepared. The file contains only this browser's local demo data.",
+      "export_schema_visible": true,
+      "saved_plan_visible_in_export_preview": true,
+      "truth_boundary_visible": true,
+      "horizontal_overflow": false,
+      "console_or_page_errors": [],
+      "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-mobile-390.png"
+    },
+    "omega_desktop": {
+      "url": "https://life-max-omega.vercel.app/profile",
+      "viewport": "1280x800",
+      "download_filename": "lifemax-local-demo-export-2026-06-20.json",
+      "status_message": "Download prepared. The file contains only this browser's local demo data.",
+      "side_navigation_visible": true,
+      "download_button_visible": true,
+      "export_schema_visible": true,
+      "saved_plan_visible_in_export_preview": true,
+      "horizontal_overflow": false,
+      "console_or_page_errors": [],
+      "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-desktop-1280.png"
+    }
+  },
+  "loop_evidence": {
+    "defects_repaired": 4,
+    "checks_rerun_after_repair": [
+      "typecheck",
+      "lint",
+      "unit tests",
+      "fixture tests",
+      "PWA test",
+      "production build",
+      "Playwright screenshot smoke",
+      "credential scan",
+      "Vercel deploy",
+      "deployed browser smoke"
+    ],
+    "stop_continue_decision": "checkpoint, not complete: the public browser-local demo is more functional and more credible, but real backend/shared-context daily usability remains blocked by the red lab preflight and unconnected integrations."
+  },
+  "residual_risks": [
+    "The app is still a browser-local demo, not the full LifeMax dogfood product.",
+    "Copy JSON depends on browser clipboard availability; download was the primary browser-smoked export path.",
+    "Full-page screenshots can show the sticky mobile shell in the page body because of capture mechanics; viewport checks did not find horizontal overflow.",
+    "Preview deployment access may still be affected by Vercel protection; public proof used the omega production alias.",
+    "No credential, auth, DNS, backend, Telegram, n8n, public MCP, Grok, Postgres, or WHOOP changes were made."
+  ],
+  "next_action": "Continue with project/preview protection hygiene or start a separate backend/shared-context Wave 1 repair once the lab MCP boot path is green."
+}

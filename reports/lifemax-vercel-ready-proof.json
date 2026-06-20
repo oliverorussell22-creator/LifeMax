@@ -1,20 +1,22 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T04:56:06Z",
+  "generated_at": "2026-06-20T05:27:17Z",
   "risk_class": "Q3",
-  "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel. This packet records the preview deployment path; production promotion, domain/alias mutation, credential changes, and backend/service activation are not part of this update.",
+  "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
   "clean_repo_path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
   "target_remote": "https://github.com/oliverorussell22-creator/LifeMax.git",
   "remote_state": {
-    "checked_with": "git push origin main and git ls-remote",
+    "checked_with": "git push origin main, git rev-parse HEAD, and git ls-remote origin refs/heads/main",
     "exists": true,
     "branch": "main",
-    "status": "origin/main matched local main after push before this proof refresh",
+    "status": "origin/main matched local main at 8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 before this proof refresh; proof-only commit still pending at packet write time",
     "pushed_commits": [
       "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9 feat: make LifeMax app shell functional",
-      "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e chore: ignore local vercel linkage"
+      "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e chore: ignore local vercel linkage",
+      "1fa968c700ddfab60d07996634795577be932d9d fix: keep daily plan editor in sync",
+      "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 feat: add local data export controls"
     ]
   },
   "git_identity_summary": {
@@ -44,7 +46,11 @@
     ".gitignore",
     ".vercelignore",
     "vercel.json",
-    "reports/lifemax-vercel-ready-proof.json"
+    "reports/lifemax-vercel-ready-proof.json",
+    "reports/lifemax-production-browser-proof-2026-06-20.json",
+    "reports/lifemax-plan-editor-sync-proof-2026-06-20.json",
+    "reports/lifemax-local-export-proof-2026-06-20.json",
+    "reports/lifemax-checkpoint-audit-2026-06-20.json"
   ],
   "files_excluded_summary": [
     "source .next output",
@@ -83,7 +89,7 @@
     {
       "command": "npm run test",
       "status": "pass",
-      "summary": "Vitest passed: 3 files, 9 tests"
+      "summary": "Vitest passed after export repair: 3 files, 10 tests"
     },
     {
       "command": "npm run test:fixtures",
@@ -108,12 +114,12 @@
     {
       "command": "changed-file no-secrets scan",
       "status": "pass",
-      "summary": "changed and untracked public files scanned for obvious secret patterns; only README boundary text matched secret-related words"
+      "summary": "changed and untracked public files scanned for value-shaped credential patterns; no matches"
     },
     {
-      "command": "quality_verifier sidecar",
-      "status": "pass",
-      "summary": "independent read-only verifier passed Git push and Vercel preview deployment gate, with production explicitly out of scope"
+      "command": "quality_verifier sidecars",
+      "status": "checkpoint_pass",
+      "summary": "earlier verifier passed the scoped production-web proof; current verifier 019ee382-fc96-73b1-9708-c5256bdc2e37 returned CHECKPOINT_OK and explicitly rejected COMPLETE_OK for the broader LifeMax goal"
     },
     {
       "command": "git push origin main",
@@ -134,6 +140,21 @@
       "command": "npx --yes vercel inspect life-max-omega.vercel.app",
       "status": "pass",
       "summary": "production target READY with life-max-omega alias"
+    },
+    {
+      "command": "local export controls repair verification",
+      "status": "pass",
+      "summary": "Profile now downloads browser-local JSON, shows export status, exposes a structured export preview, and has unit plus Playwright coverage."
+    },
+    {
+      "command": "omega production export smoke",
+      "status": "pass",
+      "summary": "life-max-omega Profile export was smoked on mobile and desktop; JSON download triggered, schema and saved plan appeared in export preview, no horizontal overflow or runtime errors were observed."
+    },
+    {
+      "command": "superseding checkpoint audit",
+      "status": "checkpoint_pass",
+      "summary": "reports/lifemax-checkpoint-audit-2026-06-20.json scopes the result as public browser-local demo checkpoint OK, full LifeMax/shared-context goal not complete"
     }
   ],
   "pages_verified": [
@@ -159,15 +180,18 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/browser-privacy-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-flow-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-flow-desktop-1280.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-privacy-mobile-390.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-privacy-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-desktop-1280.png"
   ],
   "no_secrets_scan": {
     "status": "pass",
-    "scope": "staged files",
+    "scope": "changed and untracked public files",
     "scanned_files_before_packet": 30,
     "violations": [],
-    "notes": "Checked token, key, service-marker, environment-file path, encrypted-secret marker, private-network address, and raw payload dump indicators. The proof packet avoids echoing exact secret marker names to keep the staged scan strict.",
-    "scanned_files_after_packet": 31
+    "notes": "Checked value-shaped credential patterns in the final changed proof files after the export repair and proof-packet update; no matches.",
+    "final_changed_files_scanned": 4
   },
   "vercel_import_settings": {
     "framework": "Next.js",
@@ -179,33 +203,50 @@
   },
   "commit_hash": "see git_state",
   "commit_hash_note": "This proof packet is tracked, so the final commit hash that contains this packet is recorded in the final Codex response rather than embedded self-referentially here.",
-  "push_status": "pushed_to_origin_main_before_proof_refresh",
+  "push_status": "app_code_pushed_to_origin_main_before_proof_refresh; proof_packet_commit_pending_at_packet_write_time",
   "residual_risks": [
-    "Preview deployment only; no production promotion, alias/domain mutation, DNS change, credential change, or backend/service activation was performed.",
+    "Preview and production deployments were performed after explicit approval; no DNS/custom-domain mutation, credential change, auth setting edit, or backend/service activation was performed.",
     "This is still a browser-local demo shell, not the full LifeMax dogfood product.",
     "WHOOP OAuth, account connection, hosted AI, Telegram, n8n, public MCP, Grok, database persistence, and backend writes are not connected.",
     "npm install/build output reported 2 moderate dependency audit findings; no forced dependency upgrades were applied.",
     "The lab repo shared-context preflight has previously been red, so no broader daily-usability or wellness-intensity claims are made."
   ],
   "next_actions": [
-    "Browser-smoke the preview in a signed-in browser if Vercel protection or account context blocks public inspection.",
-    "Promote to production only after an explicit current production instruction and a fresh preview smoke pass.",
+    "Resolve Vercel preview protection or project split hygiene if preview URLs need to be public proof surfaces.",
+    "Keep production promotion/domains under explicit approval even though this run had an approval record.",
     "Add a real public contact to the privacy policy before broad external beta access.",
     "Configure real integrations only through separate approval-gated work."
   ],
   "git_state": {
     "pushed_app_commit": "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9",
     "pushed_ignore_commit": "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e",
+    "pushed_plan_editor_sync_commit": "1fa968c700ddfab60d07996634795577be932d9d",
+    "pushed_local_export_commit": "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3",
     "final_proof_packet_commit_note": "This proof packet is tracked, so the final commit hash that contains this packet is recorded in the final Codex response rather than embedded self-referentially here."
   },
   "vercel_deployment": {
     "status": "ready",
-    "type": "preview",
-    "production_promoted": false,
-    "deployment_id": "dpl_92KUjcgsByk83HsKqCureUw53Ty1",
-    "preview_url": "https://lifemax-ai67lebl1-olivers-projects-25fda214.vercel.app",
-    "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/92KUjcgsByk83HsKqCureUw53Ty1",
-    "cli_summary": "Build completed and Vercel CLI returned readyState READY for the preview deployment."
+    "type": "preview_and_production",
+    "production_promoted": true,
+    "latest_preview_deployment": {
+      "deployment_id": "dpl_EKRmsbmsSdKoxXnypxkq9q6nKkAm",
+      "preview_url": "https://lifemax-hbc08wrss-olivers-projects-25fda214.vercel.app",
+      "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/EKRmsbmsSdKoxXnypxkq9q6nKkAm",
+      "cli_summary": "Vercel CLI returned READY for the preview deployment."
+    },
+    "linked_project_production_deployment": {
+      "deployment_id": "dpl_JADsLo4n4t7pptNAnZ2cBGQE2m1K",
+      "url": "https://lifemax-prn9tjexb-olivers-projects-25fda214.vercel.app",
+      "alias": "https://lifemax-web.vercel.app",
+      "cli_summary": "Vercel CLI returned READY for the linked project production deployment."
+    },
+    "omega_public_production": {
+      "deployment_id": "dpl_3bM4rKBUDtue23QK3VWp1oeyVEFD",
+      "url": "https://life-max-omega.vercel.app",
+      "target": "production",
+      "status": "ready",
+      "cli_summary": "Vercel inspect confirmed the omega public alias was READY."
+    }
   },
   "public_production_browser_proof": {
     "status": "pass",
@@ -243,5 +284,23 @@
     "preview_deployment": "https://lifemax-3o7jf8qpu-olivers-projects-25fda214.vercel.app",
     "production_deployment": "https://lifemax-mkhma3our-olivers-projects-25fda214.vercel.app",
     "omega_deployment_id": "dpl_9edUpiRgokPmLKqtMiXQpm6FanYV"
+  },
+  "local_export_controls_repair": {
+    "status": "pass",
+    "proof_packet": "reports/lifemax-local-export-proof-2026-06-20.json",
+    "commit": "8865829 feat: add local data export controls",
+    "defect": "Profile exposed local data explanation and preview without a real download/copy export control.",
+    "production_url": "https://life-max-omega.vercel.app/profile",
+    "production_smoke": "Profile JSON download triggered on omega mobile and desktop; export preview showed schema, boundary, and saved plan content.",
+    "preview_deployment": "https://lifemax-hbc08wrss-olivers-projects-25fda214.vercel.app",
+    "production_deployment": "https://lifemax-prn9tjexb-olivers-projects-25fda214.vercel.app",
+    "omega_deployment_id": "dpl_3bM4rKBUDtue23QK3VWp1oeyVEFD"
+  },
+  "superseding_checkpoint_audit": {
+    "status": "checkpoint_ok_not_complete",
+    "proof_packet": "reports/lifemax-checkpoint-audit-2026-06-20.json",
+    "independent_verifier": "019ee382-fc96-73b1-9708-c5256bdc2e37",
+    "verifier_verdict": "CHECKPOINT_OK; not COMPLETE_OK",
+    "stop_continue_decision": "Public browser-local demo checkpoint is acceptable after proof commit/push; broader LifeMax/shared-context goal remains active."
   }
 }

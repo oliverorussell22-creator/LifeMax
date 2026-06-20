@@ -1,0 +1,106 @@
+{
+  "schema": "lifemax.checkpoint_audit.v1",
+  "generated_at": "2026-06-20T05:36:36Z",
+  "status": "checkpoint_ok_not_complete",
+  "scope": "Superseding audit for the current LifeMax public browser-local demo checkpoint after the plan-editor and local-export repairs.",
+  "active_goal": "Continue the LifeMax high-functionality goal: inspect current repo/proof/deployed preview, verify live navigation and local-demo flows, repair the highest-impact functionality/UI gaps, rerun quality gates, update durable proof, and deploy safely as far as approved.",
+  "verdict": {
+    "public_browser_local_demo": "checkpoint_ok",
+    "full_lifemax_goal": "not_complete",
+    "reason": "The visible public demo now has stateful local flows and real Profile export controls, but backend/shared-context/Wave 1 readiness remains red or unproved."
+  },
+  "current_git_and_deploy_state": {
+    "repo": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
+    "branch": "main",
+    "latest_code_commit": "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3",
+    "latest_code_commit_subject": "feat: add local data export controls",
+    "origin_main_verified_at_code_commit": true,
+    "public_url_smoked": "https://life-max-omega.vercel.app/profile",
+    "omega_deployment_id": "dpl_3bM4rKBUDtue23QK3VWp1oeyVEFD",
+    "preview_status": "ready in Vercel CLI but not treated as public proof because prior previews were blocked by Vercel login protection"
+  },
+  "acceptance_criteria_proof": [
+    {
+      "criterion": "Navigation across Today, Capture, Patterns, Experiments, Profile, and Privacy",
+      "status": "proven_for_browser_local_demo",
+      "evidence": "reports/lifemax-production-browser-proof-2026-06-20.json route_smoke covered /today, /capture, /patterns, /experiments, /profile, and /privacy on omega."
+    },
+    {
+      "criterion": "Privacy reachable from UI",
+      "status": "proven",
+      "evidence": "Top bar, desktop side navigation, Profile controls, and route smoke all reach /privacy."
+    },
+    {
+      "criterion": "Today meaningful state-changing flow",
+      "status": "proven_for_browser_local_demo",
+      "evidence": "Manual check-in, editable plan, plan item statuses, evening close, refresh persistence, and plan-editor sync were tested locally and on omega."
+    },
+    {
+      "criterion": "Capture input/list workflow",
+      "status": "proven_for_browser_local_demo",
+      "evidence": "Capture kind, label, note, impact save, and list visibility were covered by Playwright smoke and production proof."
+    },
+    {
+      "criterion": "Patterns or Experiments derive from user actions",
+      "status": "proven_for_browser_local_demo",
+      "evidence": "Pattern watch decision and experiment start/inconclusive flow were part of the production smoke."
+    },
+    {
+      "criterion": "Local persistence across refresh when backend unavailable",
+      "status": "proven_for_browser_local_demo",
+      "evidence": "Today plan/editor state and local demo flow were refreshed and verified after storage hydration."
+    },
+    {
+      "criterion": "Profile/privacy data controls are real and honest",
+      "status": "improved_and_proven",
+      "evidence": "reports/lifemax-local-export-proof-2026-06-20.json records real JSON download, structured export preview, status messaging, and local-only boundary."
+    },
+    {
+      "criterion": "Desktop and mobile inspected without overflow",
+      "status": "proven_for_smoked_surfaces",
+      "evidence": "Local and omega mobile/desktop smokes reported no horizontal overflow; screenshots exist as local ignored artifacts under reports/screenshots/."
+    },
+    {
+      "criterion": "Backend/shared-context or real integrations",
+      "status": "not_claimed_not_proven",
+      "evidence": "LifeMax lab boot packet remains red and safe_to_claim_daily_usable is false; WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, and backend writes are explicitly unconnected."
+    }
+  ],
+  "commands_and_results": [
+    "npm run typecheck: pass",
+    "npm run lint: pass",
+    "npm run test: pass, 3 files and 10 tests",
+    "npm run test:fixtures: pass, 1 file and 2 tests",
+    "npm run test:pwa: pass, 1 file and 1 test",
+    "npm run build && npm run screenshot:mobile: pass after sequential rerun",
+    "git diff --check: pass",
+    "changed-file value-shaped credential scan: pass",
+    "npx --yes vercel deploy -y: READY preview",
+    "npx --yes vercel deploy --prod -y: READY linked-project production after explicit approval",
+    "npx --yes vercel inspect life-max-omega.vercel.app: READY production alias"
+  ],
+  "independent_verification": {
+    "agent_id": "019ee382-fc96-73b1-9708-c5256bdc2e37",
+    "verdict": "CHECKPOINT_OK",
+    "complete_ok": false,
+    "key_findings": [
+      "The export flow is real enough on live omega: Blob download, status/error handling, clipboard path, structured preview, and independent mobile/desktop browser smoke.",
+      "Backend/shared-context readiness remains honestly unclaimed.",
+      "The goal must remain active because broader Wave 1/shared-context readiness is not complete.",
+      "Newest proof artifacts must be committed and pushed before the checkpoint is durable."
+    ]
+  },
+  "defects_repaired_this_cycle": [
+    "Plan editor and summary could disagree after localStorage hydration; repaired and deployed in commit 1fa968c.",
+    "Profile export/data controls were explanatory but not functionally exportable; repaired and deployed in commit 8865829.",
+    "Main proof packet had stale preview-only production wording; refreshed in this checkpoint proof commit."
+  ],
+  "residual_risks": [
+    "This is still a browser-local demo, not full LifeMax dogfood readiness.",
+    "Preview URLs are not treated as public proof because of Vercel login protection history.",
+    "Screenshots are local ignored artifacts and not included in git.",
+    "Clipboard copy is implemented but download is the primary browser-smoked export path.",
+    "The lab repo/shared-context boot path remains red, so daily-use, wellness-intensity, or integration readiness cannot be claimed."
+  ],
+  "stop_continue_decision": "Stop this run at a checkpoint after committing and pushing proof. Continue the active goal next with either Vercel preview/project hygiene or a separate backend/shared-context Wave 1 repair once the lab MCP path is green."
+}
