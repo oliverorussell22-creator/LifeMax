@@ -1,60 +1,60 @@
 {
-  "schema_version": "lifemax.vercel_ready_command_matrix.v1",
+  "schema_version": "lifemax.vercel_ready_command_matrix.v2",
   "package_scope": "repo_root",
   "package_manager": "npm",
   "commands": [
     {
       "id": "install",
       "command": "npm install",
-      "required_for_stage": "vercel_ready_shell",
+      "required_for_stage": "vercel_ready_app",
       "evidence_path": "package-lock.json"
     },
     {
       "id": "dev",
       "command": "npm run dev",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "local server smoke"
+      "required_for_stage": "local_review",
+      "evidence_path": "local browser smoke"
     },
     {
       "id": "build",
       "command": "npm run build",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+      "required_for_stage": "vercel_ready_app",
+      "evidence_path": "terminal build output"
     },
     {
       "id": "typecheck",
       "command": "npm run typecheck",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+      "required_for_stage": "vercel_ready_app",
+      "evidence_path": "terminal typecheck output"
     },
     {
       "id": "lint",
       "command": "npm run lint",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+      "required_for_stage": "vercel_ready_app",
+      "evidence_path": "terminal lint output"
     },
     {
       "id": "test",
       "command": "npm test",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+      "required_for_stage": "vercel_ready_app",
+      "evidence_path": "terminal vitest output"
     },
     {
       "id": "test_pwa",
       "command": "npm run test:pwa",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+      "required_for_stage": "vercel_ready_app",
+      "evidence_path": "terminal vitest output"
     },
     {
       "id": "test_fixtures",
       "command": "npm run test:fixtures",
-      "required_for_stage": "vercel_ready_shell",
-      "evidence_path": "reports/lifemax-vercel-ready-proof.json"
+      "required_for_stage": "vercel_ready_app",
+      "evidence_path": "terminal vitest output"
     },
     {
       "id": "screenshot_mobile",
       "command": "npm run screenshot:mobile",
-      "required_for_stage": "vercel_ready_shell",
+      "required_for_stage": "browser_visual_smoke",
       "evidence_path": "reports/screenshots/"
     }
   ],
@@ -64,7 +64,9 @@
     "live WHOOP data",
     "production auth",
     "database persistence",
-    "AI coaching",
+    "hosted AI coaching",
+    "Telegram delivery",
+    "n8n/public MCP/Postgres daily usability",
     "medical advice"
   ]
 }

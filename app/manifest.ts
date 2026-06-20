@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "LifeMax",
     short_name: "LifeMax",
-    description: "A private beta health memory PWA shell for personal wellness tracking.",
+    description: "A local-first wellness reflection app shell for daily check-ins and capture.",
     start_url: "/",
     display: "standalone",
     background_color: "#eff7f1",

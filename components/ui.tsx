@@ -25,9 +25,13 @@ export function EmptyState({
       <h2 className="empty-title">{title}</h2>
       <p className="empty-copy">{copy}</p>
       <div className="action-row">
-        <span className="status-chip status-chip-primary">{actionLabel}</span>
+        <span className="primary-action" role="button" aria-disabled="true">
+          {actionLabel}
+        </span>
         {secondaryLabel ? (
-          <span className="status-chip">{secondaryLabel}</span>
+          <span className="secondary-action" role="button" aria-disabled="true">
+            {secondaryLabel}
+          </span>
         ) : null}
       </div>
     </section>

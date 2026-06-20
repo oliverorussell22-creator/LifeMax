@@ -45,8 +45,8 @@ export const wave0CommandIds = [
   "typecheck",
   "lint",
   "test",
-  "test:pwa",
   "test:fixtures",
+  "test:pwa",
   "screenshot:mobile"
 ] as const;
 

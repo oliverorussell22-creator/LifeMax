@@ -3,6 +3,7 @@ import packageJson from "../package.json";
 import commandMatrix from "../command-matrix.json";
 import { forbiddenWave0Dependencies, tabs, wave0CommandIds } from "../lib/contracts";
 import { emptyTodayState } from "../lib/demo-state";
+import { createInitialLocalDemoState, createSuggestedPlan, deriveTodayView, type LocalDemoState } from "../lib/local-demo-state";
 
 describe("Wave 0 scaffold contract", () => {
   test("keeps canonical five-tab navigation stable", () => {
@@ -15,6 +16,138 @@ describe("Wave 0 scaffold contract", () => {
     expect(emptyTodayState.confidence).toBe("low");
     expect(emptyTodayState.freshness_summary.every((source) => ["missing", "disabled"].includes(source.status))).toBe(true);
     expect(emptyTodayState.freshness_summary.some((source) => source.source_kind === "goose_helper")).toBe(true);
+  });
+
+  test("derives local demo state without claiming backend readiness", () => {
+    const emptyView = deriveTodayView(createInitialLocalDemoState());
+
+    expect(emptyView.state).toBe("uncertain");
+    expect(emptyView.confidence).toBe("low");
+    expect(emptyView.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+
+    const withLocalSignals: LocalDemoState = {
+      schema_version: "lifemax.local_demo.v1",
+      check_in: {
+        energy: "ok",
+        mood: "ok",
+        stress: "medium",
+        body: "ok",
+        friction_tags: ["good momentum"],
+        note: "",
+        saved_at: "2026-06-19T18:00:00.000Z"
+      },
+      captures: [
+        {
+          id: "capture-test",
+          kind: "habit",
+          label: "morning walk",
+          note: "",
+          impact: "helped",
+          created_at: "2026-06-19T18:05:00.000Z"
+        }
+      ],
+      daily_plan: null,
+      evening_close: null,
+      memory_candidates: [],
+      pattern_decisions: [],
+      experiment: null,
+      plan_done: false,
+      lowered_today: false,
+      experiment_started_at: null,
+      updated_at: "2026-06-19T18:05:00.000Z"
+    };
+
+    const signalView = deriveTodayView(withLocalSignals);
+    expect(signalView.confidence).toBe("medium");
+    expect(signalView.pattern_summary.ready).toBe(true);
+    expect(signalView.plan_summary.status).toBe("missing");
+    expect(signalView.pattern_cards[0]?.evidence_count).toBeGreaterThanOrEqual(2);
+    expect(signalView.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+  });
+
+  test("derives the higher-functionality local daily loop", () => {
+    const plan = createSuggestedPlan(false, "2026-06-19T18:00:00.000Z");
+    const state: LocalDemoState = {
+      schema_version: "lifemax.local_demo.v1",
+      check_in: {
+        energy: "ok",
+        mood: "ok",
+        stress: "medium",
+        body: "ok",
+        friction_tags: ["schedule friction"],
+        note: "manual day loop",
+        saved_at: "2026-06-19T18:00:00.000Z"
+      },
+      captures: [
+        {
+          id: "capture-test",
+          kind: "habit",
+          label: "morning walk",
+          note: "felt easier after breakfast",
+          impact: "helped",
+          created_at: "2026-06-19T18:05:00.000Z"
+        }
+      ],
+      daily_plan: {
+        ...plan,
+        must_do: "Draft the client note",
+        item_statuses: {
+          must_do: "done",
+          optional_1: "open",
+          optional_2: "skipped"
+        }
+      },
+      evening_close: {
+        completed: "Client note drafted",
+        missed: "Walk moved",
+        why: "Afternoon friction",
+        recovery_impact: "neutral",
+        tomorrow_hint: "Walk before messages",
+        saved_at: "2026-06-19T20:30:00.000Z"
+      },
+      memory_candidates: [
+        {
+          id: "memory-test",
+          title: "Walk before messages",
+          detail: "Afternoon friction",
+          source: "evening_close",
+          created_at: "2026-06-19T20:30:00.000Z"
+        }
+      ],
+      pattern_decisions: [
+        {
+          pattern_id: "local-pattern-energy",
+          status: "watching",
+          updated_at: "2026-06-19T20:31:00.000Z"
+        }
+      ],
+      experiment: {
+        id: "experiment-test",
+        pattern_id: "local-pattern-energy",
+        hypothesis: "Morning walk may reduce friction",
+        intervention: "Walk before messages",
+        target_signal: "energy",
+        minimum_window_days: 3,
+        stop_condition: "Stop if it adds pressure",
+        status: "active",
+        started_at: "2026-06-19T20:32:00.000Z",
+        stopped_at: null,
+        result_note: null
+      },
+      plan_done: false,
+      lowered_today: false,
+      experiment_started_at: "2026-06-19T20:32:00.000Z",
+      updated_at: "2026-06-19T20:32:00.000Z"
+    };
+
+    const view = deriveTodayView(state);
+
+    expect(view.plan_summary.progress_label).toBe("1/3 done");
+    expect(view.evening_summary.status).toBe("closed");
+    expect(view.memory_summary.latest?.title).toBe("Walk before messages");
+    expect(view.pattern_cards.find((card) => card.id === "local-pattern-energy")?.decision).toBe("watching");
+    expect(view.experiment_summary.status).toBe("active");
+    expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
   });
 
   test("declares every required Wave 0 command", () => {

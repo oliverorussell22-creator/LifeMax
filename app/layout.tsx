@@ -2,18 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  applicationName: "LifeMax",
-  title: {
-    default: "LifeMax | Private Beta Health Memory",
-    template: "%s | LifeMax"
-  },
-  description:
-    "LifeMax is a mobile-first private beta app shell for personal health memory, daily planning, and wellness tracking.",
-  manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg"
-  }
+  title: "LifeMax",
+  description: "A local-first wellness reflection app shell for daily check-ins and capture."
 };
 
 export const viewport: Viewport = {
