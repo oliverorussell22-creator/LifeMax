@@ -83,7 +83,7 @@
   },
   "schema": "lifemax.high-functionality-proof.v1",
   "riskClass": "Q3",
-  "status": "local_proven_deploy_pending",
+  "status": "production_deployed_checkpoint_not_full_connected_lifemax",
   "objective": "Add a higher-level browser-local Weekly operating board that turns local day history, captures, and experiment decisions into a cautious plan handoff back to Today.",
   "changedFiles": [
     "lib/local-demo-state.ts",
@@ -153,6 +153,11 @@
     "labBoundary": {
       "localPreflight": "red at 2026-06-20T12:07:34Z: local MCP health unknown; life safety state and Grok context brief not loaded; fetch failed",
       "bootPacket": "red at 2026-06-20T12:07:40Z: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports"
+    },
+    "production": {
+      "command": "npm exec -- vercel deploy --prod -y plus in-app browser smoke on lifemax-web and life-max-omega",
+      "result": "passed",
+      "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-weekly-board-production-smoke-2026-06-20.json"
     }
   },
   "approvalStatus": "Production promotion was previously approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote. This slice does not edit credentials/auth/DNS/backend services.",
@@ -167,10 +172,46 @@
     "User data rollback is not needed for backend records because this feature writes only browser-local demo state."
   ],
   "postActionEvidence": {
-    "local": "Local browser smoke passed; production deployment pending.",
+    "local": "Local weekly-board browser smoke passed against next start on 127.0.0.1:3000.",
     "deployment": {
-      "status": "pending"
-    }
+      "status": "production_ready_and_smoked",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote",
+      "vercelDeploymentId": "dpl_9atHMs1vqaqqV5rFh9go5ramz7R1",
+      "productionUrl": "https://lifemax-6o03jn3k5-olivers-projects-25fda214.vercel.app",
+      "productionAlias": "https://lifemax-web.vercel.app",
+      "originalTargetSmoked": "https://life-max-omega.vercel.app",
+      "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/9atHMs1vqaqqV5rFh9go5ramz7R1",
+      "readyState": "READY"
+    },
+    "productionSmokePath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-weekly-board-production-smoke-2026-06-20.json",
+    "productionSmokeSummary": [
+      {
+        "baseUrl": "https://lifemax-web.vercel.app",
+        "hasBoard": true,
+        "persisted": true,
+        "consoleErrors": [],
+        "planValues": [
+          "Protect first useful block",
+          "Repeat helped signal: protected first block",
+          "Close and archive one more local day",
+          "Do not start with messages before plan",
+          "8:30 PM"
+        ]
+      },
+      {
+        "baseUrl": "https://life-max-omega.vercel.app",
+        "hasBoard": true,
+        "persisted": true,
+        "consoleErrors": [],
+        "planValues": [
+          "Protect first useful block",
+          "Repeat helped signal: protected first block",
+          "Close and archive one more local day",
+          "Do not start with messages before plan",
+          "8:30 PM"
+        ]
+      }
+    ]
   },
   "secretsRedacted": true,
   "noSecretsHandling": "No secrets printed or edited. Strict diff credential-shape scan will be run before commit.",
@@ -194,10 +235,10 @@
       "PWA",
       "local browser smoke"
     ],
-    "stopContinueDecision": "continue_to_diff_review_commit_push_and_approved_vercel_production_deploy"
+    "stopContinueDecision": "checkpoint_after_weekly_board_push_and_production_smoke; continue next with deeper product workflows or connected lab recovery, not completion"
   },
   "environmentBlockers": [
     "Standalone Playwright/Chromium visual test command remains unsuitable in this desktop environment because the Codex parent process has a large defunct child backlog; in-app browser smoke is used as current browser proof."
   ],
-  "updatedAt": "2026-06-20T12:14:09.280Z"
+  "updatedAt": "2026-06-20T12:17:24.358Z"
 }

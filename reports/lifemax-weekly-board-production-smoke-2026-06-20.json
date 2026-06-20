@@ -1,0 +1,79 @@
+{
+  "schema": "lifemax.production-smoke.v1",
+  "createdAt": "2026-06-20T12:17:24.326Z",
+  "deployment": {
+    "id": "dpl_9atHMs1vqaqqV5rFh9go5ramz7R1",
+    "productionUrl": "https://lifemax-6o03jn3k5-olivers-projects-25fda214.vercel.app",
+    "productionAlias": "https://lifemax-web.vercel.app",
+    "originalTargetUrl": "https://life-max-omega.vercel.app"
+  },
+  "smoke": [
+    {
+      "baseUrl": "https://lifemax-web.vercel.app",
+      "before": {
+        "boardText": "Weekly boardWeekly board ready from local history.ready3 browser-local checkpoints, 13 evidence points, and 3 captures support a cautious weekly board.local trendSignal13Evidence5Plan itemskeepExperimentPrimary cueProtect first useful blockMust-doProtect first useful blockKeepRepeat helped signal: protected first blockCloseClose and archive one more local dayReduceDo not start with messages before planUse week plan in TodayKeep only the smallest useful experiment result. This is a browser-local operating board, not connected AI or medical advice.",
+        "clientWidth": 390,
+        "h1": "Only show patterns the local data can support.",
+        "hasBoard": true,
+        "scrollWidth": 390,
+        "url": "https://lifemax-web.vercel.app/patterns"
+      },
+      "planValues": [
+        "Protect first useful block",
+        "Repeat helped signal: protected first block",
+        "Close and archive one more local day",
+        "Do not start with messages before plan",
+        "8:30 PM"
+      ],
+      "planValuesAfterReload": [
+        "Protect first useful block",
+        "Repeat helped signal: protected first block",
+        "Close and archive one more local day",
+        "Do not start with messages before plan",
+        "8:30 PM"
+      ],
+      "persisted": true,
+      "logs": []
+    },
+    {
+      "baseUrl": "https://life-max-omega.vercel.app",
+      "before": {
+        "boardText": "Weekly boardWeekly board ready from local history.ready3 browser-local checkpoints, 13 evidence points, and 3 captures support a cautious weekly board.local trendSignal13Evidence5Plan itemskeepExperimentPrimary cueProtect first useful blockMust-doProtect first useful blockKeepRepeat helped signal: protected first blockCloseClose and archive one more local dayReduceDo not start with messages before planUse week plan in TodayKeep only the smallest useful experiment result. This is a browser-local operating board, not connected AI or medical advice.",
+        "clientWidth": 390,
+        "h1": "Only show patterns the local data can support.",
+        "hasBoard": true,
+        "scrollWidth": 390,
+        "url": "https://life-max-omega.vercel.app/patterns"
+      },
+      "planValues": [
+        "Protect first useful block",
+        "Repeat helped signal: protected first block",
+        "Close and archive one more local day",
+        "Do not start with messages before plan",
+        "8:30 PM"
+      ],
+      "planValuesAfterReload": [
+        "Protect first useful block",
+        "Repeat helped signal: protected first block",
+        "Close and archive one more local day",
+        "Do not start with messages before plan",
+        "8:30 PM"
+      ],
+      "persisted": true,
+      "logs": []
+    }
+  ],
+  "screenshots": [
+    {
+      "baseUrl": "https://life-max-omega.vercel.app",
+      "weeklyScreenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-life-max-omega-weekly-board-mobile-390.png",
+      "todayScreenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-life-max-omega-weekly-board-today-plan-mobile-390.png"
+    },
+    {
+      "baseUrl": "https://lifemax-web.vercel.app",
+      "weeklyScreenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-lifemax-web-weekly-board-mobile-390.png",
+      "todayScreenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-lifemax-web-weekly-board-today-plan-mobile-390.png"
+    }
+  ],
+  "truthBoundary": "Weekly board is browser-local demo behavior only; no connected backend, account, AI, Telegram, n8n, WHOOP, or medical claim is proven."
+}
