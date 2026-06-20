@@ -95,6 +95,23 @@ export interface LocalDemoState {
   updated_at: string | null;
 }
 
+export interface LocalDemoExport {
+  schema_version: "lifemax.local_demo_export.v1";
+  generated_at: string;
+  storage_key: typeof localDemoStorageKey;
+  truth_boundary: string[];
+  summary: {
+    check_in: "saved" | "empty";
+    plan: "saved" | "empty";
+    close: "saved" | "open";
+    captures: number;
+    memories: number;
+    pattern_decisions: number;
+    experiment: ExperimentStatus | "none";
+  };
+  state: LocalDemoState;
+}
+
 export interface DerivedTodayView {
   state: LifeState;
   confidence: Confidence;
@@ -172,6 +189,33 @@ export function createInitialLocalDemoState(): LocalDemoState {
     experiment_started_at: null,
     updated_at: null
   };
+}
+
+export function createLocalDemoExport(state: LocalDemoState, generatedAt: string): LocalDemoExport {
+  return {
+    schema_version: "lifemax.local_demo_export.v1",
+    generated_at: generatedAt,
+    storage_key: localDemoStorageKey,
+    truth_boundary: [
+      "This export contains browser-local LifeMax demo data only.",
+      "It does not include WHOOP, account, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, or backend records.",
+      "Exporting does not delete local browser data."
+    ],
+    summary: {
+      check_in: state.check_in ? "saved" : "empty",
+      plan: state.daily_plan ? "saved" : "empty",
+      close: state.evening_close ? "saved" : "open",
+      captures: state.captures.length,
+      memories: state.memory_candidates.length,
+      pattern_decisions: state.pattern_decisions.length,
+      experiment: state.experiment?.status ?? "none"
+    },
+    state
+  };
+}
+
+export function serializeLocalDemoExport(state: LocalDemoState, generatedAt: string): string {
+  return JSON.stringify(createLocalDemoExport(state, generatedAt), null, 2);
 }
 
 export function readStoredLocalDemoState(raw: string | null): LocalDemoState {

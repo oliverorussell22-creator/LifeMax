@@ -121,6 +121,10 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.data-action-row {
+  align-items: stretch;
+}
+
 .brand-mark {
   display: grid;
   gap: 2px;
@@ -875,6 +879,29 @@ button:disabled {
   color: #e5f2ea;
   font-size: 11px;
   line-height: 1.4;
+}
+
+.export-status {
+  margin: 10px 0 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.export-status-success {
+  border-color: rgba(58, 124, 105, 0.38);
+  background: rgba(50, 119, 97, 0.1);
+  color: var(--accent-strong);
+}
+
+.export-status-error {
+  border-color: rgba(171, 90, 68, 0.38);
+  background: rgba(171, 90, 68, 0.1);
+  color: #8d402c;
 }
 
 .bottom-nav {

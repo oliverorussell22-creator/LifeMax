@@ -8,6 +8,7 @@ import {
   formatShortTime,
   localDemoStorageKey,
   readStoredLocalDemoState,
+  serializeLocalDemoExport,
   type BodyLevel,
   type CaptureImpact,
   type CaptureKind,
@@ -979,6 +980,48 @@ export function ExperimentsScreen() {
 
 export function ProfileScreen() {
   const { state, storageStatus, storageMessage, resetLocalState } = useLocalDemoState();
+  const [exportStatus, setExportStatus] = useState<{ tone: "idle" | "success" | "error"; message: string }>({
+    tone: "idle",
+    message: "Export stays on this device until you choose where to save it."
+  });
+  const exportPreview = useMemo(() => serializeLocalDemoExport(state, state.updated_at ?? "not-exported-yet"), [state]);
+
+  function createFreshExportJson() {
+    return serializeLocalDemoExport(state, new Date().toISOString());
+  }
+
+  function downloadLocalExport() {
+    if (typeof window === "undefined") return;
+
+    try {
+      const blob = new Blob([createFreshExportJson()], { type: "application/json" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `lifemax-local-demo-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setExportStatus({ tone: "success", message: "Download prepared. The file contains only this browser's local demo data." });
+    } catch {
+      setExportStatus({ tone: "error", message: "Download failed in this browser. The preview below still shows the export JSON." });
+    }
+  }
+
+  async function copyLocalExport() {
+    if (typeof navigator === "undefined" || !navigator.clipboard) {
+      setExportStatus({ tone: "error", message: "Clipboard access is unavailable here. Use Download local JSON instead." });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(createFreshExportJson());
+      setExportStatus({ tone: "success", message: "Copied local demo JSON to clipboard. Nothing was sent to a server." });
+    } catch {
+      setExportStatus({ tone: "error", message: "Copy failed in this browser. Use Download local JSON instead." });
+    }
+  }
 
   return (
     <AppShell active="profile">
@@ -1011,15 +1054,26 @@ export function ProfileScreen() {
               </div>
               <span className="state-pill">local only</span>
             </div>
-            <p className="panel-copy">Reset clears only this browser demo state. It does not touch Postgres, Telegram, n8n, WHOOP, Grok, or public MCP.</p>
-            <div className="action-row">
+            <p className="panel-copy">
+              Export and reset apply only to this browser demo state. They do not touch Postgres, Telegram, n8n, WHOOP, Grok, public MCP, or backend records.
+            </p>
+            <div className="action-row data-action-row">
+              <button className="primary-action" type="button" onClick={downloadLocalExport} data-testid="download-local-export">
+                Download local JSON
+              </button>
+              <button className="secondary-action" type="button" onClick={() => void copyLocalExport()} data-testid="copy-local-export">
+                Copy JSON
+              </button>
               <button className="secondary-action" type="button" onClick={resetLocalState} data-testid="reset-local">
                 Reset local demo
               </button>
-              <a className="primary-action" href="/privacy">
+              <a className="secondary-action" href="/privacy">
                 Open privacy
               </a>
             </div>
+            <p className={`export-status export-status-${exportStatus.tone}`} role="status">
+              {exportStatus.message}
+            </p>
           </section>
         </div>
 
@@ -1036,9 +1090,9 @@ export function ProfileScreen() {
               ))}
             </ul>
           </section>
-          <details className="panel export-panel">
+          <details className="panel export-panel" aria-label="Local export preview">
             <summary>View local export preview</summary>
-            <pre>{JSON.stringify(state, null, 2)}</pre>
+            <pre>{exportPreview}</pre>
           </details>
         </aside>
       </section>

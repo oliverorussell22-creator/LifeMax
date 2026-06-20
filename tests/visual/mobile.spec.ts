@@ -98,6 +98,23 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
     fullPage: true
   });
 
+  await page.goto("/profile");
+  await expect(page.getByRole("heading", { name: "Local app truth and data controls." })).toBeVisible();
+  await expect(page.getByText("Export and reset apply only to this browser demo state.")).toBeVisible();
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByTestId("download-local-export").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^lifemax-local-demo-export-\d{4}-\d{2}-\d{2}\.json$/);
+  await expect(page.getByRole("status")).toContainText("Download prepared");
+  await page.getByText("View local export preview").click();
+  await expect(page.getByLabel("Local export preview").getByText("lifemax.local_demo_export.v1")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("Draft the client note")).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({
+    path: path.join(highFunctionalityDir, "local-profile-export-mobile-390.png"),
+    fullPage: true
+  });
+
   expect(runtimeErrors()).toEqual([]);
 });
 

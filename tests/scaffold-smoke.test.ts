@@ -3,7 +3,7 @@ import packageJson from "../package.json";
 import commandMatrix from "../command-matrix.json";
 import { forbiddenWave0Dependencies, tabs, wave0CommandIds } from "../lib/contracts";
 import { emptyTodayState } from "../lib/demo-state";
-import { createInitialLocalDemoState, createSuggestedPlan, deriveTodayView, type LocalDemoState } from "../lib/local-demo-state";
+import { createInitialLocalDemoState, createLocalDemoExport, createSuggestedPlan, deriveTodayView, type LocalDemoState } from "../lib/local-demo-state";
 
 describe("Wave 0 scaffold contract", () => {
   test("keeps canonical five-tab navigation stable", () => {
@@ -148,6 +148,41 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.pattern_cards.find((card) => card.id === "local-pattern-energy")?.decision).toBe("watching");
     expect(view.experiment_summary.status).toBe("active");
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+  });
+
+  test("exports only browser-local demo state with an explicit boundary", () => {
+    const state: LocalDemoState = {
+      ...createInitialLocalDemoState(),
+      check_in: {
+        energy: "ok",
+        mood: "ok",
+        stress: "medium",
+        body: "ok",
+        friction_tags: [],
+        note: "local only",
+        saved_at: "2026-06-19T18:00:00.000Z"
+      },
+      captures: [
+        {
+          id: "capture-export-test",
+          kind: "note",
+          label: "export proof",
+          note: "",
+          impact: "uncertain",
+          created_at: "2026-06-19T18:05:00.000Z"
+        }
+      ],
+      updated_at: "2026-06-19T18:05:00.000Z"
+    };
+
+    const localExport = createLocalDemoExport(state, "2026-06-20T05:30:00.000Z");
+
+    expect(localExport.schema_version).toBe("lifemax.local_demo_export.v1");
+    expect(localExport.summary.check_in).toBe("saved");
+    expect(localExport.summary.captures).toBe(1);
+    expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
+    expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
+    expect(localExport.state.captures[0]?.label).toBe("export proof");
   });
 
   test("declares every required Wave 0 command", () => {
