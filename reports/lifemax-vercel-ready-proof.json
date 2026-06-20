@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T11:24:12Z",
+  "generated_at": "2026-06-20T11:34:00Z",
   "objective": "Make the public LifeMax app visibly functional and credible through browser-local flows, proof artifacts, Git push, and Vercel deployment while preserving the truth boundary that backend/shared-context readiness remains unproved.",
   "risk_class": "Q3",
   "riskClass": "Q3",
@@ -48,7 +48,7 @@
     "npm run test:fixtures pass",
     "npm run test:pwa pass",
     "npm run build pass",
-    "npm run screenshot:mobile pass",
+    "npm run screenshot:mobile pass for prior focus-block/local visual suites; this slice used in-app browser proof because standalone Chromium launch timed out before app interaction",
     "git diff --check pass",
     "redacted changed-file scan for secret-shaped strings pass",
     "live browser smoke pass on both public aliases for the Capture correction flow",
@@ -88,12 +88,12 @@
     "checked_with": "git rev-parse HEAD, git ls-remote origin refs/heads/main, Vercel production deploy output, Vercel inspect for both aliases, and production smoke report after focus-block deployment",
     "exists": true,
     "branch": "main",
-    "status": "origin/main contains focus-block feature/proof commit 50c9e48 at product-deploy time; this proof index records the subsequent verifier/proof refresh as documentation evidence and should be read with the latest Git log after commit.",
+    "status": "origin/main contains experiment plan handoff feature commit b7c94b2 and proof commit 89f6173; public aliases inspected Ready after production smoke. Read slice-specific reports for current deployment proof.",
     "pushed_commits": [
       "92dbdfc docs: record local plan builder proof",
-      "50c9e48f6e14c2439aa817ebf40d6e8d6b1b8081 feat: add local focus block workflow"
-      ,
-      "b7c94b2471f39fe3ac7f6fdc63b5cb9186c65f6c feat: turn experiment decisions into local plans"
+      "50c9e48f6e14c2439aa817ebf40d6e8d6b1b8081 feat: add local focus block workflow",
+      "b7c94b2471f39fe3ac7f6fdc63b5cb9186c65f6c feat: turn experiment decisions into local plans",
+      "89f6173e5e26eebaa4f6b7099ff3d815a40f53df docs: record experiment plan deployment proof"
     ],
     "deployment": {
       "lifemax_web": {
@@ -111,9 +111,9 @@
     }
   },
   "git_identity_summary": {
-    "user_name": "Oliver Russell",
-    "user_email": "oliverorussell22@gmail.com",
-    "gh_cli": "not installed in local shell; push auth to be proven by git push"
+    "user_name": "redacted in public proof packet",
+    "user_email": "redacted in public proof packet",
+    "gh_cli": "push auth proven by successful git push; personal identity omitted from proof packet"
   },
   "source_context": {
     "source_worktree": "dirty control-plane repo; not cleaned or reverted",
@@ -945,5 +945,11 @@
     "completionDisproofAudit": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-completion-audit-2026-06-20.json",
     "independentVerification": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-verifier-2026-06-20.json"
   },
-  "updatedAt": "2026-06-20T10:49:01Z"
+  "updatedAt": "2026-06-20T10:49:01Z",
+  "independentVerification": {
+    "latest_agent_id": "019ee4c8-10d5-7fb2-be7d-1d47a0a8c19e",
+    "status": "completed",
+    "verdict": "CHECKPOINT_OK true; COMPLETE_OK false",
+    "scope": "experiment decision to Today plan handoff checkpoint, proof hygiene, truth boundary, deployment overclaim risk"
+  }
 }
