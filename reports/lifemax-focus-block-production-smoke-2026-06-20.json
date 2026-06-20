@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-06-20T10:41:27.221Z",
+  "results": [
+    {
+      "target": "https://life-max-omega.vercel.app",
+      "result": "pass",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-focus-block-completed-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-focus-capture-mobile-390.png"
+      ],
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "serverErrors": []
+    },
+    {
+      "target": "https://lifemax-web.vercel.app",
+      "result": "pass",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-focus-block-completed-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-focus-capture-mobile-390.png"
+      ],
+      "dimensions": {
+        "scrollWidth": 390,
+        "clientWidth": 390
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "serverErrors": []
+    }
+  ]
+}

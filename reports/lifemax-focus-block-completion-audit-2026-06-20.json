@@ -1,0 +1,97 @@
+{
+  "schema": "lifemax.completion_disproof_audit.v1",
+  "auditedAt": "2026-06-20T10:43:57.474Z",
+  "method": "separate self-critique pass after production deploy and smoke; checks original acceptance criteria against current focus-block proof and lab truth boundary",
+  "verdict": "PASS_CHECKPOINT_FAIL_COMPLETE",
+  "checkpointOk": true,
+  "completeOk": false,
+  "acceptanceCriteriaStatus": [
+    {
+      "criterion": "App shell navigation works across Today, Capture, Patterns, Experiments, Profile, and Privacy or equivalent surfaces.",
+      "status": "previously_proven_and_not_regressed",
+      "evidence": "npm run screenshot:mobile still traversed Today, Capture, Patterns, Experiments, Profile, and Privacy; production focus smoke opened Today/Capture/Privacy on both aliases."
+    },
+    {
+      "criterion": "Privacy policy/page is reachable from UI.",
+      "status": "proven",
+      "evidence": "Production smoke opened /privacy on both aliases and verified heading Privacy policy and local data boundary."
+    },
+    {
+      "criterion": "Today has meaningful flow that changes visible state and persists.",
+      "status": "proven_for_focus_slice",
+      "evidence": "Focus flow starts from generated plan, completes with note, marks 1/3 plan done, persists after refresh, and produces a Capture record."
+    },
+    {
+      "criterion": "Capture has usable input/list workflow.",
+      "status": "proven_for_focus_slice_and_existing_flow",
+      "evidence": "Production smoke verified generated Focus block Capture; existing Playwright flow still saves/edits/deletes Capture records."
+    },
+    {
+      "criterion": "Patterns or Experiments show derived/demo state from actions when backend unavailable.",
+      "status": "previously_proven_and_not_regressed",
+      "evidence": "Existing Playwright flow still covers Patterns history/review and Experiments observation/decision; focus slice does not mutate these surfaces directly."
+    },
+    {
+      "criterion": "Demo/local behavior persists across refresh.",
+      "status": "proven",
+      "evidence": "Local and production smoke verified focus completion and plan progress persisted after refresh."
+    },
+    {
+      "criterion": "Empty/loading/disabled/error states honest; buttons not decorative.",
+      "status": "proven_for_changed_controls",
+      "evidence": "Start focus block disabled before plan; complete/stop controls appear only when active; completed state exposes next action; no backend/timer/reminder claims."
+    },
+    {
+      "criterion": "UI quality mobile/desktop inspected and no overlap/overflow.",
+      "status": "proven_for_slice",
+      "evidence": "screenshot:mobile passed mobile and desktop no-overflow checks; production smoke measured scrollWidth 390/clientWidth 390 on both aliases."
+    },
+    {
+      "criterion": "Deploy preview/production as approved with proof.",
+      "status": "proven_for_this_checkpoint",
+      "evidence": "Production approved earlier; commit 50c9e48 pushed; lifemax-web and life-max-omega aliases Ready and smoke-passed."
+    },
+    {
+      "criterion": "Full LifeMax readiness including WHOOP/accounts/AI/Telegram/backend/shared context.",
+      "status": "not_proven",
+      "evidence": "Lab preflight and boot packet remain red; the app truthfully remains browser-local demo behavior only."
+    }
+  ],
+  "defectsFoundThisCycle": [
+    "Completed focus screenshot showed ambiguous Current item/Start focus block copy after completion.",
+    "Selected in-app browser tab was stuck on old data: error page from stale localhost outage.",
+    "First production smoke failed due Node 25 require plus top-level await ambiguity.",
+    "Second production smoke clicked before production hydration/control readiness and did not observe Quick Restart saved."
+  ],
+  "repairsMadeThisCycle": [
+    "Added next_item to focus summary and changed completed/stopped panel copy to Last item, Next item, Start next focus block or disabled No open plan item.",
+    "Opened a fresh in-app browser tab for local route proof.",
+    "Reran production smoke as ESM import script.",
+    "Added networkidle/control readiness waits to production smoke; final run passed both aliases."
+  ],
+  "commandsAndResults": [
+    "npm run typecheck pass",
+    "npm run lint pass",
+    "npm test pass: 3 files, 18 tests",
+    "npm run test:fixtures pass: 1 file, 2 tests",
+    "npm run test:pwa pass: 1 file, 1 test",
+    "npm run screenshot:mobile pass: Next build plus 3 Playwright tests",
+    "git diff --check pass",
+    "changed-file no-secrets scan pass",
+    "git push origin main pass",
+    "npx --yes vercel deploy --prod --yes pass",
+    "vercel inspect both aliases pass Ready",
+    "production Playwright smoke final pass both aliases"
+  ],
+  "evidencePaths": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-proof-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-production-smoke-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-focus-block-completed-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-focus-capture-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-focus-block-completed-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-focus-capture-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-focus-block-completed-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-focus-capture-mobile-390.png"
+  ],
+  "stopContinueDecision": "checkpoint, not complete: focus-block functionality is pushed/deployed/smoked; continue the broader goal with the next high-level function or lab shared-context repair, but do not call full LifeMax complete while lab preflight/boot are red."
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "lifemax.independent_verifier.v1",
+  "generatedAt": "2026-06-20T10:49:01Z",
+  "agentId": "019ee4a0-ae94-7490-920a-39bda0e282e4",
+  "verdict": "CHECKPOINT_OK",
+  "completeOk": false,
+  "qLevel": "Pass for narrower Q3 checkpoint; fail for broader original goal until lab/shared-context readiness is green.",
+  "evidenceChecked": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-proof-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-production-smoke-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-completion-audit-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-vercel-ready-proof.json",
+    "/Users/oliverrussell/Desktop/LifeMax/ops/reports/latest-lifemax-local-agent-context-preflight.json",
+    "/Users/oliverrussell/Desktop/LifeMax/ops/reports/latest-lifemax-agent-context-boot-packet.json"
+  ],
+  "findings": [
+    "Focus-block checkpoint is OK: commit 50c9e48 was pushed, deployed, and live-smoked on both public aliases.",
+    "Full LifeMax completion is false: lab preflight and boot packet remain red and safe_to_claim_daily_usable is false.",
+    "Proof bundle needed cleanup before finalizing: current proof files were uncommitted and proof index had stale pending/day-history text."
+  ],
+  "repairsAppliedAfterVerifier": [
+    "Removed stale focus-block pending-deploy residual risk and post-action line from the proof index.",
+    "Updated proof-index remote_state to the focus-block production checkpoint rather than the old 53bad3b Day History state.",
+    "Added this verifier artifact and linked it from focus-block proof, overall proof index, and ledger."
+  ],
+  "finalAllowedClaim": "May honestly claim pushed/deployed/smoked focus-block checkpoint, not broader LifeMax/shared-context completion."
+}

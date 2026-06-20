@@ -1,9 +1,9 @@
 {
   "schema": "lifemax.focus_block_proof.v1",
   "objective": "Make Today feel more functional by adding a browser-local focus block that advances the daily plan into a completed local capture without claiming timers, reminders, backend writes, WHOOP, accounts, AI, or cross-device sync.",
-  "riskClass": "Q3 because the goal includes production deployment; this local proof packet records app/frontend behavior only before deployment.",
+  "riskClass": "Q3 because this checkpoint includes production deployment and live public-alias browser smoke; no credentials, auth settings, backend services, databases, DNS, or destructive service state were changed.",
   "approvalStatus": "Production deploy/promotion was explicitly approved earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote. No credentials, auth settings, DNS, backend services, databases, or external integrations were edited.",
-  "status": "local_checkpoint_pending_git_push_and_vercel_deploy",
+  "status": "checkpoint_deployed_and_smoked_not_complete",
   "generatedAt": "2026-06-20T10:36:49Z",
   "preActionEvidence": [
     "Public repo /Users/oliverrussell/Desktop/LifeMax-vercel-ready was clean at 92dbdfc before this focus-block slice.",
@@ -57,6 +57,18 @@
       "defectOrRisk": "The selected in-app browser tab was stuck on an old data: error page from a stale localhost outage.",
       "repair": "Opened a fresh in-app browser tab against http://127.0.0.1:3000/today and captured Today, Capture, and Privacy route proof.",
       "rerunEvidence": "In-app browser smoke found Today focus surface, local truth boundary, Capture route, Privacy route, and zero console errors."
+    },
+    {
+      "cycle": "production_smoke_tooling_repair",
+      "defectOrRisk": "First production smoke script failed before browser proof because Node 25 rejected require plus top-level await.",
+      "repair": "Reran the smoke script as an ES module with import syntax.",
+      "rerunEvidence": "The script advanced to browser interaction on the next run."
+    },
+    {
+      "cycle": "production_smoke_hydration_repair",
+      "defectOrRisk": "Second production smoke clicked Quick Restart before production hydration/control readiness, so saved state did not appear.",
+      "repair": "Changed the smoke to wait for networkidle and visible control readiness before interactions.",
+      "rerunEvidence": "Final production smoke passed on both public aliases."
     }
   ],
   "verification": [
@@ -99,6 +111,34 @@
     {
       "command": "in-app browser local smoke",
       "result": "pass: Today/Capture/Privacy reachable on 127.0.0.1:3000 with no console errors"
+    },
+    {
+      "command": "git push origin main",
+      "result": "pass: 92dbdfc..50c9e48 pushed to main"
+    },
+    {
+      "command": "npx --yes vercel deploy --prod --yes",
+      "result": "pass: lifemax-web production Ready at dpl_HnJDor8w7aVRATN4ECCprMCpa7QZ"
+    },
+    {
+      "command": "npx --yes vercel inspect lifemax-web.vercel.app",
+      "result": "pass: Ready, deployment dpl_HnJDor8w7aVRATN4ECCprMCpa7QZ"
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "result": "pass: Ready, deployment dpl_EiH9MaWHQibE4fK1pJ65E9H6HC3c"
+    },
+    {
+      "command": "production Playwright smoke after hydration repair",
+      "result": "pass: both aliases completed focus flow and Capture proof with no browser/server errors"
+    },
+    {
+      "command": "completion-disproof self-audit",
+      "result": "PASS_CHECKPOINT_FAIL_COMPLETE"
+    },
+    {
+      "command": "quality_verifier sidecar 019ee4a0-ae94-7490-920a-39bda0e282e4",
+      "result": "CHECKPOINT_OK; COMPLETE_OK false; stale proof findings repaired before proof commit"
     }
   ],
   "browserEvidence": [
@@ -109,17 +149,73 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-privacy-127-3000.png"
   ],
   "deployment": {
-    "status": "pending_after_feature_commit_push",
+    "status": "production_deployed_and_smoked",
     "productionApproved": true,
-    "plannedCommand": "npx --yes vercel deploy --prod --yes",
-    "postDeployRequired": "Inspect both public aliases and browser-smoke the focus flow before final checkpoint."
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_HnJDor8w7aVRATN4ECCprMCpa7QZ",
+      "deployment_url": "https://lifemax-m12ykae59-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_EiH9MaWHQibE4fK1pJ65E9H6HC3c",
+      "deployment_url": "https://life-azuaj1t2h-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready"
+    },
+    "productionSmoke": [
+      {
+        "target": "https://life-max-omega.vercel.app",
+        "result": "pass",
+        "screenshots": [
+          "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-focus-block-completed-mobile-390.png",
+          "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-focus-capture-mobile-390.png"
+        ],
+        "dimensions": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "consoleErrors": [],
+        "pageErrors": [],
+        "serverErrors": []
+      },
+      {
+        "target": "https://lifemax-web.vercel.app",
+        "result": "pass",
+        "screenshots": [
+          "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-focus-block-completed-mobile-390.png",
+          "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-focus-capture-mobile-390.png"
+        ],
+        "dimensions": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "consoleErrors": [],
+        "pageErrors": [],
+        "serverErrors": []
+      }
+    ]
   },
   "residualRisks": [
     "This remains browser-local demo behavior only; it does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, timers, or cross-device sync.",
     "LifeMax lab preflight and boot packet remain red, so full daily shared-context usability is not complete.",
-    "Production deployment and live smoke are still pending in this proof packet and must be updated after Vercel work completes."
+    "Vercel npm install reported 2 moderate vulnerabilities; no package/runtime upgrade was performed in this slice.",
+    "Successful production focus smoke proves browser-local behavior on two public aliases, not backend/shared-context readiness."
   ],
   "rollbackPath": "Revert the focus-block feature commit, push main, and redeploy the previous public app commit if the live smoke fails. No credentials, auth settings, DNS, custom domains, databases, or backend services are changed by this slice.",
   "secretsRedacted": true,
-  "stopContinueDecision": "checkpoint_pending_deploy: local focus-block behavior is implemented and locally proven; continue to commit, push, deploy production as approved, smoke public aliases, update proof, and run a verifier/self-audit."
+  "stopContinueDecision": "checkpoint_not_complete: focus-block product slice is committed, pushed, deployed to production, live-smoked on both public aliases, and independently verified as a checkpoint; full LifeMax daily/shared-context usability remains unproved while lab preflight and boot packet are red.",
+  "updatedAt": "2026-06-20T10:49:01Z",
+  "subjectCommit": "50c9e48f6e14c2439aa817ebf40d6e8d6b1b8081",
+  "postActionEvidence": [
+    "Feature/proof commit 50c9e48 was pushed to origin/main.",
+    "Production Vercel deploy completed: lifemax-web dpl_HnJDor8w7aVRATN4ECCprMCpa7QZ, Ready, aliased to https://lifemax-web.vercel.app.",
+    "Vercel inspect showed life-max-omega also Ready at dpl_EiH9MaWHQibE4fK1pJ65E9H6HC3c, aliased to https://life-max-omega.vercel.app.",
+    "Fresh production browser smoke passed on both public aliases for focus lock, quick restart context, generated plan, focus active/completed, refresh persistence, generated Capture, Privacy reachability, no 390px overflow, and no console/page/server errors."
+  ],
+  "productionSmokeReport": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-production-smoke-2026-06-20.json",
+  "completionDisproofAudit": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-completion-audit-2026-06-20.json",
+  "independentVerification": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-verifier-2026-06-20.json"
 }
