@@ -1,0 +1,182 @@
+{
+  "objective": "Make Today visibly more functional by adding a browser-local plan builder that converts current local signals into a concrete daily plan without claiming AI, backend, wearable, or account sync.",
+  "riskClass": "Q3",
+  "approvalStatus": "Production deploy/promotion was explicitly approved earlier in the thread with PRODUCTION_DEPLOY_APPROVED=true promote. No credential, auth, DNS, database, backend, or external-service mutation was performed.",
+  "subjectCommit": "a8686f54f601712e053c806aecaab05483109c52",
+  "status": "checkpoint_not_complete",
+  "preActionEvidence": [
+    "Public repo /Users/oliverrussell/Desktop/LifeMax-vercel-ready was clean at 539add58d0a3a7a7d0f01c531e9e5f279b5031a8 before this slice.",
+    "Live omega screenshots captured before editing showed Today could save a plan manually, but the command center did not generate a plan from existing local signals.",
+    "LifeMax lab preflight remained red: ok=false, generated 2026-06-20T10:09:45.646Z, with local MCP/life-safety/Grok context gaps.",
+    "LifeMax lab boot packet remained red: ok=false, generated 2026-06-20T10:10:03.246Z, safe_to_claim_daily_usable=false."
+  ],
+  "rollbackPath": "Revert subject commit a8686f54f601712e053c806aecaab05483109c52, push main, and let Vercel redeploy the prior public app. No secrets, credentials, auth settings, database data, DNS, or external service state were changed by this slice.",
+  "changedFiles": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/lib/local-demo-state.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/components/screens.tsx",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/scaffold-smoke.test.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/visual/mobile.spec.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-local-plan-builder-proof-2026-06-20.json"
+  ],
+  "changedBehavior": [
+    "Added createPlanFromLocalSignals, a deterministic local helper that builds a daily plan from check-in, quick restart, captures, rescue, and history cues.",
+    "Today command center now shows Plan builder evidence and exposes Generate local plan.",
+    "Generate local plan is disabled before a check-in and functional after local context exists.",
+    "Generated plans reset item statuses to open and persist in browser-local storage.",
+    "The UI copy says generated plans are browser-local and nothing leaves the browser."
+  ],
+  "postActionEvidence": [
+    "Feature commit a8686f54f601712e053c806aecaab05483109c52 was committed and pushed to origin/main.",
+    "npx --yes vercel deploy --prod --yes completed for lifemax-web: deployment dpl_2jposR6GMLvj9dEZJG2k85Co9uP1, Ready, aliased to https://lifemax-web.vercel.app.",
+    "npx --yes vercel inspect life-max-omega.vercel.app returned Ready: deployment dpl_FreN6FqgNra46UZjXpyQo2cgdi4L, url https://life-jm6hau4x3-olivers-projects-25fda214.vercel.app, target production.",
+    "Fresh production Playwright smoke passed on both https://life-max-omega.vercel.app and https://lifemax-web.vercel.app for locked generator state, quick restart context, generated local plan, refresh persistence, Privacy reachability, mobile width, and console/page errors."
+  ],
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "npm test",
+      "result": "pass: 3 files, 17 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass: 1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass: Next.js static routes generated for /, /capture, /experiments, /patterns, /privacy, /profile, /today"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "fail_then_pass: first failure exposed an ambiguous History cue assertion after the new Plan builder detail mentioned history cue; final run passed 2 Playwright tests"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "changed-file no-secrets scan",
+      "result": "pass: matches were truth-boundary copy only, not credentials"
+    },
+    {
+      "command": "npx --yes vercel deploy --prod --yes",
+      "result": "pass: lifemax-web production Ready"
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app && npx --yes vercel inspect lifemax-web.vercel.app",
+      "result": "pass: both production aliases Ready"
+    },
+    {
+      "command": "fresh production Playwright smoke on life-max-omega and lifemax-web",
+      "result": "pass: locked generator, quick restart context, generated local plan, refresh persistence, Privacy reachability, 390px no overflow, no console/page errors"
+    }
+  ],
+  "fulfillmentLoopEvidence": {
+    "cycles": [
+      {
+        "cycle": "inspect_and_plan",
+        "defectOrRisk": "Today had many manual controls but still did not orchestrate local signals into a next plan.",
+        "repair": "Selected the Today plan-builder slice because it turns current local evidence into a concrete daily action surface.",
+        "rerunEvidence": "Live pre-edit screenshots captured Today/Capture/Patterns/Experiments/Profile/Privacy on mobile and desktop."
+      },
+      {
+        "cycle": "implementation",
+        "defectOrRisk": "A generator could imply AI/backend planning or preserve stale done status.",
+        "repair": "Implemented deterministic local state helper, locked the button before check-in, reset plan statuses to open, and kept browser-local copy visible.",
+        "rerunEvidence": "Vitest covers restart/capture/history generation and Playwright covers locked and generated states."
+      },
+      {
+        "cycle": "browser_verification",
+        "defectOrRisk": "The new Plan builder detail made a broad History cue text assertion ambiguous.",
+        "repair": "Tightened the assertion to the exact History cue label.",
+        "rerunEvidence": "npm run screenshot:mobile passed after the repair."
+      },
+      {
+        "cycle": "deployment",
+        "defectOrRisk": "The linked Vercel project and original omega alias can diverge if not inspected separately.",
+        "repair": "Inspected both aliases and ran fresh production smoke on both.",
+        "rerunEvidence": "Both public aliases returned Ready and passed Playwright smoke."
+      }
+    ],
+    "stopContinueDecision": "checkpoint_not_complete: this public browser-local plan-builder slice is pushed, deployed, smoked, and proofed; full LifeMax daily usability remains unproved while lab shared-context/preflight/boot packet are red."
+  },
+  "functionalFlowsProven": [
+    "Today shows Generate local plan disabled before local context exists.",
+    "Quick restart creates local context and enables Generate local plan.",
+    "Generate local plan writes a daily plan with must-do, optional moves, boundary, shutdown target, and open statuses.",
+    "The generated plan persists after refresh on deployed production aliases.",
+    "Privacy remains reachable and no WHOOP/account/hosted-AI/backend write is claimed."
+  ],
+  "deployment": {
+    "productionApproved": true,
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_2jposR6GMLvj9dEZJG2k85Co9uP1",
+      "deployment_url": "https://lifemax-ii5lxlzns-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_FreN6FqgNra46UZjXpyQo2cgdi4L",
+      "deployment_url": "https://life-jm6hau4x3-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready"
+    }
+  },
+  "browserEvidence": [
+    {
+      "target": "https://life-max-omega.vercel.app",
+      "result": "passed",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-local-plan-builder-today-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-local-plan-builder-privacy-mobile-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "mobileWidth": {
+        "scrollWidth": 390,
+        "clientWidth": 390
+      }
+    },
+    {
+      "target": "https://lifemax-web.vercel.app",
+      "result": "passed",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-local-plan-builder-today-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-local-plan-builder-privacy-mobile-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "mobileWidth": {
+        "scrollWidth": 390,
+        "clientWidth": 390
+      }
+    },
+    {
+      "target": "local Playwright screenshots",
+      "result": "passed",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/functional/local-demo-desktop-1280.png"
+      ]
+    }
+  ],
+  "residualRisks": [
+    "This is deterministic browser-local demo behavior, not hosted AI planning. WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, and backend writes are not connected or proven.",
+    "The separate LifeMax lab preflight and boot packet remain red, so daily shared-context usability cannot be claimed.",
+    "Desktop shell/no-overflow is covered by Playwright, but the live deployed smoke for this exact plan-builder action focused on 390px mobile.",
+    "Vercel npm audit reported 2 moderate vulnerabilities during production install; no package upgrade was performed in this slice."
+  ],
+  "secretsRedacted": true
+}
