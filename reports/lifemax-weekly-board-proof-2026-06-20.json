@@ -211,6 +211,26 @@
           "8:30 PM"
         ]
       }
+    ],
+    "vercelInspect": [
+      {
+        "alias": "https://lifemax-web.vercel.app",
+        "project": "lifemax-web",
+        "deploymentId": "dpl_9atHMs1vqaqqV5rFh9go5ramz7R1",
+        "url": "https://lifemax-6o03jn3k5-olivers-projects-25fda214.vercel.app",
+        "status": "Ready",
+        "target": "production",
+        "created": "2026-06-20T05:15:30-07:00"
+      },
+      {
+        "alias": "https://life-max-omega.vercel.app",
+        "project": "life-max",
+        "deploymentId": "dpl_6aCvZ2FBHiNCBtWJ5RA4GJjANn6z",
+        "url": "https://life-aohmbtr86-olivers-projects-25fda214.vercel.app",
+        "status": "Ready",
+        "target": "production",
+        "created": "2026-06-20T05:18:25-07:00"
+      }
     ]
   },
   "secretsRedacted": true,
@@ -240,5 +260,5 @@
   "environmentBlockers": [
     "Standalone Playwright/Chromium visual test command remains unsuitable in this desktop environment because the Codex parent process has a large defunct child backlog; in-app browser smoke is used as current browser proof."
   ],
-  "updatedAt": "2026-06-20T12:17:24.358Z"
+  "updatedAt": "2026-06-20T12:20:44.086Z"
 }
