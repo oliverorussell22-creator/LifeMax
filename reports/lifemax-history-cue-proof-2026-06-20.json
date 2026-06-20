@@ -1,0 +1,196 @@
+{
+  "objective": "Make the public LifeMax app visibly more functional by turning browser-local day history into an actionable loop: a saved Patterns history cue can be carried into Today's daily plan, persists across refresh, and stays honest about local-only behavior.",
+  "riskClass": "Q3",
+  "approvalStatus": "Production deploy/promotion was explicitly approved earlier in the thread with PRODUCTION_DEPLOY_APPROVED=true promote. No credential, auth, DNS, database, backend, or external-service mutation was performed.",
+  "subjectCommit": "ab06a44a91ee583dd82e29ebaed853c973fe1a3e",
+  "status": "checkpoint_not_complete",
+  "preActionEvidence": [
+    "Public repo /Users/oliverrussell/Desktop/LifeMax-vercel-ready was clean at e4034d8314967df349854fbddaa09bdb4142e6a1 before this slice.",
+    "LifeMax lab preflight remained red: ok=false, generated 2026-06-20T09:48:42.661Z, with local MCP/life-safety/Grok context gaps.",
+    "LifeMax lab boot packet remained red: ok=false, generated 2026-06-20T09:48:54.076Z, safe_to_claim_daily_usable=false.",
+    "Prior proof packets showed local history and insights existed, but the local day history surface was not yet actionable back into Today's plan."
+  ],
+  "rollbackPath": "Revert subject commit ab06a44a91ee583dd82e29ebaed853c973fe1a3e, push main, and let Vercel redeploy the prior public app. No secrets, credentials, auth settings, database data, DNS, or external service state were changed by this slice.",
+  "changedFiles": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/lib/local-demo-state.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/components/screens.tsx",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/scaffold-smoke.test.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/visual/mobile.spec.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-history-cue-proof-2026-06-20.json"
+  ],
+  "changedBehavior": [
+    "Added createPlanFromHistoryArchive, which converts an archived local day tomorrow_cue into a new browser-local daily plan.",
+    "Patterns local day history now exposes a Use cue in Today plan action for archived days.",
+    "Using a cue resets the new plan item statuses to open, sets plan_done=false, carries the old must-do into optional_1 when useful, and adds a pattern-sourced local memory candidate.",
+    "The success message explicitly says the change moved the cue into Today's browser-local plan.",
+    "Tests now assert cue carry-forward and refresh persistence across Today and Patterns."
+  ],
+  "postActionEvidence": [
+    "Feature commit ab06a44a91ee583dd82e29ebaed853c973fe1a3e was committed and pushed to origin/main.",
+    "npx --yes vercel deploy --prod --yes completed for lifemax-web: deployment dpl_GwPJ8dBfw3zckSBMbqbUkUqcXBNr, Ready, aliased to https://lifemax-web.vercel.app.",
+    "npx --yes vercel inspect life-max-omega.vercel.app returned Ready: deployment dpl_2u78JV6vnqcops62gkpDs1taQ2jB, url https://life-il6iulcs4-olivers-projects-25fda214.vercel.app, target production.",
+    "npx --yes vercel inspect lifemax-web.vercel.app returned Ready: deployment dpl_GwPJ8dBfw3zckSBMbqbUkUqcXBNr, url https://lifemax-4s52lecgc-olivers-projects-25fda214.vercel.app, target production.",
+    "Fresh production Playwright smoke passed on both https://life-max-omega.vercel.app and https://lifemax-web.vercel.app for navigation, full local loop, capture unlock, history archive, Use cue in Today plan, Today plan update, refresh persistence, mobile width, and console/page errors.",
+    "Independent quality_verifier initially failed the checkpoint because exact proof/deploy evidence for ab06a44 was not yet present; this proof packet and deployed smoke close that specific gap, but broader completion still remains false."
+  ],
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "npm test",
+      "result": "pass: 3 files, 16 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass: 1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass: Next.js static routes generated for /, /capture, /experiments, /patterns, /privacy, /profile, /today"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "fail_then_pass: first failures exposed stale assertions after the new history cue reset plan progress and values; final run passed 2 Playwright tests"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "changed-file no-secrets scan",
+      "result": "pass: matches were truth-boundary copy only, not credentials"
+    },
+    {
+      "command": "npx --yes vercel deploy --prod --yes",
+      "result": "pass: lifemax-web production Ready"
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app && npx --yes vercel inspect lifemax-web.vercel.app",
+      "result": "pass: both production aliases Ready"
+    },
+    {
+      "command": "fresh production Playwright smoke on life-max-omega and lifemax-web",
+      "result": "pass: full local loop including Capture, Patterns archive, Use cue in Today plan, Today persistence after refresh, 390px no overflow, no console/page errors"
+    }
+  ],
+  "fulfillmentLoopEvidence": {
+    "cycles": [
+      {
+        "cycle": "inspect_and_plan",
+        "defectOrRisk": "History was visible but not actionable; prior proof could create fake confidence if it only showed archived day cards.",
+        "repair": "Chose a narrow functionality-first slice: carry an archived tomorrow cue into Today's plan with local persistence and honest copy.",
+        "rerunEvidence": "Fast checks and browser smoke were planned before deployment."
+      },
+      {
+        "cycle": "implementation",
+        "defectOrRisk": "A cue carried from history could look like a trend or preserve stale done status.",
+        "repair": "New plan resets all item statuses to open and sets avoid_today to Do not treat one archived day as a trend.",
+        "rerunEvidence": "Vitest assertions cover must_do, optional_1, avoid_today, and open status."
+      },
+      {
+        "cycle": "local_browser_verification",
+        "defectOrRisk": "Playwright proof initially expected stale Today text and plan progress after the cue changed the plan.",
+        "repair": "Updated assertions to target Daily plan editor values and the intentional 0/3 reset.",
+        "rerunEvidence": "npm run screenshot:mobile passed after the repairs."
+      },
+      {
+        "cycle": "deployed_verification",
+        "defectOrRisk": "First production smoke skipped Capture, so Patterns correctly stayed locked.",
+        "repair": "Reran deployed smoke with the full local loop: check-in, plan, rescue, capture, close, archive, use cue.",
+        "rerunEvidence": "Production smoke passed on both public aliases with screenshots."
+      }
+    ],
+    "stopContinueDecision": "checkpoint_not_complete: this public browser-local history-cue slice is pushed, deployed, smoked, and proofed; full LifeMax daily usability remains unproved while lab shared-context/preflight/boot packet are red."
+  },
+  "functionalFlowsProven": [
+    "Today local plan can be saved and plan item statuses change visible progress.",
+    "Capture can create a usable local event that unlocks Patterns review.",
+    "Patterns can archive the completed local day into local day history.",
+    "Patterns local day history can move an archived tomorrow cue into Today's daily plan.",
+    "Today shows the carried cue as the must-do, old must-do as optional_1, a close-loop optional_2, and the one-day-not-a-trend boundary.",
+    "The carried Today plan persists after refresh on deployed production aliases.",
+    "Privacy remains reachable and the UI keeps no-WHOOP/no-backend/no-hosted-AI truth-boundary copy visible."
+  ],
+  "deployment": {
+    "productionApproved": true,
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_GwPJ8dBfw3zckSBMbqbUkUqcXBNr",
+      "deployment_url": "https://lifemax-4s52lecgc-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_2u78JV6vnqcops62gkpDs1taQ2jB",
+      "deployment_url": "https://life-il6iulcs4-olivers-projects-25fda214.vercel.app",
+      "target": "production",
+      "status": "Ready"
+    }
+  },
+  "browserEvidence": [
+    {
+      "target": "https://life-max-omega.vercel.app",
+      "result": "passed",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-history-cue-patterns-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-history-cue-today-mobile-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "mobileWidth": {
+        "scrollWidth": 390,
+        "clientWidth": 390
+      }
+    },
+    {
+      "target": "https://lifemax-web.vercel.app",
+      "result": "passed",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-history-cue-patterns-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-history-cue-today-mobile-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "mobileWidth": {
+        "scrollWidth": 390,
+        "clientWidth": 390
+      }
+    },
+    {
+      "target": "local Playwright screenshots",
+      "result": "passed",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-day-history-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-history-cue-mobile-390.png"
+      ]
+    }
+  ],
+  "independentVerification": {
+    "agentId": "019ee474-c1c7-73e2-9581-0afc7a55eea9",
+    "verdictBeforeProofPacket": "PASS local implementation checkpoint; FAIL complete/proven checkpoint because exact proof/deploy evidence for ab06a44 was missing.",
+    "gapClosedByMainThread": [
+      "Created this exact proof packet for ab06a44.",
+      "Deployed and inspected production aliases.",
+      "Ran fresh production Playwright smoke on both aliases."
+    ],
+    "completeClaimAllowed": false
+  },
+  "residualRisks": [
+    "This is still browser-local demo behavior. WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, and backend writes are not connected or proven.",
+    "The separate LifeMax lab preflight and boot packet remain red, so daily shared-context usability cannot be claimed.",
+    "Desktop proof for the new history-cue interaction is thinner than mobile proof; desktop shell/privacy/no-overflow remains covered by existing Playwright.",
+    "Vercel npm audit reported 2 moderate vulnerabilities during production install; no package upgrade was performed in this slice."
+  ],
+  "secretsRedacted": true
+}
