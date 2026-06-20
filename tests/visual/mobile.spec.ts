@@ -106,10 +106,17 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Local day review").getByText("health integrations disabled")).toBeVisible();
   await page.getByTestId("archive-day").click();
   await expect(page.getByLabel("Local day review").getByRole("status")).toContainText("Day saved to browser-local history");
+  await expect(page.getByLabel("Local history insight").getByRole("heading", { name: "One checkpoint, not a trend yet" })).toBeVisible();
+  await expect(page.getByLabel("Local history insight").getByText("Archive one more closed day")).toBeVisible();
   await expect(page.getByLabel("Local day history").getByRole("heading", { name: "1 local day archived" })).toBeVisible();
   await expect(page.getByLabel("Local day history").locator(".history-item").getByText("Walk before opening messages", { exact: true })).toBeVisible();
   await page.reload();
+  await expect(page.getByLabel("Local history insight").getByRole("heading", { name: "One checkpoint, not a trend yet" })).toBeVisible();
   await expect(page.getByLabel("Local day history").getByRole("heading", { name: "1 local day archived" })).toBeVisible();
+  await page.locator('section[aria-label="Local history insight"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Local history insight"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-history-insight-mobile-390.png")
+  });
   await page.locator('section[aria-label="Local day review"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
   await page.locator('section[aria-label="Local day review"]').screenshot({
     path: path.join(highFunctionalityDir, "local-day-review-mobile-390.png")
@@ -117,6 +124,14 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.locator('section[aria-label="Local day history"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
   await page.locator('section[aria-label="Local day history"]').screenshot({
     path: path.join(highFunctionalityDir, "local-day-history-mobile-390.png")
+  });
+
+  await page.goto("/today");
+  await expect(page.getByLabel("Today command center").getByText("History cue")).toBeVisible();
+  await expect(page.getByLabel("Today command center").getByText("Archive one more closed day")).toBeVisible();
+  await page.locator('section[aria-label="Today command center"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Today command center"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-today-history-cue-mobile-390.png")
   });
 
   await page.goto("/experiments");
@@ -227,6 +242,9 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Local data summary").getByText("Kept memories")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("Rejected memories")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("Day history")).toBeVisible();
+  await expect(page.getByLabel("Local data summary").getByText("History insight")).toBeVisible();
+  await expect(page.getByLabel("Local data summary").getByText("1 checkpoint")).toBeVisible();
+  await expect(page.getByLabel("Local history insight").getByRole("heading", { name: "One checkpoint, not a trend yet" })).toBeVisible();
   await expect(page.getByLabel("Local day history").getByRole("heading", { name: "1 local day archived" })).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(5);
   const downloadPromise = page.waitForEvent("download");
@@ -246,6 +264,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Local export preview").getByText("reviewed_at")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("day_archives")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("\"day_archives\": 1")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("\"history_insight\": \"checkpoint\"")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Walk before opening messages")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Morning block felt cleaner")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("experiment_observations")).toBeVisible();

@@ -32,6 +32,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(emptyView.state).toBe("uncertain");
     expect(emptyView.confidence).toBe("low");
     expect(emptyView.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+    expect(emptyView.history_insight.status).toBe("empty");
 
     const withLocalSignals: LocalDemoState = {
       schema_version: "lifemax.local_demo.v1",
@@ -244,6 +245,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.summary.restart).toBe("open");
     expect(localExport.summary.review).toBe("open");
     expect(localExport.summary.day_archives).toBe(0);
+    expect(localExport.summary.history_insight).toBe("empty");
     expect(localExport.summary.experiment_observations).toBe(0);
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
@@ -302,15 +304,56 @@ describe("Wave 0 scaffold contract", () => {
       })
     );
     const localExport = createLocalDemoExport(stored, "2026-06-20T05:35:00.000Z");
+    const checkpointView = deriveTodayView(stored);
+    const secondArchive = {
+      ...archive,
+      id: "day-archive-second-proof",
+      archived_at: "2026-06-21T05:30:00.000Z",
+      day_label: "Jun 21",
+      evidence_count: 4,
+      plan_progress: "2/3 done",
+      capture_count: 2,
+      experiment_observation_count: 1,
+      rescue_used: true,
+      tomorrow_cue: "Walk before messages"
+    };
+    const emergingView = deriveTodayView({
+      ...stored,
+      day_archives: [secondArchive, ...stored.day_archives]
+    });
+    const thirdArchive = {
+      ...archive,
+      id: "day-archive-third-proof",
+      archived_at: "2026-06-22T05:30:00.000Z",
+      day_label: "Jun 22",
+      evidence_count: 5,
+      plan_progress: "3/3 done",
+      capture_count: 2,
+      experiment_observation_count: 1,
+      rescue_used: false,
+      tomorrow_cue: "Walk before messages"
+    };
+    const trendView = deriveTodayView({
+      ...stored,
+      day_archives: [thirdArchive, secondArchive, ...stored.day_archives]
+    });
 
     expect(view.day_review.status).toBe("ready");
     expect(archive.tomorrow_cue).toBe("Walk before messages");
     expect(archive.plan_progress).toBe("1/3 done");
     expect(archive.capture_count).toBe(1);
     expect(stored.day_archives[0]?.review_summary).toContain("1 capture");
-    expect(deriveTodayView(stored).day_history_summary.count).toBe(1);
-    expect(deriveTodayView(stored).day_history_summary.detail).toContain("Walk before messages");
+    expect(checkpointView.day_history_summary.count).toBe(1);
+    expect(checkpointView.day_history_summary.detail).toContain("Walk before messages");
+    expect(checkpointView.history_insight.status).toBe("checkpoint");
+    expect(checkpointView.history_insight.next_action).toContain("one more closed day");
+    expect(emergingView.history_insight.status).toBe("emerging");
+    expect(emergingView.history_insight.title).toContain("still early");
+    expect(trendView.history_insight.status).toBe("trend");
+    expect(trendView.history_insight.detail).toContain("plan items completed");
+    expect(trendView.history_insight.next_action).toContain("Walk before messages");
     expect(localExport.summary.day_archives).toBe(1);
+    expect(localExport.summary.history_insight).toBe("checkpoint");
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
   });
 

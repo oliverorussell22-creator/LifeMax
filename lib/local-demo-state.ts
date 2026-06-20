@@ -177,6 +177,7 @@ export interface LocalDemoExport {
     experiment: ExperimentStatus | "none";
     experiment_observations: number;
     day_archives: number;
+    history_insight: "empty" | "checkpoint" | "emerging" | "trend";
     review: "saved" | "open";
   };
   state: LocalDemoState;
@@ -255,6 +256,15 @@ export interface DerivedTodayView {
     title: string;
     detail: string;
   };
+  history_insight: {
+    status: "empty" | "checkpoint" | "emerging" | "trend";
+    title: string;
+    detail: string;
+    signal_label: string;
+    next_action: string;
+    truth_boundary: string;
+    metrics: Array<{ label: string; value: string }>;
+  };
 }
 
 export interface PatternCard {
@@ -305,6 +315,7 @@ export function createInitialLocalDemoState(): LocalDemoState {
 
 export function createLocalDemoExport(state: LocalDemoState, generatedAt: string): LocalDemoExport {
   const memorySummary = summarizeMemoryCandidates(state.memory_candidates);
+  const historyInsight = summarizeHistoryInsight(state.day_archives);
 
   return {
     schema_version: "lifemax.local_demo_export.v1",
@@ -330,10 +341,11 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       experiment: state.experiment?.status ?? "none",
       experiment_observations: state.experiment?.observations.length ?? 0,
       day_archives: state.day_archives.length,
+      history_insight: historyInsight.status,
       review: state.reviewed_at ? "saved" : "open"
-    },
-    state
-  };
+	    },
+	    state
+	  };
 }
 
 export function serializeLocalDemoExport(state: LocalDemoState, generatedAt: string): string {
@@ -386,6 +398,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const restartSummary = summarizeQuickRestart(state.quick_restart);
   const dayReview = buildDayReview(state, planSummary);
   const dayHistorySummary = summarizeDayHistory(state.day_archives);
+  const historyInsight = summarizeHistoryInsight(state.day_archives);
 
   if (!hasCheckIn) {
     return {
@@ -432,7 +445,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       },
       experiment_summary: summarizeExperiment(state.experiment, false),
       day_review: dayReview,
-      day_history_summary: dayHistorySummary
+      day_history_summary: dayHistorySummary,
+      history_insight: historyInsight
     };
   }
 
@@ -487,7 +501,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
     },
     experiment_summary: summarizeExperiment(state.experiment, captureCount > 0),
     day_review: dayReview,
-    day_history_summary: dayHistorySummary
+    day_history_summary: dayHistorySummary,
+    history_insight: historyInsight
   };
 }
 
@@ -1116,6 +1131,78 @@ function summarizeExperiment(
   };
 }
 
+function summarizeHistoryInsight(archives: LocalDayArchive[]): DerivedTodayView["history_insight"] {
+  const recent = archives.slice(0, 5);
+  const latest = recent[0] ?? null;
+  const totalEvidence = recent.reduce((sum, archive) => sum + archive.evidence_count, 0);
+  const totalCaptures = recent.reduce((sum, archive) => sum + archive.capture_count, 0);
+  const totalObservations = recent.reduce((sum, archive) => sum + archive.experiment_observation_count, 0);
+  const rescueCount = recent.filter((archive) => archive.rescue_used).length;
+  const restartCount = recent.filter((archive) => archive.restart_used).length;
+
+  if (!latest) {
+    return {
+      status: "empty",
+      title: "No local insight yet",
+      detail: "Archive a completed local day before LifeMax summarizes history.",
+      signal_label: "empty",
+      next_action: "Complete the local loop, save the review, then save it to history.",
+      truth_boundary: "History insights are derived only from browser-local archives.",
+      metrics: [
+        { label: "Checkpoints", value: "0" },
+        { label: "Evidence", value: "0" },
+        { label: "Captures", value: "0" },
+        { label: "Observations", value: "0" }
+      ]
+    };
+  }
+
+  if (recent.length === 1) {
+    return {
+      status: "checkpoint",
+      title: "One checkpoint, not a trend yet",
+      detail: `${latest.day_label}: ${latest.plan_progress}; next cue is ${latest.tomorrow_cue}.`,
+      signal_label: "1 checkpoint",
+      next_action: "Archive one more closed day before changing the experiment or treating this as a pattern.",
+      truth_boundary: "One browser-local checkpoint can guide tomorrow, but it is not a trend.",
+      metrics: [
+        { label: "Checkpoints", value: "1" },
+        { label: "Evidence", value: String(totalEvidence) },
+        { label: "Captures", value: String(totalCaptures) },
+        { label: "Recovery aids", value: String(rescueCount + restartCount) }
+      ]
+    };
+  }
+
+  const averageEvidence = (totalEvidence / recent.length).toFixed(1);
+  const planCompletedTotal = recent.reduce((sum, archive) => sum + parseCompletedPlanItems(archive.plan_progress), 0);
+  const repeatedCue = mostFrequent(recent.map((archive) => archive.tomorrow_cue));
+  const repeatedCueCount = recent.filter((archive) => archive.tomorrow_cue === repeatedCue).length;
+  const hasEnoughForTrend = recent.length >= 3 && repeatedCueCount >= 2 && totalEvidence >= recent.length * 3 && totalCaptures >= recent.length;
+  const signalLabel = hasEnoughForTrend ? "local trend" : totalEvidence >= recent.length * 2 ? "emerging signal" : "thin signal";
+  const nextAction =
+    planCompletedTotal === 0
+      ? "Keep tomorrow's cue smaller before adding more experiments."
+      : `Repeat "${repeatedCue}" once more before changing the experiment.`;
+
+  return {
+    status: hasEnoughForTrend ? "trend" : "emerging",
+    title: hasEnoughForTrend ? `${recent.length} checkpoints form a local trend` : `${recent.length} checkpoints, still early`,
+    detail: `${averageEvidence} evidence points per checkpoint; ${planCompletedTotal} plan items completed; ${rescueCount} rescue and ${restartCount} restart records.`,
+    signal_label: signalLabel,
+    next_action: nextAction,
+    truth_boundary: hasEnoughForTrend
+      ? "This is a browser-local trend summary, not a causal or medical claim."
+      : "This is an early browser-local signal, not a causal trend.",
+    metrics: [
+      { label: "Checkpoints", value: String(recent.length) },
+      { label: "Evidence/day", value: averageEvidence },
+      { label: "Captures", value: String(totalCaptures) },
+      { label: "Observations", value: String(totalObservations) }
+    ]
+  };
+}
+
 function summarizeDayHistory(archives: LocalDayArchive[]): DerivedTodayView["day_history_summary"] {
   const latest = archives[0] ?? null;
   if (!latest) {
@@ -1133,6 +1220,31 @@ function summarizeDayHistory(archives: LocalDayArchive[]): DerivedTodayView["day
     title: `${archives.length} local day${archives.length === 1 ? "" : "s"} archived`,
     detail: `${latest.day_label}: ${latest.plan_progress}; ${latest.evidence_count} evidence point${latest.evidence_count === 1 ? "" : "s"}. Next cue: ${latest.tomorrow_cue}`
   };
+}
+
+function parseCompletedPlanItems(progressLabel: string): number {
+  const match = progressLabel.match(/^(\d+)\/\d+ done$/);
+  return match ? Number(match[1]) : 0;
+}
+
+function mostFrequent(values: string[]): string {
+  const counts = new Map<string, number>();
+  for (const value of values) {
+    const trimmed = value.trim();
+    if (!trimmed) continue;
+    counts.set(trimmed, (counts.get(trimmed) ?? 0) + 1);
+  }
+
+  let best = values.find((value) => value.trim())?.trim() ?? "the latest cue";
+  let bestCount = 0;
+  for (const [value, count] of counts) {
+    if (count > bestCount) {
+      best = value;
+      bestCount = count;
+    }
+  }
+
+  return best;
 }
 
 function formatObservationCount(count: number) {

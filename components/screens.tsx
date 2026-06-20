@@ -423,6 +423,10 @@ export function TodayScreen() {
                 <strong>Close loop</strong>
                 {today.evening_summary.status === "closed" ? today.evening_summary.detail : "open"}
               </span>
+              <span>
+                <strong>History cue</strong>
+                {today.history_insight.next_action}
+              </span>
             </div>
             <div className="action-row">
               <button className="primary-action" type="button" onClick={saveCheckIn} data-testid="save-checkin">
@@ -1653,6 +1657,7 @@ export function PatternsScreen() {
           )}
         </div>
         <aside className="screen-aside">
+          <HistoryInsightPanel insight={today.history_insight} />
           <DayHistoryPanel archives={state.day_archives} summary={today.day_history_summary} />
           <FreshnessPanel items={today.freshness_summary} />
         </aside>
@@ -1733,6 +1738,36 @@ function DayReviewPanel({
         </p>
       ) : null}
       {!canSave ? <p className="field-help">Locked until the local loop has check-in, plan, capture, and evening close.</p> : null}
+    </section>
+  );
+}
+
+function HistoryInsightPanel({ insight }: Readonly<{ insight: ReturnType<typeof deriveTodayView>["history_insight"] }>) {
+  const isTrend = insight.status === "trend";
+
+  return (
+    <section className="panel history-insight-panel" aria-label="Local history insight">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Insight</p>
+          <h2 className="panel-title">{insight.title}</h2>
+        </div>
+        <span className={isTrend ? "state-pill state-pill-good" : "state-pill"}>{insight.signal_label}</span>
+      </div>
+      <p className="panel-copy">{insight.detail}</p>
+      <div className="history-insight-grid" aria-label="History insight metrics">
+        {insight.metrics.map((metric) => (
+          <span key={metric.label}>
+            <strong>{metric.value}</strong>
+            {metric.label}
+          </span>
+        ))}
+      </div>
+      <div className="insight-callout">
+        <strong>Next action</strong>
+        <span>{insight.next_action}</span>
+      </div>
+      <p className="field-help">{insight.truth_boundary}</p>
     </section>
   );
 }
@@ -2058,6 +2093,7 @@ export function ProfileScreen() {
                 { label: "Kept memories", value: String(today.memory_summary.kept_count) },
                 { label: "Rejected memories", value: String(today.memory_summary.rejected_count) },
                 { label: "Day history", value: String(state.day_archives.length) },
+                { label: "History insight", value: today.history_insight.signal_label },
                 { label: "Experiment", value: state.experiment?.status ?? "none" },
                 { label: "Experiment observations", value: String(state.experiment?.observations.length ?? 0) },
                 { label: "Review", value: state.reviewed_at ? "saved" : "open" }
@@ -2097,6 +2133,7 @@ export function ProfileScreen() {
         </div>
 
         <aside className="screen-aside">
+          <HistoryInsightPanel insight={today.history_insight} />
           <DayHistoryPanel archives={state.day_archives} summary={today.day_history_summary} />
           <section className="panel" aria-label="Source status">
             <p className="kicker">Sources</p>
