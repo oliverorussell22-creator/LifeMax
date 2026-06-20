@@ -1,0 +1,232 @@
+{
+  "schema": "lifemax.midday_rescue_proof.v1",
+  "generated_at": "2026-06-20T06:47:06Z",
+  "status": "checkpoint_ok",
+  "goal_scope": "Add a higher-functionality browser-local Midday Rescue workflow to the public-safe LifeMax app and deploy it to Vercel.",
+  "truth_boundary": [
+    "This proof covers browser-local demo behavior only.",
+    "WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, shared-context daily usability, and medical/wellness-intensity automation are still not connected or claimed.",
+    "Production deployment was approved earlier in this goal with PRODUCTION_DEPLOY_APPROVED=true promote; no credential, auth setting, DNS/custom-domain, backend, Telegram, n8n, public MCP, Grok, Postgres, or WHOOP mutation was performed.",
+    "The latest LifeMax lab preflight and boot packet remain red, so the broader LifeMax operating loop is not complete."
+  ],
+  "product_gap_evidence": [
+    "docs/LIFEMAX_LAUNCH_APP_MASTER_PLAN.md describes Midday Rescue as a core MVP loop: user reports drift and gets one reset plus a lower-intensity next move.",
+    "docs/LIFEMAX_PRODUCT_PIVOT_STRATEGY.md says drift should produce one reset rather than a lecture.",
+    "Live /today before this repair did not expose a Midday Rescue workflow; a Playwright text probe returned hasMidday:false."
+  ],
+  "assumptions_and_risk_repairs": [
+    {
+      "assumption": "Adding more UI without a real state-changing flow would produce fake confidence.",
+      "repair": "Implemented persisted LocalDemoState.midday_rescue, saved rescue evidence, command-center status, Profile/export summary, Privacy copy, and Playwright assertions that the form values persist after refresh."
+    },
+    {
+      "assumption": "A rescue flow could imply backend reminders or clinical advice.",
+      "repair": "Copy states this is browser-local only, no reminder/backend write is sent, and the action is a lower-intensity planning aid rather than a medical claim."
+    },
+    {
+      "assumption": "The form could look saved while draft fields hydrate incorrectly after refresh.",
+      "repair": "Visual inspection found stale rescue/evening-close drafts after refresh; keyed panels to persisted state and added Playwright value assertions."
+    }
+  ],
+  "defects_found": [
+    "No visible Midday Rescue surface existed on /today despite product docs treating it as a core daily loop.",
+    "Initial local visual rerun after adding the flow found saved status with stale/blank rescue and evening-close draft fields after refresh.",
+    "A first production smoke assertion was too brittle because privacy copy contained the phrase midday rescue in two places; the scoped assertion was repaired and rerun."
+  ],
+  "repairs_made": [
+    {
+      "files": [
+        "lib/local-demo-state.ts"
+      ],
+      "summary": "Added MiddayRescue types, normalization, derived rescue_summary, export summary rescue status, local memory source, day-review evidence contribution, and risk flag integration."
+    },
+    {
+      "files": [
+        "components/screens.tsx"
+      ],
+      "summary": "Added the Today Midday Rescue panel with trigger/reset controls, lower-intensity move, defer-until, note, save/update action, command-center and workflow-rail rescue status, Profile summary, Privacy copy, and draft hydration keys."
+    },
+    {
+      "files": [
+        "app/globals.css"
+      ],
+      "summary": "Expanded the workflow rail to five steps and added restrained rescue-panel styling that fits the existing calm app-shell design."
+    },
+    {
+      "files": [
+        "tests/scaffold-smoke.test.ts",
+        "tests/visual/mobile.spec.ts"
+      ],
+      "summary": "Added unit and Playwright coverage for open/saved rescue derivation, save flow, refresh persistence, Profile/export visibility, Privacy copy, and the stale-draft regression."
+    }
+  ],
+  "local_checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass",
+      "summary": "tsc --noEmit passed after Midday Rescue model/UI updates."
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass",
+      "summary": "eslint passed after Midday Rescue model/UI updates."
+    },
+    {
+      "command": "npm run test",
+      "result": "pass",
+      "summary": "Vitest passed: 3 files, 10 tests."
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass",
+      "summary": "Fixture tests passed: 1 file, 2 tests."
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass",
+      "summary": "PWA tests passed: 1 file, 1 test."
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "fail_then_pass",
+      "summary": "Rerun exposed stale rescued/close draft hydration after refresh; after keyed-panel repair, Next build plus Playwright visual smoke passed: 2 tests."
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass",
+      "summary": "No whitespace errors in the final code diff."
+    },
+    {
+      "command": "value-shaped credential scan over app/components/lib/tests/reports/package/vercel files",
+      "result": "pass",
+      "summary": "No secret-shaped values found; matches were only public truth-boundary words."
+    }
+  ],
+  "browser_flows_proven": [
+    "Today shows Rescue in status cards, command center, and the five-step workflow rail.",
+    "Before check-in, Rescue is honestly locked with a disabled save path and local-only copy.",
+    "After manual check-in, user can save a Midday Rescue with trigger, one reset, lower-intensity next move, defer-until, and note.",
+    "Saving rescue lowers today intensity locally, writes a local memory candidate, updates Today status, and keeps buttons functional rather than decorative.",
+    "Rescue state and input values persist after refresh through localStorage.",
+    "Profile shows Rescue: saved and the export preview includes midday_rescue plus the rescue note.",
+    "Privacy is reachable and now names daily plan, midday rescue, evening close, review notes, and experiment observations as browser-local data.",
+    "Production mobile smoke on both aliases measured scrollWidth 390 and clientWidth 390, with no console/page/HTTP 500 errors captured."
+  ],
+  "screenshots": {
+    "local": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png"
+    ],
+    "production": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-midday-rescue-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-midday-rescue-mobile-390.png"
+    ]
+  },
+  "git": {
+    "branch": "main",
+    "code_commit": "db6dfd2f83deddb717dd2809158f57b34b78a714",
+    "origin_main_verified_at_code_commit": true,
+    "note": "This proof packet is written after the deployed code commit; the final proof-only commit hash is recorded in the Codex final response to avoid self-referential packet churn."
+  },
+  "vercel": {
+    "lifemax_web": {
+      "preview": {
+        "deployment_id": "dpl_EfqKuJCpMRedYyuyDmjNCLuvQz3W",
+        "url": "https://lifemax-7wm7vdre3-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "production": {
+        "deployment_id": "dpl_531nJts7XTZzTHrGPifAT25yyhux",
+        "deployment_url": "https://lifemax-3ethwv55p-olivers-projects-25fda214.vercel.app",
+        "alias": "https://lifemax-web.vercel.app",
+        "status": "READY"
+      }
+    },
+    "life_max_omega_target": {
+      "preview": {
+        "deployment_id": "dpl_AiHNu9WDqnMNpSeyupAPJCqzLbcj",
+        "url": "https://life-q3kx4ej1q-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "production": {
+        "deployment_id": "dpl_8Ftiiw5tDYJCCM4qb2KWNmDpaTuq",
+        "deployment_url": "https://life-ip9zzk08n-olivers-projects-25fda214.vercel.app",
+        "alias": "https://life-max-omega.vercel.app",
+        "status": "READY"
+      }
+    }
+  },
+  "production_smoke": {
+    "status": "pass",
+    "targets": [
+      {
+        "name": "omega",
+        "origin": "https://life-max-omega.vercel.app",
+        "result": "pass",
+        "mobile_width": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-midday-rescue-mobile-390.png"
+      },
+      {
+        "name": "lifemax-web",
+        "origin": "https://lifemax-web.vercel.app",
+        "result": "pass",
+        "mobile_width": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-midday-rescue-mobile-390.png"
+      }
+    ],
+    "script_summary": "Playwright shell smoke drove Today check-in, plan save, Midday Rescue save, refresh persistence, Profile/export preview, and Privacy on both production aliases; no serious browser errors were captured."
+  },
+  "vercel_inspect": {
+    "omega": {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "result": "pass",
+      "deployment_id": "dpl_8Ftiiw5tDYJCCM4qb2KWNmDpaTuq",
+      "target": "production",
+      "status": "Ready",
+      "alias": "https://life-max-omega.vercel.app"
+    },
+    "lifemax_web": {
+      "command": "npx --yes vercel inspect lifemax-web.vercel.app",
+      "result": "pass",
+      "deployment_id": "dpl_531nJts7XTZzTHrGPifAT25yyhux",
+      "target": "production",
+      "status": "Ready",
+      "alias": "https://lifemax-web.vercel.app"
+    }
+  },
+  "independent_verification": {
+    "status": "CHECKPOINT_OK",
+    "agent_id": "019ee3c8-a663-7003-add1-8478b90b5da5",
+    "complete_ok": false,
+    "note": "quality_verifier inspected the Midday Rescue proof, repo source/tests, lab boot truth boundary, Vercel aliases, live behavior, and screenshots. It passed this as a public browser-local demo checkpoint and explicitly rejected broader COMPLETE_OK because shared-context/backend/WHOOP/Telegram/n8n/public MCP/Grok/Postgres remain red or unproved.",
+    "commands_rerun_by_verifier": [
+      "npm run lint",
+      "npm run typecheck",
+      "npm run test",
+      "npm run test:fixtures",
+      "npm run test:pwa",
+      "npm run build",
+      "npm run screenshot:mobile",
+      "git diff --check",
+      "targeted no-secrets scan",
+      "fresh Playwright live smoke on life-max-omega and lifemax-web",
+      "vercel inspect for both production aliases"
+    ],
+    "disqualifying_gaps_for_complete": [
+      "Lab-side LifeMax local agent context preflight and boot packet remain red.",
+      "get_life_safety_state and get_grok_context_brief are not loaded green.",
+      "No proof exists for WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, or shared-context daily usability.",
+      "Vercel metadata was not sufficient to tie aliases directly to the git hash; live behavior, pushed origin/main, deployment readiness, and smoke results are the practical proof."
+    ]
+  },
+  "stop_continue_decision": "checkpoint, not complete: this continuation raises public browser-local Today functionality and deploys it, but full LifeMax shared-context/backend/daily-use readiness remains red and unproved.",
+  "next_action": "Commit and push this proof checkpoint; if continuing the broader goal, choose either another visible local product workflow repair or a separate backend/shared-context Wave 1 repair after local MCP/shared-context reads are green."
+}

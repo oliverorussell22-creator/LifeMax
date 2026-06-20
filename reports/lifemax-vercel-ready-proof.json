@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T06:20:55Z",
+  "generated_at": "2026-06-20T06:47:06Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -11,13 +11,14 @@
     "checked_with": "git push origin main, git rev-parse HEAD, and git ls-remote origin refs/heads/main",
     "exists": true,
     "branch": "main",
-    "status": "origin/main matched local main at 8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 before this proof refresh; proof-only commit still pending at packet write time",
+    "status": "origin/main matched local main at db6dfd2f83deddb717dd2809158f57b34b78a714 before this proof refresh; proof-only commit still pending at packet write time",
     "pushed_commits": [
       "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9 feat: make LifeMax app shell functional",
       "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e chore: ignore local vercel linkage",
       "1fa968c700ddfab60d07996634795577be932d9d fix: keep daily plan editor in sync",
       "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 feat: add local data export controls",
-      "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0 feat: add local day review checkpoint"
+      "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0 feat: add local day review checkpoint",
+      "db6dfd2f83deddb717dd2809158f57b34b78a714 feat: add local midday rescue flow"
     ]
   },
   "git_identity_summary": {
@@ -53,7 +54,8 @@
     "reports/lifemax-local-export-proof-2026-06-20.json",
     "reports/lifemax-checkpoint-audit-2026-06-20.json",
     "reports/lifemax-day-review-proof-2026-06-20.json",
-    "reports/lifemax-experiment-observation-proof-2026-06-20.json"
+    "reports/lifemax-experiment-observation-proof-2026-06-20.json",
+    "reports/lifemax-midday-rescue-proof-2026-06-20.json"
   ],
   "files_excluded_summary": [
     "source .next output",
@@ -173,6 +175,21 @@
       "command": "experiment observation workflow repair verification",
       "status": "pass",
       "summary": "Experiments now logs browser-local observations with signal/note/timestamp, persists them after refresh, exposes Profile/export counts, and was smoked on life-max-omega plus lifemax-web production aliases."
+    },
+    {
+      "command": "local midday rescue repair verification",
+      "status": "pass",
+      "summary": "Today now has a persisted Midday Rescue workflow with trigger/reset/lower-intensity move, refresh persistence, Profile/export visibility, and regression coverage."
+    },
+    {
+      "command": "omega and lifemax-web production midday rescue smoke",
+      "status": "pass",
+      "summary": "Both production aliases saved a rescue, preserved it after refresh, exposed it in Profile/export, reached Privacy, and showed no mobile horizontal overflow or serious browser errors."
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app and lifemax-web.vercel.app",
+      "status": "pass",
+      "summary": "Both production aliases resolved to READY deployments after the Midday Rescue production deploys."
     }
   ],
   "pages_verified": [
@@ -207,7 +224,11 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-review-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-experiment-observation-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-experiment-observation-mobile-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-experiment-observation-mobile-390.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-experiment-observation-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-midday-rescue-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-midday-rescue-mobile-390.png"
   ],
   "no_secrets_scan": {
     "status": "pass",
@@ -233,7 +254,9 @@
     "This is still a browser-local demo shell, not the full LifeMax dogfood product.",
     "WHOOP OAuth, account connection, hosted AI, Telegram, n8n, public MCP, Grok, database persistence, and backend writes are not connected.",
     "npm install/build output reported 2 moderate dependency audit findings; no forced dependency upgrades were applied.",
-    "The lab repo shared-context preflight has previously been red, so no broader daily-usability or wellness-intensity claims are made."
+    "The lab repo shared-context preflight has previously been red, so no broader daily-usability or wellness-intensity claims are made.",
+    "Midday Rescue is browser-local only: it does not send reminders, write to a backend, change integrations, or provide medical advice.",
+    "The latest lab boot packet/preflight remain red; broader LifeMax shared-context daily usability is still not complete."
   ],
   "next_actions": [
     "Resolve Vercel preview protection or project split hygiene if preview URLs need to be public proof surfaces.",
@@ -368,5 +391,17 @@
     ],
     "lifemax_web_deployment_id": "dpl_23EEafmrc9988GHGcbCoyPjQVntv",
     "omega_deployment_id": "dpl_DgEtjTxxzRkxSCnnPGc9Ms4DLpdW"
+  },
+  "latest_cycle": {
+    "name": "midday-rescue-repair-and-deploy",
+    "status": "checkpoint_ok_verified",
+    "proof": "reports/lifemax-midday-rescue-proof-2026-06-20.json",
+    "code_commit": "db6dfd2f83deddb717dd2809158f57b34b78a714",
+    "independent_verifier": "019ee3c8-a663-7003-add1-8478b90b5da5",
+    "complete_ok": false,
+    "production_aliases": [
+      "https://life-max-omega.vercel.app",
+      "https://lifemax-web.vercel.app"
+    ]
   }
 }
