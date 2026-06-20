@@ -1,0 +1,148 @@
+{
+  "schema": "lifemax.plan_editor_sync_proof.v1",
+  "generated_at": "2026-06-20T05:12:42Z",
+  "status": "checkpoint_pass",
+  "objective_slice": "Repair the visible credibility bug where Today's saved plan summary could disagree with the Daily plan editor after browser-local state hydration.",
+  "risk_class": "Q3 because the fix was pushed and deployed to Vercel production under the existing explicit production approval record.",
+  "defect_found": {
+    "summary": "The Today sidebar/command center could show the persisted saved plan while the Daily plan editor still displayed suggested defaults after refresh.",
+    "source": "Visual inspection of production screenshots plus code inspection.",
+    "root_cause": "DailyPlanPanel initialized its draft with useState(plan) before browser storage hydration; later persisted plan props did not reinitialize the editor draft."
+  },
+  "repair": {
+    "files_changed": [
+      "components/screens.tsx",
+      "tests/visual/mobile.spec.ts"
+    ],
+    "implementation": [
+      "Created an activePlan value in TodayScreen so the summary and editor receive the same source plan.",
+      "Added a stable key derived from the active plan fields/statuses so DailyPlanPanel remounts when persisted plan data hydrates or changes.",
+      "Added Playwright regression assertions that saved plan input values remain in the editor after refresh."
+    ],
+    "commit": "1fa968c fix: keep daily plan editor in sync"
+  },
+  "verification": {
+    "local_commands": [
+      {
+        "command": "npm run typecheck",
+        "status": "pass"
+      },
+      {
+        "command": "npm run lint",
+        "status": "pass"
+      },
+      {
+        "command": "npm run test",
+        "status": "pass",
+        "summary": "3 files, 9 tests"
+      },
+      {
+        "command": "npm run test:fixtures",
+        "status": "pass",
+        "summary": "1 file, 2 tests"
+      },
+      {
+        "command": "npm run test:pwa",
+        "status": "pass",
+        "summary": "1 file, 1 test"
+      },
+      {
+        "command": "npm run build",
+        "status": "pass",
+        "summary": "Next production build passed; routes include Today, Capture, Patterns, Experiments, Profile, Privacy"
+      },
+      {
+        "command": "npm run screenshot:mobile",
+        "status": "pass_after_rerun",
+        "summary": "Initial concurrent run collided with a separate Next build. Rerun passed: 2 Playwright tests, including persisted plan-editor value assertions."
+      },
+      {
+        "command": "git diff --check",
+        "status": "pass"
+      },
+      {
+        "command": "value-shaped no-secrets scan over changed files",
+        "status": "pass"
+      }
+    ],
+    "preview_deployment": {
+      "command": "npx --yes vercel deploy -y",
+      "status": "ready",
+      "deployment_id": "dpl_B8u17ahWW8KCQ8rt1bDWYW5rQfko",
+      "url": "https://lifemax-3o7jf8qpu-olivers-projects-25fda214.vercel.app",
+      "note": "Preview builds successfully but prior preview URLs are protected by Vercel login, so public proof still uses production."
+    },
+    "production_deployment": {
+      "command": "npx --yes vercel deploy --prod -y",
+      "status": "ready",
+      "deployment_id": "dpl_AX7EafUnsAjQGLWA9HA9U3LPCHqb",
+      "url": "https://lifemax-mkhma3our-olivers-projects-25fda214.vercel.app",
+      "aliased": [
+        "https://lifemax-web.vercel.app"
+      ],
+      "note": "This deployment updated the linked lifemax-web project."
+    },
+    "omega_production_inspect": {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "status": "ready",
+      "deployment_id": "dpl_9edUpiRgokPmLKqtMiXQpm6FanYV",
+      "url": "https://life-j5f6g3u0w-olivers-projects-25fda214.vercel.app",
+      "aliases": [
+        "https://life-max-omega.vercel.app",
+        "https://life-max-olivers-projects-25fda214.vercel.app",
+        "https://life-max-git-main-olivers-projects-25fda214.vercel.app"
+      ],
+      "note": "The omega project also reflected a fresh production deployment after the GitHub push."
+    },
+    "omega_browser_smoke": {
+      "url": "https://life-max-omega.vercel.app/today",
+      "status": "pass",
+      "mobile_viewport": "390x844",
+      "desktop_viewport": "1280x800",
+      "flow": [
+        "reset local demo state",
+        "save check-in",
+        "edit and save daily plan",
+        "mark must-do done",
+        "refresh Today",
+        "verify Today summary and Daily plan editor show the same saved plan values"
+      ],
+      "editor_values_after_refresh": {
+        "must_do": "Verify the repaired plan editor",
+        "optional_1": "Open omega after deploy",
+        "optional_2": "Capture regression proof",
+        "avoid_today": "No stale editor state",
+        "shutdown_target": "9:15 PM"
+      },
+      "summary_proof": {
+        "has_saved_plan": true,
+        "has_progress": "1/3 done",
+        "truth_boundary_visible": true,
+        "fake_readiness_terms_present": false
+      },
+      "layout": {
+        "mobile_horizontal_overflow": false,
+        "desktop_horizontal_overflow": false,
+        "desktop_side_nav_visible": true
+      },
+      "console_errors": 0
+    }
+  },
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-plan-editor-sync-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-plan-editor-sync-desktop-1280.png"
+  ],
+  "truth_boundaries": [
+    "This proves browser-local demo persistence and UI consistency, not backend/shared-context readiness.",
+    "WHOOP, account connection, hosted AI, Telegram, n8n, public MCP, Grok, database persistence, and backend writes remain unconnected.",
+    "No credentials, auth settings, DNS records, backend services, Telegram, n8n, WHOOP, Grok, or public MCP settings were edited.",
+    "The LifeMax lab repo local MCP/preflight remains red, so daily shared-context usability is still not claimed."
+  ],
+  "next_actions": [
+    "Keep the goal active: the public web demo is stronger, but backend/shared-context Wave 1 readiness remains separate and unproved.",
+    "If the next priority is deployment hygiene, resolve preview protection/project split so preview URLs can be smoked publicly before production.",
+    "If the next priority is real product functionality, start the Wave 1 backend/shared-context readiness phase after local MCP is green."
+  ]
+}

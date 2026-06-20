@@ -232,5 +232,16 @@
       "refresh persistence"
     ],
     "truth_boundary": "Public proof covers browser-local demo behavior only; backend/shared-context and live integrations remain unproved."
+  },
+  "plan_editor_sync_repair": {
+    "status": "pass",
+    "proof_packet": "reports/lifemax-plan-editor-sync-proof-2026-06-20.json",
+    "commit": "1fa968c fix: keep daily plan editor in sync",
+    "defect": "Saved plan summary and Daily plan editor could disagree after browser-local storage hydration.",
+    "production_url": "https://life-max-omega.vercel.app/today",
+    "production_smoke": "Today summary and Daily plan editor both show the saved plan after refresh on mobile and desktop.",
+    "preview_deployment": "https://lifemax-3o7jf8qpu-olivers-projects-25fda214.vercel.app",
+    "production_deployment": "https://lifemax-mkhma3our-olivers-projects-25fda214.vercel.app",
+    "omega_deployment_id": "dpl_9edUpiRgokPmLKqtMiXQpm6FanYV"
   }
 }
