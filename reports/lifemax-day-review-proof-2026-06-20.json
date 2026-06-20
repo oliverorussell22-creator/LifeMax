@@ -1,0 +1,267 @@
+{
+  "schema": "lifemax.day_review_proof.v1",
+  "generated_at": "2026-06-20T05:54:39Z",
+  "status": "checkpoint",
+  "risk_class": "Q2_local_code_Q3_deploy",
+  "riskClass": "Q3",
+  "objective": "Raise LifeMax from a form-driven local demo toward a higher-level daily operating loop by adding a browser-local day review synthesis and repairing a mobile app-shell layout defect.",
+  "approvalStatus": "Production deployment was previously approved in this goal with PRODUCTION_DEPLOY_APPROVED=true promote. No credential, auth setting, DNS, backend, Telegram, n8n, public MCP, Grok, Postgres, or WHOOP mutation was approved or performed.",
+  "preActionEvidence": [
+    "Lab preflight was red at 2026-06-20T05:43:19.944Z, so backend/shared-context readiness could not be claimed.",
+    "Live Patterns page before repair had no day-review synthesis and the mobile screenshot showed content squeezed by the hidden desktop side-nav grid column.",
+    "Clean repo origin/main matched 7a62d268259ab95b195f6ad585b5fea209cb859b before the product repair."
+  ],
+  "rollbackPath": "Revert ba63df1b3c97f6e32d32ee06f2566fc6abe779a0 and the proof commit, then redeploy the previous Vercel production commit. The change only touches browser-local state, CSS, and tests; no backend or external records are mutated.",
+  "changedFiles": [
+    "app/globals.css",
+    "components/screens.tsx",
+    "lib/local-demo-state.ts",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts",
+    "reports/lifemax-day-review-proof-2026-06-20.json",
+    "reports/lifemax-vercel-ready-proof.json",
+    "reports/lifemax-checkpoint-audit-2026-06-20.json"
+  ],
+  "changedState": [
+    "origin/main pushed to ba63df1b3c97f6e32d32ee06f2566fc6abe779a0 for the product repair",
+    "Vercel preview dpl_HDwVXcheFRqPeZ8kKMuHj18a7Pdx reached READY",
+    "Vercel production dpl_9CEM53wjg65K7oET99k8cUbNtTat reached READY for lifemax-web",
+    "life-max-omega production inspected READY at dpl_5188AkHv81B5ikLHd4umag1uWCkP"
+  ],
+  "postActionEvidence": [
+    "Local Playwright smoke saved a review checkpoint, verified Profile Review saved, and confirmed export preview contains reviewed_at.",
+    "Live browser smoke passed on https://lifemax-web.vercel.app/patterns and https://life-max-omega.vercel.app/patterns.",
+    "Production smoke measured main content width at 390px on a 390px viewport and found no horizontal overflow or runtime errors.",
+    "Focused screenshots were captured for the local and deployed day-review panels."
+  ],
+  "verification": [
+    "npm run typecheck: pass",
+    "npm run lint: pass",
+    "npm run test: pass, 3 files and 10 tests",
+    "npm run test:fixtures: pass, 1 file and 2 tests",
+    "npm run test:pwa: pass, 1 file and 1 test",
+    "npm run screenshot:mobile: pass, production build plus 2 Playwright tests",
+    "git diff --check: pass",
+    "changed-file value-shaped credential scan: pass",
+    "npx --yes vercel deploy -y: READY",
+    "npx --yes vercel deploy --prod -y: READY",
+    "live browser smoke on lifemax-web and life-max-omega: pass",
+    "quality_verifier Faraday: CHECKPOINT_OK, not COMPLETE_OK"
+  ],
+  "secretsRedacted": true,
+  "truth_boundary": [
+    "This proof covers browser-local product behavior only.",
+    "The review is derived from local check-in, plan, capture, evening close, pattern decision, and experiment state.",
+    "It is not AI coaching, medical guidance, WHOOP analysis, account sync, Telegram, n8n, public MCP, Grok, Postgres, or backend persistence.",
+    "The LifeMax lab preflight and boot packet remained red at the start of this cycle, so daily shared-context readiness is not claimed."
+  ],
+  "defects_found": [
+    "After a full local day, Patterns still showed only weak pattern cards and action buttons; there was no synthesis artifact that helped the user review the day or decide the next cautious move.",
+    "The mobile shell reserved the desktop side-navigation grid column even when the side nav was hidden, squeezing main content into roughly half of the 390px viewport.",
+    "The existing horizontal-overflow checks did not detect the squeezed mobile layout because the page did not overflow; it was simply too narrow.",
+    "The first new Profile test assertion for Review saved status was ambiguous because multiple local summary tiles legitimately said saved.",
+    "Full-page screenshots with the sticky top bar created confusing proof artifacts, so the day-review proof screenshot needed a focused element capture."
+  ],
+  "repairs_made": [
+    {
+      "path": "lib/local-demo-state.ts",
+      "summary": "Added reviewed_at local state, a derived DayReview model, export summary review status, and localStorage normalization for older state."
+    },
+    {
+      "path": "components/screens.tsx",
+      "summary": "Added the Patterns Local day review panel and Save/Update review checkpoint action, which persists a pattern-sourced memory candidate and review timestamp."
+    },
+    {
+      "path": "components/screens.tsx",
+      "summary": "Added Review status to the Profile local data summary."
+    },
+    {
+      "path": "app/globals.css",
+      "summary": "Fixed mobile app-shell layout by using a single-column workspace below the desktop breakpoint and restoring the side-nav grid only at desktop width."
+    },
+    {
+      "path": "tests/scaffold-smoke.test.ts",
+      "summary": "Added unit assertions for locked and ready day-review derivation plus export review status."
+    },
+    {
+      "path": "tests/visual/mobile.spec.ts",
+      "summary": "Added browser coverage for review save, export reviewed_at, mobile content width, and a focused day-review screenshot artifact."
+    }
+  ],
+  "git": {
+    "branch": "main",
+    "code_commit": "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0",
+    "code_commit_subject": "feat: add local day review checkpoint",
+    "origin_main": "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0",
+    "push_status": "origin/main matched local main after product commit push"
+  },
+  "commands_run": [
+    {
+      "command": "node ops/lifemax-local-agent-context-preflight.mjs --output=ops/reports/latest-lifemax-local-agent-context-preflight.json --markdown-output=ops/reports/latest-lifemax-local-agent-context-preflight.md",
+      "status": "red",
+      "summary": "Lab preflight still failed local MCP health/fetch and did not load life safety or Grok context state."
+    },
+    {
+      "command": "node ops/lifemax-agent-context-boot-packet.mjs --output=ops/reports/latest-lifemax-agent-context-boot-packet.json --markdown-output=ops/reports/latest-lifemax-agent-context-boot-packet.md",
+      "status": "red",
+      "summary": "Boot packet remained not safe to claim daily usability; this proof stays browser-local."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "status": "pass"
+    },
+    {
+      "command": "npm run test",
+      "status": "pass",
+      "summary": "Vitest passed: 3 files, 10 tests."
+    },
+    {
+      "command": "npm run test:fixtures",
+      "status": "pass",
+      "summary": "Fixture tests passed: 1 file, 2 tests."
+    },
+    {
+      "command": "npm run test:pwa",
+      "status": "pass",
+      "summary": "PWA tests passed: 1 file, 1 test."
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "status": "pass",
+      "summary": "Next production build plus Playwright mobile/desktop smoke passed: 2 tests."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    },
+    {
+      "command": "changed-file value-shaped credential scan",
+      "status": "pass",
+      "summary": "No value-shaped credential patterns were found in changed files before the product commit."
+    },
+    {
+      "command": "npx --yes vercel deploy -y",
+      "status": "pass",
+      "summary": "Preview deployment dpl_HDwVXcheFRqPeZ8kKMuHj18a7Pdx reached READY."
+    },
+    {
+      "command": "npx --yes vercel deploy --prod -y",
+      "status": "pass",
+      "summary": "Linked project production deployment dpl_9CEM53wjg65K7oET99k8cUbNtTat reached READY and was aliased to lifemax-web.vercel.app."
+    },
+    {
+      "command": "npx --yes vercel inspect life-max-omega.vercel.app",
+      "status": "pass",
+      "summary": "Omega public production alias was READY at deployment dpl_5188AkHv81B5ikLHd4umag1uWCkP."
+    }
+  ],
+  "vercel": {
+    "preview": {
+      "deployment_id": "dpl_HDwVXcheFRqPeZ8kKMuHj18a7Pdx",
+      "url": "https://lifemax-eud3eqcin-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "linked_project_production": {
+      "deployment_id": "dpl_9CEM53wjg65K7oET99k8cUbNtTat",
+      "url": "https://lifemax-dpiv9znnt-olivers-projects-25fda214.vercel.app",
+      "alias": "https://lifemax-web.vercel.app",
+      "status": "READY"
+    },
+    "omega_public_production": {
+      "deployment_id": "dpl_5188AkHv81B5ikLHd4umag1uWCkP",
+      "url": "https://life-max-omega.vercel.app",
+      "target": "production",
+      "status": "READY"
+    }
+  },
+  "browser_smoke": {
+    "local_playwright": {
+      "flow": [
+        "opened Today",
+        "verified mobile main content width is greater than 340px at a 390px viewport",
+        "saved check-in",
+        "saved daily plan",
+        "marked one plan item done",
+        "saved evening close",
+        "saved capture",
+        "opened Patterns",
+        "marked pattern watching",
+        "saved review checkpoint",
+        "opened Profile",
+        "verified Review saved status",
+        "downloaded export",
+        "verified export preview contains reviewed_at"
+      ],
+      "status": "pass",
+      "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-day-review-mobile-390.png"
+    },
+    "production_aliases": [
+      {
+        "url": "https://lifemax-web.vercel.app/patterns",
+        "viewport": "390x844",
+        "review_saved": true,
+        "evidence_metric_visible": true,
+        "tomorrow_cue_visible": true,
+        "guardrail_visible": true,
+        "pattern_decision_visible": true,
+        "profile_review_saved": true,
+        "content_width": 390,
+        "horizontal_overflow": false,
+        "console_or_page_errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-day-review-mobile-390.png"
+      },
+      {
+        "url": "https://life-max-omega.vercel.app/patterns",
+        "viewport": "390x844",
+        "review_saved": true,
+        "evidence_metric_visible": true,
+        "tomorrow_cue_visible": true,
+        "guardrail_visible": true,
+        "pattern_decision_visible": true,
+        "profile_review_saved": true,
+        "content_width": 390,
+        "horizontal_overflow": false,
+        "console_or_page_errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-review-mobile-390.png"
+      }
+    ]
+  },
+  "loop_evidence": {
+    "cycle_hypothesis": "A local day review and mobile shell-width repair will make the app feel more like a useful private operating loop and less like a static form/card demo.",
+    "defects_repaired": 5,
+    "checks_rerun_after_repair": [
+      "typecheck",
+      "lint",
+      "unit tests",
+      "fixture tests",
+      "PWA test",
+      "production build",
+      "Playwright browser smoke",
+      "diff check",
+      "credential scan",
+      "Vercel preview deploy",
+      "Vercel production deploy",
+      "live browser smoke on both production aliases"
+    ],
+    "stop_continue_decision": "checkpoint, not complete: the browser-local app now has a stronger review loop and repaired mobile layout, but full LifeMax backend/shared-context/Wave 1 readiness remains red and unproved."
+  },
+  "residual_risks": [
+    "The review is local deterministic synthesis, not AI or wearable analysis.",
+    "The app still does not connect WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, or backend writes.",
+    "Preview deployments may still be protected by Vercel login; public proof uses production aliases.",
+    "Screenshots are local ignored artifacts and are not tracked in git.",
+    "The lab repo is dirty and its shared-context boot/preflight state remains red; this run did not mutate or repair that backend/control-plane lane."
+  ],
+  "residualRisks": [
+    "The review is local deterministic synthesis, not AI or wearable analysis.",
+    "The app still does not connect WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, or backend writes.",
+    "Preview deployments may still be protected by Vercel login; public proof uses production aliases.",
+    "Screenshots are local ignored artifacts and are not tracked in git.",
+    "The lab repo is dirty and its shared-context boot/preflight state remains red; this run did not mutate or repair that backend/control-plane lane."
+  ],
+  "next_action": "Continue with either Vercel preview/project hygiene or a separate backend/shared-context Wave 1 repair once local MCP/shared-context reads can be made green."
+}

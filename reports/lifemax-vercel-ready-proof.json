@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T05:27:17Z",
+  "generated_at": "2026-06-20T05:54:39Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -16,7 +16,8 @@
       "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9 feat: make LifeMax app shell functional",
       "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e chore: ignore local vercel linkage",
       "1fa968c700ddfab60d07996634795577be932d9d fix: keep daily plan editor in sync",
-      "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 feat: add local data export controls"
+      "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3 feat: add local data export controls",
+      "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0 feat: add local day review checkpoint"
     ]
   },
   "git_identity_summary": {
@@ -50,7 +51,8 @@
     "reports/lifemax-production-browser-proof-2026-06-20.json",
     "reports/lifemax-plan-editor-sync-proof-2026-06-20.json",
     "reports/lifemax-local-export-proof-2026-06-20.json",
-    "reports/lifemax-checkpoint-audit-2026-06-20.json"
+    "reports/lifemax-checkpoint-audit-2026-06-20.json",
+    "reports/lifemax-day-review-proof-2026-06-20.json"
   ],
   "files_excluded_summary": [
     "source .next output",
@@ -155,6 +157,16 @@
       "command": "superseding checkpoint audit",
       "status": "checkpoint_pass",
       "summary": "reports/lifemax-checkpoint-audit-2026-06-20.json scopes the result as public browser-local demo checkpoint OK, full LifeMax/shared-context goal not complete"
+    },
+    {
+      "command": "local day review repair verification",
+      "status": "pass",
+      "summary": "Patterns now synthesizes check-in, plan, capture, close, and pattern evidence into a browser-local day review checkpoint; Profile/export reflect reviewed_at."
+    },
+    {
+      "command": "mobile shell width regression",
+      "status": "pass",
+      "summary": "Playwright asserts main.content is wider than 340px at a 390px viewport; live production smokes measured content width at 390px with no horizontal overflow."
     }
   ],
   "pages_verified": [
@@ -183,7 +195,10 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-production-privacy-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-mobile-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-desktop-1280.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-day-review-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-day-review-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-review-mobile-390.png"
   ],
   "no_secrets_scan": {
     "status": "pass",
@@ -222,6 +237,7 @@
     "pushed_ignore_commit": "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e",
     "pushed_plan_editor_sync_commit": "1fa968c700ddfab60d07996634795577be932d9d",
     "pushed_local_export_commit": "8865829631e452b3bb1ad8e5271ebd2c07bcb7a3",
+    "pushed_day_review_commit": "ba63df1b3c97f6e32d32ee06f2566fc6abe779a0",
     "final_proof_packet_commit_note": "This proof packet is tracked, so the final commit hash that contains this packet is recorded in the final Codex response rather than embedded self-referentially here."
   },
   "vercel_deployment": {
@@ -229,19 +245,19 @@
     "type": "preview_and_production",
     "production_promoted": true,
     "latest_preview_deployment": {
-      "deployment_id": "dpl_EKRmsbmsSdKoxXnypxkq9q6nKkAm",
-      "preview_url": "https://lifemax-hbc08wrss-olivers-projects-25fda214.vercel.app",
-      "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/EKRmsbmsSdKoxXnypxkq9q6nKkAm",
+      "deployment_id": "dpl_HDwVXcheFRqPeZ8kKMuHj18a7Pdx",
+      "preview_url": "https://lifemax-eud3eqcin-olivers-projects-25fda214.vercel.app",
+      "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/HDwVXcheFRqPeZ8kKMuHj18a7Pdx",
       "cli_summary": "Vercel CLI returned READY for the preview deployment."
     },
     "linked_project_production_deployment": {
-      "deployment_id": "dpl_JADsLo4n4t7pptNAnZ2cBGQE2m1K",
-      "url": "https://lifemax-prn9tjexb-olivers-projects-25fda214.vercel.app",
+      "deployment_id": "dpl_9CEM53wjg65K7oET99k8cUbNtTat",
+      "url": "https://lifemax-dpiv9znnt-olivers-projects-25fda214.vercel.app",
       "alias": "https://lifemax-web.vercel.app",
       "cli_summary": "Vercel CLI returned READY for the linked project production deployment."
     },
     "omega_public_production": {
-      "deployment_id": "dpl_3bM4rKBUDtue23QK3VWp1oeyVEFD",
+      "deployment_id": "dpl_5188AkHv81B5ikLHd4umag1uWCkP",
       "url": "https://life-max-omega.vercel.app",
       "target": "production",
       "status": "ready",
@@ -302,5 +318,22 @@
     "independent_verifier": "019ee382-fc96-73b1-9708-c5256bdc2e37",
     "verifier_verdict": "CHECKPOINT_OK; not COMPLETE_OK",
     "stop_continue_decision": "Public browser-local demo checkpoint is acceptable after proof commit/push; broader LifeMax/shared-context goal remains active."
+  },
+  "day_review_synthesis_repair": {
+    "status": "pass",
+    "proof_packet": "reports/lifemax-day-review-proof-2026-06-20.json",
+    "commit": "ba63df1 feat: add local day review checkpoint",
+    "defects": [
+      "Patterns lacked a real day-level synthesis after a full local flow.",
+      "Mobile content was squeezed by a hidden desktop side-nav grid column."
+    ],
+    "production_urls": [
+      "https://lifemax-web.vercel.app/patterns",
+      "https://life-max-omega.vercel.app/patterns"
+    ],
+    "production_smoke": "Both aliases saved a review checkpoint, showed evidence/tomorrow cue/guardrails, reflected Review saved in Profile, measured mobile content width at 390px, and reported no runtime errors.",
+    "preview_deployment": "https://lifemax-eud3eqcin-olivers-projects-25fda214.vercel.app",
+    "production_deployment": "https://lifemax-dpiv9znnt-olivers-projects-25fda214.vercel.app",
+    "omega_deployment_id": "dpl_5188AkHv81B5ikLHd4umag1uWCkP"
   }
 }
