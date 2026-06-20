@@ -1,0 +1,78 @@
+{
+  "schema": "lifemax.production-smoke.v1",
+  "createdAt": "2026-06-20T12:45:00Z",
+  "objective": "Smoke the deployed Today weekly-board command on both public production aliases after git push and approved Vercel production deployment.",
+  "deployment": {
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote",
+    "command": "npm exec -- vercel deploy --prod -y",
+    "project": "lifemax-web",
+    "deploymentId": "dpl_7cHVetp9MDhaxzphEutMHeLmFFn3",
+    "deploymentUrl": "https://lifemax-jykipk2jn-olivers-projects-25fda214.vercel.app",
+    "alias": "https://lifemax-web.vercel.app",
+    "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/7cHVetp9MDhaxzphEutMHeLmFFn3",
+    "readyState": "READY",
+    "target": "production",
+    "lifeMaxOmegaAutoDeployment": {
+      "deploymentId": "dpl_A4rDeW4udpmFXPkk12ERE8JUyce3",
+      "deploymentUrl": "https://life-leu88qpm3-olivers-projects-25fda214.vercel.app",
+      "alias": "https://life-max-omega.vercel.app",
+      "readyState": "READY",
+      "target": "production",
+      "note": "life-max-omega was updated by the git-linked production deployment after pushing main."
+    }
+  },
+  "smoke": [
+    {
+      "baseUrl": "https://lifemax-web.vercel.app",
+      "label": "lifemax-web",
+      "flow": [
+        "Reset browser-local state through /profile.",
+        "Open /today, load sample week, verify Today weekly board summary.",
+        "Click Use week plan on Today.",
+        "Verify role=status moved weekly board cue into Today's browser-local plan.",
+        "Verify plan fields and refresh persistence.",
+        "Open /privacy and verify policy plus WHOOP disconnected-services copy.",
+        "Verify mobile scrollWidth equals clientWidth."
+      ],
+      "result": "passed",
+      "metrics": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "url": "https://lifemax-web.vercel.app/privacy"
+      },
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-today-weekly-command-today-weekly-board-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-today-weekly-command-privacy-mobile-390.png"
+      ]
+    },
+    {
+      "baseUrl": "https://life-max-omega.vercel.app",
+      "label": "life-max-omega",
+      "flow": [
+        "Reset browser-local state through /profile.",
+        "Open /today, load sample week, verify Today weekly board summary.",
+        "Click Use week plan on Today.",
+        "Verify role=status moved weekly board cue into Today's browser-local plan.",
+        "Verify plan fields and refresh persistence.",
+        "Open /privacy and verify policy plus WHOOP disconnected-services copy.",
+        "Verify mobile scrollWidth equals clientWidth."
+      ],
+      "result": "passed",
+      "metrics": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "url": "https://life-max-omega.vercel.app/privacy"
+      },
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-today-weekly-command-today-weekly-board-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-today-weekly-command-privacy-mobile-390.png"
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "truthBoundary": [
+    "Production smoke proves browser-local demo behavior only.",
+    "No backend, account, WHOOP, AI, Telegram, n8n, Postgres, public MCP, reminder, timer, or cross-device sync readiness is claimed."
+  ],
+  "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-today-weekly-command-production-smoke-2026-06-20.json"
+}
