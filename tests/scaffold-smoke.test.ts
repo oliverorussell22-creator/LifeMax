@@ -48,6 +48,7 @@ describe("Wave 0 scaffold contract", () => {
       ],
       daily_plan: null,
       midday_rescue: null,
+      quick_restart: null,
       evening_close: null,
       memory_candidates: [],
       pattern_decisions: [],
@@ -110,6 +111,15 @@ describe("Wave 0 scaffold contract", () => {
         note: "Messages scattered the plan",
         saved_at: "2026-06-19T19:10:00.000Z"
       },
+      quick_restart: {
+        window: "one_day",
+        energy: "low",
+        sleep: "rough",
+        priority: "Draft the client note",
+        changed: "Missed yesterday after travel",
+        reminder_stance: "none_today",
+        saved_at: "2026-06-19T17:45:00.000Z"
+      },
       evening_close: {
         completed: "Client note drafted",
         missed: "Walk moved",
@@ -165,6 +175,8 @@ describe("Wave 0 scaffold contract", () => {
     const view = deriveTodayView(state);
 
     expect(view.plan_summary.progress_label).toBe("1/3 done");
+    expect(view.restart_summary.status).toBe("saved");
+    expect(view.restart_summary.priority).toBe("Draft the client note");
     expect(view.rescue_summary.status).toBe("saved");
     expect(view.rescue_summary.detail).toContain("Walk without messages");
     expect(view.evening_summary.status).toBe("closed");
@@ -173,7 +185,8 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.experiment_summary.status).toBe("active");
     expect(view.experiment_summary.detail).toContain("1 observation logged");
     expect(view.day_review.status).toBe("ready");
-    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(7);
+    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(8);
+    expect(view.day_review.risk_flags).toContain("quick restart used");
     expect(view.day_review.risk_flags).toContain("midday rescue used");
     expect(view.day_review.tomorrow_cue).toBe("Walk before messages");
     expect(view.day_review.risk_flags).toContain("health integrations disabled");
@@ -211,6 +224,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.summary.check_in).toBe("saved");
     expect(localExport.summary.captures).toBe(1);
     expect(localExport.summary.rescue).toBe("open");
+    expect(localExport.summary.restart).toBe("open");
     expect(localExport.summary.review).toBe("open");
     expect(localExport.summary.experiment_observations).toBe(0);
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");

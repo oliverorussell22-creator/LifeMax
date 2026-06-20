@@ -15,6 +15,9 @@ export type ExperimentStatus = "active" | "stopped" | "inconclusive";
 export type ExperimentObservationSignal = "better" | "same" | "worse" | "unclear";
 export type RescueTrigger = "drift" | "overloaded" | "body_noise" | "plan_broke";
 export type RescueReset = "breathe" | "walk" | "water" | "reduce_input";
+export type RestartWindow = "one_day" | "three_days" | "seven_days";
+export type RestartSleep = "rough" | "ok" | "good";
+export type RestartReminderStance = "none_today" | "evening_only" | "tomorrow";
 
 export interface LocalCheckIn {
   energy: SignalLevel;
@@ -59,7 +62,7 @@ export interface MemoryCandidate {
   id: string;
   title: string;
   detail: string;
-  source: "evening_close" | "pattern" | "experiment" | "rescue";
+  source: "evening_close" | "pattern" | "experiment" | "rescue" | "restart";
   created_at: string;
 }
 
@@ -69,6 +72,16 @@ export interface MiddayRescue {
   next_move: string;
   defer_until: string;
   note: string;
+  saved_at: string;
+}
+
+export interface QuickRestart {
+  window: RestartWindow;
+  energy: SignalLevel;
+  sleep: RestartSleep;
+  priority: string;
+  changed: string;
+  reminder_stance: RestartReminderStance;
   saved_at: string;
 }
 
@@ -106,6 +119,7 @@ export interface LocalDemoState {
   captures: CaptureEvent[];
   daily_plan: LocalDailyPlan | null;
   midday_rescue: MiddayRescue | null;
+  quick_restart: QuickRestart | null;
   evening_close: EveningClose | null;
   memory_candidates: MemoryCandidate[];
   pattern_decisions: PatternDecision[];
@@ -126,6 +140,7 @@ export interface LocalDemoExport {
     check_in: "saved" | "empty";
     plan: "saved" | "empty";
     rescue: "saved" | "open";
+    restart: "saved" | "open";
     close: "saved" | "open";
     captures: number;
     memories: number;
@@ -172,6 +187,12 @@ export interface DerivedTodayView {
     detail: string;
     reset_label: string;
     next_move: string;
+  };
+  restart_summary: {
+    status: "open" | "saved";
+    title: string;
+    detail: string;
+    priority: string;
   };
   memory_summary: {
     count: number;
@@ -228,6 +249,7 @@ export function createInitialLocalDemoState(): LocalDemoState {
     captures: [],
     daily_plan: null,
     midday_rescue: null,
+    quick_restart: null,
     evening_close: null,
     memory_candidates: [],
     pattern_decisions: [],
@@ -254,6 +276,7 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       check_in: state.check_in ? "saved" : "empty",
       plan: state.daily_plan ? "saved" : "empty",
       rescue: state.midday_rescue ? "saved" : "open",
+      restart: state.quick_restart ? "saved" : "open",
       close: state.evening_close ? "saved" : "open",
       captures: state.captures.length,
       memories: state.memory_candidates.length,
@@ -292,6 +315,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
         : [],
       daily_plan: normalizeDailyPlan(parsed.daily_plan),
       midday_rescue: normalizeMiddayRescue(parsed.midday_rescue),
+      quick_restart: normalizeQuickRestart(parsed.quick_restart),
       evening_close: normalizeEveningClose(parsed.evening_close),
       memory_candidates: Array.isArray(parsed.memory_candidates) ? parsed.memory_candidates.slice(0, 25) : [],
       pattern_decisions: Array.isArray(parsed.pattern_decisions) ? parsed.pattern_decisions.slice(0, 20) : [],
@@ -320,6 +344,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const patternCards = buildPatternCards(state);
   const latestMemory = state.memory_candidates[0] ?? null;
   const rescueSummary = summarizeMiddayRescue(state.midday_rescue, planSummary, hasCheckIn);
+  const restartSummary = summarizeQuickRestart(state.quick_restart);
   const dayReview = buildDayReview(state, planSummary);
 
   if (!hasCheckIn) {
@@ -349,6 +374,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       suggested_plan: activePlan,
       evening_summary: summarizeEveningClose(state.evening_close),
       rescue_summary: rescueSummary,
+      restart_summary: restartSummary,
       memory_summary: {
         count: state.memory_candidates.length,
         latest: latestMemory
@@ -391,6 +417,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
     suggested_plan: activePlan,
     evening_summary: summarizeEveningClose(state.evening_close),
     rescue_summary: rescueSummary,
+    restart_summary: restartSummary,
     memory_summary: {
       count: state.memory_candidates.length,
       latest: latestMemory
@@ -482,6 +509,38 @@ function normalizeMiddayRescue(value: unknown): MiddayRescue | null {
     note: rescue.note ?? "",
     saved_at: rescue.saved_at
   };
+}
+
+function normalizeQuickRestart(value: unknown): QuickRestart | null {
+  if (!value || typeof value !== "object") return null;
+  const restart = value as Partial<QuickRestart>;
+  if (!restart.saved_at || !restart.priority) return null;
+
+  return {
+    window: normalizeRestartWindow(restart.window),
+    energy: normalizeSignalLevel(restart.energy),
+    sleep: normalizeRestartSleep(restart.sleep),
+    priority: restart.priority,
+    changed: restart.changed ?? "",
+    reminder_stance: normalizeRestartReminderStance(restart.reminder_stance),
+    saved_at: restart.saved_at
+  };
+}
+
+function normalizeSignalLevel(value: unknown): SignalLevel {
+  return value === "low" || value === "ok" || value === "strong" ? value : "ok";
+}
+
+function normalizeRestartWindow(value: unknown): RestartWindow {
+  return value === "one_day" || value === "three_days" || value === "seven_days" ? value : "one_day";
+}
+
+function normalizeRestartSleep(value: unknown): RestartSleep {
+  return value === "rough" || value === "ok" || value === "good" ? value : "ok";
+}
+
+function normalizeRestartReminderStance(value: unknown): RestartReminderStance {
+  return value === "none_today" || value === "evening_only" || value === "tomorrow" ? value : "none_today";
 }
 
 function normalizeRescueTrigger(value: unknown): RescueTrigger {
@@ -606,6 +665,7 @@ function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["pl
     (state.check_in ? 1 : 0) +
     (state.daily_plan ? 1 : 0) +
     (state.midday_rescue ? 1 : 0) +
+    (state.quick_restart ? 1 : 0) +
     state.captures.length +
     (state.evening_close ? 1 : 0) +
     (state.experiment ? 1 : 0) +
@@ -626,6 +686,7 @@ function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["pl
     state.check_in?.stress === "high" ? "high stress check-in" : null,
     state.check_in?.body === "rough" ? "rough body signal" : null,
     state.midday_rescue ? "midday rescue used" : null,
+    state.quick_restart ? "quick restart used" : null,
     state.evening_close?.recovery_impact === "draining" ? "draining close" : null
   ].filter((item): item is string => Boolean(item));
 
@@ -703,6 +764,48 @@ function summarizeMiddayRescue(
     reset_label: labelForRescueReset(rescue.reset),
     next_move: rescue.next_move
   };
+}
+
+function summarizeQuickRestart(restart: QuickRestart | null): DerivedTodayView["restart_summary"] {
+  if (!restart) {
+    return {
+      status: "open",
+      title: "Quick restart is ready.",
+      detail: "Use minimum fields after a missed day: energy, sleep, one priority, and a reminder boundary.",
+      priority: "No restart saved"
+    };
+  }
+
+  return {
+    status: "saved",
+    title: "Quick restart saved.",
+    detail: `${labelForRestartWindow(restart.window)} reset. Sleep ${restart.sleep}. Reminders: ${labelForRestartReminder(restart.reminder_stance)}.`,
+    priority: restart.priority
+  };
+}
+
+function labelForRestartWindow(window: RestartWindow) {
+  switch (window) {
+    case "three_days":
+      return "3-day";
+    case "seven_days":
+      return "7-day";
+    case "one_day":
+    default:
+      return "1-day";
+  }
+}
+
+function labelForRestartReminder(stance: RestartReminderStance) {
+  switch (stance) {
+    case "evening_only":
+      return "evening only";
+    case "tomorrow":
+      return "tomorrow";
+    case "none_today":
+    default:
+      return "none today";
+  }
 }
 
 function labelForRescueReset(reset: RescueReset) {

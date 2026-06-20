@@ -22,6 +22,9 @@ import {
   type PlanItemStatus,
   type PlanSlot,
   type RecoveryImpact,
+  type RestartReminderStance,
+  type RestartSleep,
+  type RestartWindow,
   type RescueReset,
   type RescueTrigger,
   type SignalLevel,
@@ -96,6 +99,24 @@ const rescueResetOptions: Array<{ value: RescueReset; label: string }> = [
   { value: "walk", label: "Short walk" },
   { value: "water", label: "Water" },
   { value: "reduce_input", label: "Reduce input" }
+];
+
+const restartWindowOptions: Array<{ value: RestartWindow; label: string }> = [
+  { value: "one_day", label: "1 day" },
+  { value: "three_days", label: "3 days" },
+  { value: "seven_days", label: "7 days" }
+];
+
+const restartSleepOptions: Array<{ value: RestartSleep; label: string }> = [
+  { value: "rough", label: "Rough" },
+  { value: "ok", label: "OK" },
+  { value: "good", label: "Good" }
+];
+
+const restartReminderOptions: Array<{ value: RestartReminderStance; label: string }> = [
+  { value: "none_today", label: "None today" },
+  { value: "evening_only", label: "Evening only" },
+  { value: "tomorrow", label: "Tomorrow" }
 ];
 
 export function TodayScreen() {
@@ -240,6 +261,69 @@ export function TodayScreen() {
     }));
   }
 
+  function saveQuickRestart(restart: {
+    window: RestartWindow;
+    energy: SignalLevel;
+    sleep: RestartSleep;
+    priority: string;
+    changed: string;
+    reminder_stance: RestartReminderStance;
+  }) {
+    const now = new Date().toISOString();
+    const trimmedPriority = restart.priority.trim();
+    const changed = restart.changed.trim();
+    const sleepTag = restart.sleep === "rough" ? "low sleep" : "schedule friction";
+
+    setLocalState((current) => ({
+      ...current,
+      quick_restart: {
+        ...restart,
+        priority: trimmedPriority,
+        changed,
+        saved_at: now
+      },
+      check_in: {
+        energy: restart.energy,
+        mood: restart.energy === "low" ? "low" : "ok",
+        stress: restart.window === "seven_days" ? "high" : "medium",
+        body: restart.sleep === "rough" ? "rough" : "ok",
+        friction_tags: Array.from(new Set([sleepTag, "schedule friction"])),
+        note: changed || "Quick restart saved after a missed day.",
+        saved_at: now
+      },
+      daily_plan: {
+        must_do: trimmedPriority,
+        optional_1: "Capture only if energy, symptoms, or friction change",
+        optional_2: "Close the loop tonight",
+        avoid_today:
+          restart.window === "seven_days"
+            ? "Do not rebuild the whole system today"
+            : "Do not punish the missed day",
+        shutdown_target: "8:30 PM",
+        item_statuses: {
+          must_do: "open",
+          optional_1: "open",
+          optional_2: "open"
+        },
+        accepted_at: now,
+        updated_at: now
+      },
+      lowered_today: true,
+      plan_done: false,
+      memory_candidates: [
+        {
+          id: `memory-restart-${Date.now()}`,
+          title: `Restart priority: ${trimmedPriority}`,
+          detail: changed || `Sleep ${restart.sleep}; reminders ${labelForRestartReminder(restart.reminder_stance)}.`,
+          source: "restart" as const,
+          created_at: now
+        },
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "restart")
+      ].slice(0, 20),
+      updated_at: now
+    }));
+  }
+
   return (
     <AppShell active="today">
       <section className="screen today-layout" data-screen="today-functional">
@@ -256,7 +340,8 @@ export function TodayScreen() {
               { label: "Confidence", value: today.confidence },
               { label: "Intensity cap", value: String(today.intensity_cap) },
               { label: "Plan", value: today.plan_summary.progress_label },
-              { label: "Rescue", value: today.rescue_summary.status }
+              { label: "Rescue", value: today.rescue_summary.status },
+              { label: "Restart", value: today.restart_summary.status }
             ]}
           />
           <WorkflowRail state={state} today={today} />
@@ -284,6 +369,10 @@ export function TodayScreen() {
                 <strong>Rescue</strong>
                 {today.rescue_summary.next_move}
               </span>
+              <span aria-label={`Restart: ${today.restart_summary.priority}`}>
+                <strong>Restart</strong>
+                {today.restart_summary.priority}
+              </span>
               <span>
                 <strong>Close loop</strong>
                 {today.evening_summary.status === "closed" ? today.evening_summary.detail : "open"}
@@ -304,6 +393,12 @@ export function TodayScreen() {
             onDraftChange={setDraft}
             onTagToggle={toggleFrictionTag}
             onSave={saveCheckIn}
+          />
+          <QuickRestartPanel
+            key={getRestartSyncKey(state.quick_restart)}
+            restart={state.quick_restart}
+            summary={today.restart_summary}
+            onSave={saveQuickRestart}
           />
           <DailyPlanPanel
             key={getPlanSyncKey(activePlan)}
@@ -516,6 +611,92 @@ function CheckInForm({
   );
 }
 
+function QuickRestartPanel({
+  restart,
+  summary,
+  onSave
+}: Readonly<{
+  restart: LocalDemoState["quick_restart"];
+  summary: ReturnType<typeof deriveTodayView>["restart_summary"];
+  onSave: (restart: {
+    window: RestartWindow;
+    energy: SignalLevel;
+    sleep: RestartSleep;
+    priority: string;
+    changed: string;
+    reminder_stance: RestartReminderStance;
+  }) => void;
+}>) {
+  const [draft, setDraft] = useState({
+    window: restart?.window ?? ("one_day" as RestartWindow),
+    energy: restart?.energy ?? ("ok" as SignalLevel),
+    sleep: restart?.sleep ?? ("ok" as RestartSleep),
+    priority: restart?.priority ?? "",
+    changed: restart?.changed ?? "",
+    reminder_stance: restart?.reminder_stance ?? ("none_today" as RestartReminderStance)
+  });
+  const [error, setError] = useState("");
+
+  function saveRestart() {
+    const priority = draft.priority.trim();
+    if (!priority) {
+      setError("Choose one restart priority before saving.");
+      return;
+    }
+
+    setError("");
+    onSave({
+      ...draft,
+      priority,
+      changed: draft.changed.trim()
+    });
+  }
+
+  return (
+    <section className="panel form-panel restart-panel" aria-label="Quick restart">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Re-entry</p>
+          <h2 className="panel-title">{summary.title}</h2>
+        </div>
+        <span className={summary.status === "saved" ? "state-pill state-pill-good" : "state-pill"}>{summary.status}</span>
+      </div>
+      <p className="panel-copy">{summary.detail}</p>
+      <SegmentedControl
+        label="Missed window"
+        value={draft.window}
+        options={restartWindowOptions}
+        onChange={(window) => setDraft((current) => ({ ...current, window }))}
+      />
+      <SegmentedControl
+        label="Energy now"
+        value={draft.energy}
+        options={energyOptions}
+        onChange={(energy) => setDraft((current) => ({ ...current, energy }))}
+      />
+      <SegmentedControl
+        label="Sleep"
+        value={draft.sleep}
+        options={restartSleepOptions}
+        onChange={(sleep) => setDraft((current) => ({ ...current, sleep }))}
+      />
+      <PlanInput label="One restart priority" value={draft.priority} onChange={(priority) => setDraft((current) => ({ ...current, priority }))} />
+      <PlanInput label="What changed" value={draft.changed} onChange={(changed) => setDraft((current) => ({ ...current, changed }))} />
+      <SegmentedControl
+        label="Reminder boundary"
+        value={draft.reminder_stance}
+        options={restartReminderOptions}
+        onChange={(reminder_stance) => setDraft((current) => ({ ...current, reminder_stance }))}
+      />
+      {error ? <p className="error-message">{error}</p> : null}
+      <button className="primary-action full-width" type="button" onClick={saveRestart} data-testid="save-quick-restart">
+        {summary.status === "saved" ? "Update restart" : "Save quick restart"}
+      </button>
+      <p className="field-help">Saving uses local browser storage only. No reminder, Telegram message, backend write, or recovery-state mutation is sent.</p>
+    </section>
+  );
+}
+
 function DailyPlanPanel({
   plan,
   summary,
@@ -576,6 +757,11 @@ function getPlanSyncKey(plan: LocalDailyPlan) {
     plan.item_statuses.optional_1,
     plan.item_statuses.optional_2
   ].join("|");
+}
+
+function getRestartSyncKey(restart: LocalDemoState["quick_restart"]) {
+  if (!restart) return "open-restart";
+  return [restart.saved_at, restart.window, restart.energy, restart.sleep, restart.priority, restart.changed, restart.reminder_stance].join("|");
 }
 
 function getRescueSyncKey(rescue: LocalDemoState["midday_rescue"], fallbackNextMove: string) {
@@ -1389,6 +1575,7 @@ export function ProfileScreen() {
                 { label: "Check-in", value: state.check_in ? "saved" : "empty" },
                 { label: "Plan", value: state.daily_plan ? deriveTodayView(state).plan_summary.progress_label : "empty" },
                 { label: "Rescue", value: state.midday_rescue ? "saved" : "open" },
+                { label: "Restart", value: state.quick_restart ? "saved" : "open" },
                 { label: "Close", value: state.evening_close ? "saved" : "open" },
                 { label: "Captures", value: String(state.captures.length) },
                 { label: "Memories", value: String(state.memory_candidates.length) },
@@ -1467,13 +1654,13 @@ export function PrivacyScreen() {
             <p className="kicker">Last updated</p>
             <h2 className="panel-title">June 19, 2026</h2>
             <p className="panel-copy">
-              LifeMax currently stores the demo check-in, captures, plan status, midday rescue, local experiment status, and observation notes in this browser only.
+              LifeMax currently stores the demo check-in, captures, plan status, quick restart, midday rescue, local experiment status, and observation notes in this browser only.
             </p>
           </section>
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, midday rescue, evening close, memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
+              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">
@@ -1647,6 +1834,10 @@ function labelForKind(kind: CaptureKind) {
 
 function labelForRescueReset(reset: RescueReset) {
   return rescueResetOptions.find((item) => item.value === reset)?.label ?? "Breathe";
+}
+
+function labelForRestartReminder(stance: RestartReminderStance) {
+  return restartReminderOptions.find((item) => item.value === stance)?.label ?? "None today";
 }
 
 function labelForExperimentSignal(signal: ExperimentObservationSignal) {

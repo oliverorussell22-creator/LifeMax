@@ -21,9 +21,22 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   const mobileContentBox = await page.locator("main.content").boundingBox();
   expect(mobileContentBox?.width).toBeGreaterThan(340);
 
+  const restartPanel = page.getByLabel("Quick restart");
+  await expect(restartPanel.getByRole("heading", { name: "Quick restart is ready." })).toBeVisible();
+  await restartPanel.getByRole("button", { name: "3 days" }).click();
+  await restartPanel.getByRole("button", { name: "Low" }).click();
+  await restartPanel.getByRole("button", { name: "Rough" }).click();
+  await page.getByLabel("One restart priority").fill("Open the client draft");
+  await page.getByLabel("What changed").fill("Missed yesterday after travel");
+  await restartPanel.getByRole("button", { name: "Evening only" }).click();
+  await page.getByTestId("save-quick-restart").click();
+  await expect(page.getByRole("heading", { name: "Quick restart saved." })).toBeVisible();
+  await expect(page.getByLabel("Restart: Open the client draft")).toBeVisible();
+  await expect(page.getByLabel("Current state summary").getByText("Restart")).toBeVisible();
+
   await page.getByTestId("save-checkin").click();
-  await expect(page.getByText("The local check-in is enough to choose one next action.")).toBeVisible();
-  await expect(page.getByText("State")).toBeVisible();
+  await expect(page.getByText("A lower intensity cap protects the day from turning into a productivity push.")).toBeVisible();
+  await expect(page.getByText("State", { exact: true })).toBeVisible();
   await page.getByLabel("Must-do").fill("Draft the client note");
   await page.getByLabel("Optional move 1").fill("Ten minute walk");
   await page.getByLabel("Optional move 2").fill("Capture caffeine timing");
@@ -96,7 +109,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.goto("/privacy");
   await expect(page.getByRole("heading", { name: "Privacy policy and local data boundary." })).toBeVisible();
   await expect(page.getByText("This app shell does not connect WHOOP")).toBeVisible();
-  await expect(page.getByText("daily plan, midday rescue, evening close")).toBeVisible();
+  await expect(page.getByText("daily plan, missed-day quick restart, midday rescue")).toBeVisible();
 
   await page.goto("/today");
   await page.reload();
@@ -105,7 +118,10 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Today command center").getByText("Walk before opening messages")).toBeVisible();
   await expect(page.getByLabel("Today command center").getByText("Ten minute walk without phone")).toBeVisible();
   await expect(page.getByLabel("Current state summary").getByText("1/3 done")).toBeVisible();
-  await expect(page.getByLabel("Current state summary").getByText("saved")).toBeVisible();
+  await expect(page.getByLabel("Rescue: saved")).toBeVisible();
+  await expect(page.getByLabel("Restart: saved")).toBeVisible();
+  await expect(page.getByLabel("One restart priority")).toHaveValue("Open the client draft");
+  await expect(page.getByLabel("What changed")).toHaveValue("Missed yesterday after travel");
   await expect(page.getByLabel("Must-do")).toHaveValue("Draft the client note");
   await expect(page.getByLabel("Optional move 1")).toHaveValue("Ten minute walk");
   await expect(page.getByLabel("Optional move 2")).toHaveValue("Capture caffeine timing");
@@ -143,9 +159,10 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("heading", { name: "Local app truth and data controls." })).toBeVisible();
   await expect(page.getByText("Export and reset apply only to this browser demo state.")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("Review")).toBeVisible();
+  await expect(page.getByLabel("Restart: saved")).toBeVisible();
   await expect(page.getByLabel("Rescue: saved")).toBeVisible();
   await expect(page.getByLabel("Experiment observations: 1")).toBeVisible();
-  await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(4);
+  await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(5);
   const downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-local-export").click();
   const download = await downloadPromise;
@@ -154,6 +171,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.getByText("View local export preview").click();
   await expect(page.getByLabel("Local export preview").getByText("lifemax.local_demo_export.v1")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Draft the client note")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("quick_restart")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("Missed yesterday after travel")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("midday_rescue")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Messages scattered the plan")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("reviewed_at")).toBeVisible();

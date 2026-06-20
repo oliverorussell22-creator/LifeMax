@@ -866,6 +866,11 @@ button:disabled {
   background: var(--surface-warm);
 }
 
+.restart-panel {
+  border-color: rgba(36, 92, 151, 0.24);
+  background: #f6f8ff;
+}
+
 .experiment-log-form,
 .experiment-observation-block {
   display: grid;
