@@ -861,6 +861,46 @@ button:disabled {
   opacity: 0.72;
 }
 
+.experiment-log-form,
+.experiment-observation-block {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px;
+  background: var(--surface-strong);
+}
+
+.experiment-log-form {
+  margin-top: 2px;
+}
+
+.experiment-observation-block h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.experiment-observation-list {
+  max-height: 340px;
+  overflow: auto;
+}
+
+.experiment-signal-better {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.experiment-signal-same {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.experiment-signal-worse {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
 .export-panel {
   overflow: hidden;
 }

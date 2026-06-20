@@ -14,6 +14,7 @@ import {
   type CaptureKind,
   type DayReview,
   type EveningClose,
+  type ExperimentObservationSignal,
   type LocalDemoState,
   type LocalDailyPlan,
   type PatternCard,
@@ -72,6 +73,13 @@ const recoveryImpactOptions: Array<{ value: RecoveryImpact; label: string }> = [
   { value: "restored", label: "Restored" },
   { value: "neutral", label: "Neutral" },
   { value: "draining", label: "Draining" }
+];
+
+const experimentSignalOptions: Array<{ value: ExperimentObservationSignal; label: string }> = [
+  { value: "better", label: "Better" },
+  { value: "same", label: "Same" },
+  { value: "worse", label: "Worse" },
+  { value: "unclear", label: "Unclear" }
 ];
 
 export function TodayScreen() {
@@ -783,6 +791,7 @@ export function PatternsScreen() {
     setLocalState((current) => ({
       ...current,
       experiment: createExperimentFromPattern(card, now),
+      experiment_started_at: now,
       updated_at: now
     }));
   }
@@ -946,8 +955,18 @@ function DayReviewPanel({
 export function ExperimentsScreen() {
   const { state, storageStatus, storageMessage, setLocalState } = useLocalDemoState();
   const today = useMemo(() => deriveTodayView(state), [state]);
+  const [observationSignal, setObservationSignal] = useState<ExperimentObservationSignal>("unclear");
+  const [observationNote, setObservationNote] = useState("");
+  const [observationMessage, setObservationMessage] = useState<{ tone: "idle" | "success" | "error"; text: string }>({
+    tone: "idle",
+    text: "Observations stay in this browser and do not update any backend."
+  });
   const activeExperiment = state.experiment?.status === "active" ? state.experiment : null;
+  const endedExperiment = state.experiment && state.experiment.status !== "active" ? state.experiment : null;
   const canStart = today.pattern_summary.ready && !activeExperiment;
+  const builderCopy = endedExperiment
+    ? "The previous local experiment result is saved below. Starting again replaces the single browser-local experiment record."
+    : `${today.experiment_summary.detail} Safety caveat: this is a local wellness note, not treatment advice.`;
 
   function startExperiment() {
     const now = new Date().toISOString();
@@ -957,6 +976,49 @@ export function ExperimentsScreen() {
       experiment_started_at: now,
       updated_at: now
     }));
+  }
+
+  function logExperimentObservation() {
+    const note = observationNote.trim();
+
+    if (!activeExperiment) return;
+    if (!note) {
+      setObservationMessage({ tone: "error", text: "Add a short observation before saving." });
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const observation = {
+      id: `observation-${Date.now()}`,
+      signal: observationSignal,
+      note,
+      captured_at: now
+    };
+
+    setLocalState((current) => ({
+      ...current,
+      experiment:
+        current.experiment?.status === "active"
+          ? {
+              ...current.experiment,
+              observations: [observation, ...current.experiment.observations].slice(0, 20)
+            }
+          : current.experiment,
+      memory_candidates: [
+        {
+          id: `memory-experiment-${Date.now()}`,
+          title: `Experiment observation: ${labelForExperimentSignal(observationSignal)}`,
+          detail: note,
+          source: "experiment" as const,
+          created_at: now
+        },
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "experiment")
+      ].slice(0, 20),
+      updated_at: now
+    }));
+    setObservationNote("");
+    setObservationSignal("unclear");
+    setObservationMessage({ tone: "success", text: "Observation saved locally. It now appears in the log and export preview." });
   }
 
   function stopExperiment(status: "stopped" | "inconclusive") {
@@ -970,8 +1032,8 @@ export function ExperimentsScreen() {
             stopped_at: now,
             result_note:
               status === "inconclusive"
-                ? "Not enough local evidence yet. Keep watching without changing routines."
-                : "Stopped by user before conclusion."
+                ? `Not enough local evidence yet. ${formatExperimentObservationCount(current.experiment.observations.length)} saved; keep watching without changing routines.`
+                : `Stopped by user before conclusion. ${formatExperimentObservationCount(current.experiment.observations.length)} saved.`
           }
         : null,
       experiment_started_at: null,
@@ -1003,6 +1065,46 @@ export function ExperimentsScreen() {
                 {activeExperiment.intervention} Target: {activeExperiment.target_signal}. Minimum window: {activeExperiment.minimum_window_days} days.
               </p>
               <p className="field-help">Stop condition: {activeExperiment.stop_condition}</p>
+              <section className="experiment-log-form" aria-label="Log experiment observation">
+                <SegmentedControl label="Latest signal" value={observationSignal} options={experimentSignalOptions} onChange={setObservationSignal} />
+                <label className="stacked-input">
+                  <span>What changed?</span>
+                  <textarea
+                    className="text-area compact-text-area"
+                    value={observationNote}
+                    onChange={(event) => setObservationNote(event.target.value)}
+                    placeholder="Example: protected first block; energy dipped after lunch."
+                  />
+                </label>
+                <p className={`export-status export-status-${observationMessage.tone}`} role="status">
+                  {observationMessage.text}
+                </p>
+                <button className="primary-action full-width" type="button" onClick={logExperimentObservation} data-testid="log-experiment-observation">
+                  Log observation
+                </button>
+              </section>
+              <section className="experiment-observation-block" aria-label="Experiment observations">
+                <div className="section-heading-row">
+                  <div>
+                    <p className="kicker">Observations</p>
+                    <h3>{formatExperimentObservationCount(activeExperiment.observations.length)}</h3>
+                  </div>
+                  <span className="state-pill">{activeExperiment.observations.length}</span>
+                </div>
+                {activeExperiment.observations.length ? (
+                  <ul className="event-list experiment-observation-list">
+                    {activeExperiment.observations.map((observation) => (
+                      <li className="event-item" key={observation.id}>
+                        <span className={`event-kind experiment-signal-${observation.signal}`}>{labelForExperimentSignal(observation.signal)}</span>
+                        <strong>{observation.note}</strong>
+                        <time>{formatShortTime(observation.captured_at)}</time>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="panel-copy">Log at least one observation before ending the experiment. This is manual evidence only.</p>
+                )}
+              </section>
               <div className="action-row">
                 <button className="secondary-action" type="button" onClick={() => stopExperiment("inconclusive")} data-testid="mark-inconclusive">
                   Mark inconclusive
@@ -1021,9 +1123,7 @@ export function ExperimentsScreen() {
                 </div>
                 <span className={canStart ? "state-pill state-pill-good" : "state-pill"}>{canStart ? "ready" : "locked"}</span>
               </div>
-              <p className="panel-copy">
-                {today.experiment_summary.detail} Safety caveat: this is a local wellness note, not treatment advice.
-              </p>
+              <p className="panel-copy">{builderCopy}</p>
               <button
                 className="primary-action"
                 type="button"
@@ -1031,7 +1131,7 @@ export function ExperimentsScreen() {
                 onClick={startExperiment}
                 data-testid="start-experiment"
               >
-                Start local experiment
+                {endedExperiment ? "Start another local experiment" : "Start local experiment"}
               </button>
               {!canStart ? <p className="field-help">Save a check-in and one capture to unlock this local test.</p> : null}
             </section>
@@ -1120,6 +1220,7 @@ export function ProfileScreen() {
                 { label: "Captures", value: String(state.captures.length) },
                 { label: "Memories", value: String(state.memory_candidates.length) },
                 { label: "Experiment", value: state.experiment?.status ?? "none" },
+                { label: "Experiment observations", value: String(state.experiment?.observations.length ?? 0) },
                 { label: "Review", value: state.reviewed_at ? "saved" : "open" }
               ]}
             />
@@ -1193,13 +1294,13 @@ export function PrivacyScreen() {
             <p className="kicker">Last updated</p>
             <h2 className="panel-title">June 19, 2026</h2>
             <p className="panel-copy">
-              LifeMax currently stores the demo check-in, captures, plan status, and local experiment status in this browser only.
+              LifeMax currently stores the demo check-in, captures, plan status, local experiment status, and observation notes in this browser only.
             </p>
           </section>
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, evening close, memory candidates, pattern decisions, and one local experiment. These are browser-local records.
+              The higher-functionality demo can store a daily plan, evening close, memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">
@@ -1371,6 +1472,14 @@ function labelForKind(kind: CaptureKind) {
   return captureKinds.find((item) => item.value === kind)?.label ?? "Note";
 }
 
+function labelForExperimentSignal(signal: ExperimentObservationSignal) {
+  return experimentSignalOptions.find((item) => item.value === signal)?.label ?? "Unclear";
+}
+
+function formatExperimentObservationCount(count: number) {
+  return `${count} observation${count === 1 ? "" : "s"}`;
+}
+
 function createExperimentFromPattern(card: PatternCard | undefined, startedAt: string) {
   return {
     id: `experiment-${Date.now()}`,
@@ -1383,6 +1492,7 @@ function createExperimentFromPattern(card: PatternCard | undefined, startedAt: s
     status: "active" as const,
     started_at: startedAt,
     stopped_at: null,
-    result_note: null
+    result_note: null,
+    observations: []
   };
 }

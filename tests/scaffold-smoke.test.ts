@@ -135,7 +135,15 @@ describe("Wave 0 scaffold contract", () => {
         status: "active",
         started_at: "2026-06-19T20:32:00.000Z",
         stopped_at: null,
-        result_note: null
+        result_note: null,
+        observations: [
+          {
+            id: "observation-test",
+            signal: "better",
+            note: "Morning block felt cleaner",
+            captured_at: "2026-06-19T20:45:00.000Z"
+          }
+        ]
       },
       reviewed_at: null,
       plan_done: false,
@@ -151,8 +159,9 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.memory_summary.latest?.title).toBe("Walk before messages");
     expect(view.pattern_cards.find((card) => card.id === "local-pattern-energy")?.decision).toBe("watching");
     expect(view.experiment_summary.status).toBe("active");
+    expect(view.experiment_summary.detail).toContain("1 observation logged");
     expect(view.day_review.status).toBe("ready");
-    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(5);
+    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(6);
     expect(view.day_review.tomorrow_cue).toBe("Walk before messages");
     expect(view.day_review.risk_flags).toContain("health integrations disabled");
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
@@ -189,6 +198,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.summary.check_in).toBe("saved");
     expect(localExport.summary.captures).toBe(1);
     expect(localExport.summary.review).toBe("open");
+    expect(localExport.summary.experiment_observations).toBe(0);
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
     expect(localExport.state.captures[0]?.label).toBe("export proof");

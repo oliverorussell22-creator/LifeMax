@@ -1,0 +1,182 @@
+{
+  "schema": "lifemax.experiment_observation_proof.v1",
+  "generated_at": "2026-06-20T06:20:55Z",
+  "status": "checkpoint_ok",
+  "goal_scope": "Add a higher-functionality browser-local Experiments observation workflow to the public-safe LifeMax app and deploy it to Vercel.",
+  "truth_boundary": [
+    "This proof covers browser-local demo behavior only.",
+    "WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, and shared-context daily usability are still not connected or claimed.",
+    "Production deployment was approved earlier in this goal with PRODUCTION_DEPLOY_APPROVED=true promote; no credential, auth setting, DNS/custom-domain, backend, Telegram, n8n, public MCP, Grok, Postgres, or WHOOP mutation was performed."
+  ],
+  "defects_found": [
+    "Experiments could start, stop, and mark inconclusive, but had no user-facing observation log, so the surface still felt shallow.",
+    "First Playwright rerun after the feature found duplicated ended-experiment result copy in the builder and result panel.",
+    "Second Playwright rerun found that Profile status tile text fused label/value content, making the observation count harder to verify and less accessible."
+  ],
+  "repairs_made": [
+    {
+      "files": [
+        "lib/local-demo-state.ts"
+      ],
+      "summary": "Added ExperimentObservationSignal, ExperimentObservation, LocalExperiment.observations normalization, export summary experiment_observations count, day-review evidence count contribution, and active/ended experiment summary observation counts."
+    },
+    {
+      "files": [
+        "components/screens.tsx"
+      ],
+      "summary": "Added active experiment observation form, signal segmented control, local save status, recent observation list, memory candidate write, refresh-persistent observation state, Profile observation count, Privacy observation-log copy, and non-duplicative ended-experiment builder copy."
+    },
+    {
+      "files": [
+        "components/ui.tsx"
+      ],
+      "summary": "Added accessible aria labels to status tiles so label/value pairs like Experiment observations: 1 are inspectable."
+    },
+    {
+      "files": [
+        "app/globals.css"
+      ],
+      "summary": "Added restrained styling for experiment observation form, observation list, and signal pills while preserving the existing app-shell design."
+    },
+    {
+      "files": [
+        "tests/scaffold-smoke.test.ts",
+        "tests/visual/mobile.spec.ts"
+      ],
+      "summary": "Added unit and Playwright assertions for observation derivation, export summary, observation save, refresh persistence, Profile count, export preview, and mobile screenshot capture."
+    }
+  ],
+  "local_checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass",
+      "summary": "tsc --noEmit passed after observation model/UI updates."
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass",
+      "summary": "eslint passed after observation model/UI updates."
+    },
+    {
+      "command": "npm run test",
+      "result": "pass",
+      "summary": "Vitest passed: 3 files, 10 tests."
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass",
+      "summary": "Fixture tests passed: 1 file, 2 tests."
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass",
+      "summary": "PWA tests passed: 1 file, 1 test."
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "fail_then_pass",
+      "summary": "First rerun found duplicate ended-experiment copy; second rerun found weak Profile status semantics; after repairs, Next build plus Playwright visual smoke passed: 2 tests."
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass",
+      "summary": "No whitespace errors in the final diff."
+    },
+    {
+      "command": "value-shaped credential scan over app/components/lib/tests/reports/package/vercel files",
+      "result": "pass",
+      "summary": "No secret-shaped values found; matches were only public truth-boundary words like WHOOP/disabled services."
+    }
+  ],
+  "browser_flows_proven": [
+    "Today local check-in still works and unlocks local planning context.",
+    "Capture saves a browser-local event that unlocks pattern/experiment readiness.",
+    "Experiments starts a local experiment from local evidence.",
+    "Experiments logs an observation with signal, note, timestamp, local status message, and visible recent-observation list.",
+    "Observation survives refresh through localStorage.",
+    "Profile shows Experiment observations: 1 and export preview includes experiment_observations plus the observation note.",
+    "Privacy is reachable and states the observation-log boundary.",
+    "Mobile viewport 390px had no horizontal overflow in local and production smoke."
+  ],
+  "screenshots": {
+    "local": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-experiment-observation-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
+    ],
+    "production": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-experiment-observation-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-experiment-observation-mobile-390.png"
+    ]
+  },
+  "vercel": {
+    "lifemax_web": {
+      "preview": {
+        "deployment_id": "dpl_NeDWhRUcpb34Y1vgX8zFME81Rsmq",
+        "url": "https://lifemax-9ol17iw4h-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "production": {
+        "deployment_id": "dpl_23EEafmrc9988GHGcbCoyPjQVntv",
+        "deployment_url": "https://lifemax-i7rhgqo28-olivers-projects-25fda214.vercel.app",
+        "alias": "https://lifemax-web.vercel.app",
+        "status": "READY"
+      }
+    },
+    "life_max_omega_target": {
+      "preview": {
+        "deployment_id": "dpl_5TRf3z7W2zzbcywjzHKqo2K3t23Q",
+        "url": "https://life-r2qb8bzrg-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "production": {
+        "deployment_id": "dpl_DgEtjTxxzRkxSCnnPGc9Ms4DLpdW",
+        "deployment_url": "https://life-ebykritgz-olivers-projects-25fda214.vercel.app",
+        "alias": "https://life-max-omega.vercel.app",
+        "status": "READY"
+      }
+    }
+  },
+  "production_smoke": {
+    "status": "pass",
+    "targets": [
+      {
+        "name": "omega",
+        "origin": "https://life-max-omega.vercel.app",
+        "result": "pass",
+        "mobile_width": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-experiment-observation-mobile-390.png"
+      },
+      {
+        "name": "lifemax-web",
+        "origin": "https://lifemax-web.vercel.app",
+        "result": "pass",
+        "mobile_width": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "errors": [],
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-experiment-observation-mobile-390.png"
+      }
+    ],
+    "script_summary": "Playwright shell smoke drove Today, Capture, Experiments observation save, refresh persistence, Profile export preview, and Privacy on both production aliases; no console/page/HTTP 500 errors were captured."
+  },
+  "independent_verification": {
+    "status": "CHECKPOINT_OK",
+    "agent_id": "019ee3b1-0474-7542-885c-ed678276c9a8",
+    "complete_ok": false,
+    "note": "quality_verifier verified the observation model/UI/tests, reran read-only Vercel inspect for lifemax-web and life-max-omega, ran fresh headless production smoke on both aliases, and found no blocker for this checkpoint. It explicitly rejected broader COMPLETE_OK because backend/shared-context/WHOOP/Telegram/n8n/public MCP/Grok/Postgres remain unproved or red.",
+    "defects_found_by_verifier": [
+      "Worktree was still dirty and not yet durably checkpointed in git.",
+      "This proof packet was untracked before this patch.",
+      "The independent_verification field was still pending before this patch."
+    ]
+  },
+  "stop_continue_decision": "checkpoint, not complete: this continuation raises public browser-local Experiments functionality and deploys it, but full LifeMax shared-context/backend/daily-use readiness remains red and unproved.",
+  "next_action": "Commit and push this observation workflow plus proof; if continuing the broader goal, either clean up Vercel project split/preview protection or begin a separate backend/shared-context Wave 1 repair after local MCP/shared-context reads are green."
+}

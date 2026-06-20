@@ -44,7 +44,7 @@ export function StatusGrid({
   return (
     <section className="status-grid" aria-label="Current state summary">
       {items.map((item) => (
-        <div className="status-tile" key={item.label}>
+        <div className="status-tile" key={item.label} aria-label={`${item.label}: ${item.value}`}>
           <span className="status-label">{item.label}</span>
           <span className="status-value">{item.value}</span>
         </div>

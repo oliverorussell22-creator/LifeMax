@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T05:54:39Z",
+  "generated_at": "2026-06-20T06:20:55Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -52,7 +52,8 @@
     "reports/lifemax-plan-editor-sync-proof-2026-06-20.json",
     "reports/lifemax-local-export-proof-2026-06-20.json",
     "reports/lifemax-checkpoint-audit-2026-06-20.json",
-    "reports/lifemax-day-review-proof-2026-06-20.json"
+    "reports/lifemax-day-review-proof-2026-06-20.json",
+    "reports/lifemax-experiment-observation-proof-2026-06-20.json"
   ],
   "files_excluded_summary": [
     "source .next output",
@@ -167,6 +168,11 @@
       "command": "mobile shell width regression",
       "status": "pass",
       "summary": "Playwright asserts main.content is wider than 340px at a 390px viewport; live production smokes measured content width at 390px with no horizontal overflow."
+    },
+    {
+      "command": "experiment observation workflow repair verification",
+      "status": "pass",
+      "summary": "Experiments now logs browser-local observations with signal/note/timestamp, persists them after refresh, exposes Profile/export counts, and was smoked on life-max-omega plus lifemax-web production aliases."
     }
   ],
   "pages_verified": [
@@ -198,7 +204,10 @@
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-profile-export-desktop-1280.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-day-review-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-day-review-mobile-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-review-mobile-390.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-review-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-experiment-observation-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-experiment-observation-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-experiment-observation-mobile-390.png"
   ],
   "no_secrets_scan": {
     "status": "pass",
@@ -245,23 +254,23 @@
     "type": "preview_and_production",
     "production_promoted": true,
     "latest_preview_deployment": {
-      "deployment_id": "dpl_HDwVXcheFRqPeZ8kKMuHj18a7Pdx",
-      "preview_url": "https://lifemax-eud3eqcin-olivers-projects-25fda214.vercel.app",
-      "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/HDwVXcheFRqPeZ8kKMuHj18a7Pdx",
+      "deployment_id": "dpl_NeDWhRUcpb34Y1vgX8zFME81Rsmq",
+      "preview_url": "https://lifemax-9ol17iw4h-olivers-projects-25fda214.vercel.app",
+      "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/NeDWhRUcpb34Y1vgX8zFME81Rsmq",
       "cli_summary": "Vercel CLI returned READY for the preview deployment."
     },
     "linked_project_production_deployment": {
-      "deployment_id": "dpl_9CEM53wjg65K7oET99k8cUbNtTat",
-      "url": "https://lifemax-dpiv9znnt-olivers-projects-25fda214.vercel.app",
+      "deployment_id": "dpl_23EEafmrc9988GHGcbCoyPjQVntv",
+      "url": "https://lifemax-i7rhgqo28-olivers-projects-25fda214.vercel.app",
       "alias": "https://lifemax-web.vercel.app",
       "cli_summary": "Vercel CLI returned READY for the linked project production deployment."
     },
     "omega_public_production": {
-      "deployment_id": "dpl_5188AkHv81B5ikLHd4umag1uWCkP",
+      "deployment_id": "dpl_DgEtjTxxzRkxSCnnPGc9Ms4DLpdW",
       "url": "https://life-max-omega.vercel.app",
       "target": "production",
       "status": "ready",
-      "cli_summary": "Vercel inspect confirmed the omega public alias was READY."
+      "cli_summary": "Vercel inspect confirmed the omega public alias was READY after deploying explicitly to --project life-max."
     }
   },
   "public_production_browser_proof": {
@@ -335,5 +344,29 @@
     "preview_deployment": "https://lifemax-eud3eqcin-olivers-projects-25fda214.vercel.app",
     "production_deployment": "https://lifemax-dpiv9znnt-olivers-projects-25fda214.vercel.app",
     "omega_deployment_id": "dpl_5188AkHv81B5ikLHd4umag1uWCkP"
+  },
+  "experiment_observation_repair": {
+    "status": "pass",
+    "proof_packet": "reports/lifemax-experiment-observation-proof-2026-06-20.json",
+    "defects": [
+      "Experiments had no observation log after starting a local test.",
+      "Ended-experiment result copy duplicated between builder and result panel.",
+      "Profile status tile label/value text was not accessible enough for exact observation-count verification."
+    ],
+    "production_urls": [
+      "https://life-max-omega.vercel.app/experiments",
+      "https://lifemax-web.vercel.app/experiments"
+    ],
+    "production_smoke": "Both aliases saved an experiment observation, showed it after refresh, exposed Experiment observations: 1 in Profile, included experiment_observations and the note in export preview, opened Privacy, measured mobile width at 390px, and reported no console/page/HTTP 500 errors.",
+    "preview_deployments": [
+      "https://lifemax-9ol17iw4h-olivers-projects-25fda214.vercel.app",
+      "https://life-r2qb8bzrg-olivers-projects-25fda214.vercel.app"
+    ],
+    "production_deployments": [
+      "https://lifemax-i7rhgqo28-olivers-projects-25fda214.vercel.app",
+      "https://life-ebykritgz-olivers-projects-25fda214.vercel.app"
+    ],
+    "lifemax_web_deployment_id": "dpl_23EEafmrc9988GHGcbCoyPjQVntv",
+    "omega_deployment_id": "dpl_DgEtjTxxzRkxSCnnPGc9Ms4DLpdW"
   }
 }

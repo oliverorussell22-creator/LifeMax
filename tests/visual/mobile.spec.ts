@@ -69,8 +69,20 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.goto("/experiments");
   await page.getByTestId("start-experiment").click();
   await expect(page.getByText("Minimum window: 3 days.")).toBeVisible();
+  await page.getByRole("button", { name: "Better" }).click();
+  await page.getByLabel("What changed?").fill("Morning block felt cleaner after the protected start.");
+  await page.getByTestId("log-experiment-observation").click();
+  await expect(page.getByRole("status")).toContainText("Observation saved locally");
+  await expect(page.getByLabel("Experiment observations").getByText("Morning block felt cleaner")).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel("Experiment observations").getByText("Morning block felt cleaner")).toBeVisible();
+  await page.locator('section[aria-label="Active local experiment"]').evaluate((node) => node.scrollIntoView({ block: "start" }));
+  await page.locator('section[aria-label="Active local experiment"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-experiment-observation-mobile-390.png")
+  });
   await page.getByTestId("mark-inconclusive").click();
   await expect(page.getByRole("heading", { name: "Experiment ended inconclusive." })).toBeVisible();
+  await expect(page.getByLabel("Experiment result").getByText("1 observation saved")).toBeVisible();
 
   await page.goto("/privacy");
   await expect(page.getByRole("heading", { name: "Privacy policy and local data boundary." })).toBeVisible();
@@ -113,6 +125,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("heading", { name: "Local app truth and data controls." })).toBeVisible();
   await expect(page.getByText("Export and reset apply only to this browser demo state.")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("Review")).toBeVisible();
+  await expect(page.getByLabel("Experiment observations: 1")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(3);
   const downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-local-export").click();
@@ -123,6 +136,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Local export preview").getByText("lifemax.local_demo_export.v1")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Draft the client note")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("reviewed_at")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("Morning block felt cleaner")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("experiment_observations")).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: path.join(highFunctionalityDir, "local-profile-export-mobile-390.png"),

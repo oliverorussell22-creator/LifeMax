@@ -12,6 +12,7 @@ export type PlanSlot = "must_do" | "optional_1" | "optional_2";
 export type RecoveryImpact = "restored" | "neutral" | "draining";
 export type PatternDecisionStatus = "watching" | "confirmed" | "rejected";
 export type ExperimentStatus = "active" | "stopped" | "inconclusive";
+export type ExperimentObservationSignal = "better" | "same" | "worse" | "unclear";
 
 export interface LocalCheckIn {
   energy: SignalLevel;
@@ -66,6 +67,13 @@ export interface PatternDecision {
   updated_at: string;
 }
 
+export interface ExperimentObservation {
+  id: string;
+  signal: ExperimentObservationSignal;
+  note: string;
+  captured_at: string;
+}
+
 export interface LocalExperiment {
   id: string;
   pattern_id: string;
@@ -78,6 +86,7 @@ export interface LocalExperiment {
   started_at: string;
   stopped_at: string | null;
   result_note: string | null;
+  observations: ExperimentObservation[];
 }
 
 export interface LocalDemoState {
@@ -109,6 +118,7 @@ export interface LocalDemoExport {
     memories: number;
     pattern_decisions: number;
     experiment: ExperimentStatus | "none";
+    experiment_observations: number;
     review: "saved" | "open";
   };
   state: LocalDemoState;
@@ -227,6 +237,7 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       memories: state.memory_candidates.length,
       pattern_decisions: state.pattern_decisions.length,
       experiment: state.experiment?.status ?? "none",
+      experiment_observations: state.experiment?.observations.length ?? 0,
       review: state.reviewed_at ? "saved" : "open"
     },
     state
@@ -447,7 +458,8 @@ function normalizeExperiment(value: unknown, legacyStartedAt: string | null): Lo
         status: experiment.status ?? "active",
         started_at: experiment.started_at,
         stopped_at: experiment.stopped_at ?? null,
-        result_note: experiment.result_note ?? null
+        result_note: experiment.result_note ?? null,
+        observations: normalizeExperimentObservations(experiment.observations)
       };
     }
   }
@@ -464,8 +476,28 @@ function normalizeExperiment(value: unknown, legacyStartedAt: string | null): Lo
     status: "active",
     started_at: legacyStartedAt,
     stopped_at: null,
-    result_note: null
+    result_note: null,
+    observations: []
   };
+}
+
+function normalizeExperimentObservations(value: unknown): ExperimentObservation[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .slice(0, 20)
+    .map((item) => item as Partial<ExperimentObservation>)
+    .filter((item) => item.id && item.note && item.captured_at)
+    .map((item) => ({
+      id: item.id as string,
+      signal: normalizeExperimentSignal(item.signal),
+      note: item.note as string,
+      captured_at: item.captured_at as string
+    }));
+}
+
+function normalizeExperimentSignal(value: unknown): ExperimentObservationSignal {
+  return value === "better" || value === "same" || value === "worse" || value === "unclear" ? value : "unclear";
 }
 
 function summarizePlan(plan: LocalDailyPlan | null): DerivedTodayView["plan_summary"] {
@@ -526,7 +558,8 @@ function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["pl
     (state.daily_plan ? 1 : 0) +
     state.captures.length +
     (state.evening_close ? 1 : 0) +
-    (state.experiment ? 1 : 0);
+    (state.experiment ? 1 : 0) +
+    (state.experiment?.observations.length ?? 0);
   const ready = missingInputs.length === 0;
   const latestCapture = state.captures[0] ?? null;
   const tomorrowCue =
@@ -667,9 +700,13 @@ function summarizeExperiment(
           : "Experiment stopped.",
     detail:
       experiment.status === "active"
-        ? `${experiment.minimum_window_days}-day minimum. Target: ${experiment.target_signal}.`
-        : experiment.result_note ?? "No result note saved."
+        ? `${experiment.minimum_window_days}-day minimum. Target: ${experiment.target_signal}. ${formatObservationCount(experiment.observations.length)} logged.`
+        : `${experiment.result_note ?? "No result note saved."} ${formatObservationCount(experiment.observations.length)} logged.`
   };
+}
+
+function formatObservationCount(count: number) {
+  return `${count} observation${count === 1 ? "" : "s"}`;
 }
 
 function freshnessSummary(
