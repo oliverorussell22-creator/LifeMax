@@ -1,8 +1,48 @@
 {
   "schema": "lifemax.capture_correction_checkpoint_proof.v1",
-  "generated_at": "2026-06-20T08:01:11Z",
+  "generated_at": "2026-06-20T08:09:40Z",
   "status": "checkpoint_deployed_and_smoked",
   "objective": "Make Capture feel like credible local evidence by allowing saved entries to be corrected, repeated, and deleted without backend claims.",
+  "riskClass": "Q3",
+  "approvalStatus": "Production promotion was explicitly approved earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote; no credential, auth, DNS, or backend service changes were made.",
+  "preActionEvidence": [
+    "Public app already had browser-local Today/Capture/Patterns/Experiments/Profile/Privacy flows, but Capture entries were effectively add-only.",
+    "LifeMax lab preflight and boot packet were red, so the implementation scope stayed browser-local.",
+    "Working tree inspection showed only public app/proof files were in the clean deploy repo before this slice."
+  ],
+  "changedFiles": [
+    "lib/local-demo-state.ts",
+    "components/screens.tsx",
+    "app/globals.css",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts"
+  ],
+  "postActionEvidence": [
+    "Capture entries can be edited, repeated, and deleted in the browser-local app.",
+    "Edited Capture evidence persists across refresh and appears in Profile export.",
+    "Deleted incorrect Capture evidence stays deleted across refresh and export.",
+    "Both public aliases were production-smoked after deployment.",
+    "Independent verifier 019ee40d-9b7e-76b2-b309-3c880dca0e31 returned CHECKPOINT_OK and COMPLETE_OK=false."
+  ],
+  "verification": [
+    "npm run typecheck pass",
+    "npm run lint pass",
+    "npm run test pass: 3 files, 13 tests",
+    "npm run test:fixtures pass: 1 file, 2 tests",
+    "npm run test:pwa pass: 1 file, 1 test",
+    "npm run build pass",
+    "npm run screenshot:mobile pass: build plus 2 Playwright tests",
+    "git diff --check pass",
+    "redacted changed-file scan for secret-shaped strings pass",
+    "live smoke pass on https://life-max-omega.vercel.app/capture and https://lifemax-web.vercel.app/capture"
+  ],
+  "residualRisks": [
+    "This slice is browser-local only and does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, or cross-device sync.",
+    "LifeMax lab boot/preflight remains red, so the broader daily shared-context goal is not complete.",
+    "Vercel deployment IDs are point-in-time and may be superseded by Git integration after proof-only pushes; public aliases are the user-facing verification target."
+  ],
+  "rollbackPath": "Revert or redeploy the previous public app commit from Vercel/Git if the Capture correction UI regresses; no credentials, auth settings, DNS, or backend services were mutated by this slice.",
+  "secretsRedacted": true,
   "scope": "LifeMax-vercel-ready browser-local app only",
   "truth_boundary": [
     "Capture corrections are browser-local demo records only.",
@@ -113,13 +153,18 @@
   },
   "lab_truth_boundary": {
     "local_preflight_ok": false,
+    "local_preflight_generated_at": "2026-06-20T08:09:40.469Z",
     "boot_packet_ok": false,
+    "boot_packet_generated_at": "2026-06-20T08:09:40.670Z",
     "failures": [
       "local-mcp-health-red",
       "life-safety-state-not-loaded",
       "grok-context-brief-not-loaded",
+      "local-agent-context-preflight-error",
       "status_summary_current",
+      "local_agent_preflight_current",
       "local_agent_preflight_green",
+      "shared_state_views_consistent",
       "abnormally_tired_readiness_current"
     ]
   },
@@ -134,8 +179,8 @@
     },
     "life_max_omega": {
       "alias": "https://life-max-omega.vercel.app",
-      "deployment_id": "dpl_HSe9TWdGCULT2ob1nFmrBZpneL8Y",
-      "deployment_url": "https://life-elzsxk772-olivers-projects-25fda214.vercel.app",
+      "deployment_id": "dpl_BciwH8enyneaFa6HtFQVe8m7MDqX",
+      "deployment_url": "https://life-1ej9r6zg3-olivers-projects-25fda214.vercel.app",
       "status": "READY"
     },
     "live_smoke": {
@@ -148,8 +193,19 @@
       "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
       "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
       "errors": []
-    }
+    },
+    "deployment_id_note": "Deployment IDs are point-in-time verification details. The user-facing proof target is the public alias; Vercel/Git integration may supersede IDs after proof-only pushes without changing app behavior."
   },
   "proof_hygiene_note": "This proof packet supersedes older checkpoint-audit deployment fields where later Vercel IDs changed after proof-only redeploys.",
-  "stop_continue_decision": "checkpoint, not complete: capture correction product code is pushed/deployed/smoked on both public aliases; shared-context/Wave 1 readiness remains red and unproved."
+  "stop_continue_decision": "checkpoint, not complete: capture correction product code is pushed/deployed/smoked on both public aliases; shared-context/Wave 1 readiness remains red and unproved.",
+  "independent_verification": {
+    "agent_id": "019ee40d-9b7e-76b2-b309-3c880dca0e31",
+    "verdict": "CHECKPOINT_OK",
+    "complete_ok": false,
+    "notes": [
+      "Verifier independently reran local gates and live Capture correction smoke.",
+      "Verifier flagged the omega deployment ID as superseded; this packet refreshes that point-in-time ID and records that alias readiness is authoritative.",
+      "Verifier rejected broad COMPLETE_OK because lab boot/preflight remains red."
+    ]
+  }
 }

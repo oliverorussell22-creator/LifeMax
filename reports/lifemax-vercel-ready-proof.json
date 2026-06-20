@@ -1,8 +1,51 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T08:01:11Z",
+  "generated_at": "2026-06-20T08:09:40Z",
+  "objective": "Make the public LifeMax app visibly functional and credible through browser-local flows, proof artifacts, Git push, and Vercel deployment while preserving the truth boundary that backend/shared-context readiness remains unproved.",
   "risk_class": "Q3",
+  "riskClass": "Q3",
+  "approvalStatus": "Oliver explicitly approved production promotion earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote; this packet excludes credential edits, auth-setting changes, backend activation, DNS/custom-domain mutation, and destructive service changes.",
+  "preActionEvidence": [
+    "The deploy-ready public repo was separate from the dirty LifeMax lab/control-plane repo.",
+    "The public app was already deployed, but Oliver's high-functionality reaction required additional visible local behavior rather than static proof.",
+    "Fresh LifeMax lab preflight and boot packet remained red, so only browser-local demo behavior could be claimed."
+  ],
+  "changedFiles": [
+    "lib/local-demo-state.ts",
+    "components/screens.tsx",
+    "app/globals.css",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts",
+    "reports/lifemax-capture-correction-proof-2026-06-20.json",
+    "reports/lifemax-vercel-ready-proof.json"
+  ],
+  "postActionEvidence": [
+    "Capture correction code was committed and pushed in 4df3dec.",
+    "Capture correction proof was committed and pushed in f3816f2.",
+    "Both https://life-max-omega.vercel.app/capture and https://lifemax-web.vercel.app/capture were production-smoked for save, edit, delete, refresh persistence, and Profile export propagation.",
+    "Independent verifier 019ee40d-9b7e-76b2-b309-3c880dca0e31 returned CHECKPOINT_OK and COMPLETE_OK=false for the broader goal."
+  ],
+  "verification": [
+    "npm run typecheck pass",
+    "npm run lint pass",
+    "npm run test pass",
+    "npm run test:fixtures pass",
+    "npm run test:pwa pass",
+    "npm run build pass",
+    "npm run screenshot:mobile pass",
+    "git diff --check pass",
+    "redacted changed-file scan for secret-shaped strings pass",
+    "live browser smoke pass on both public aliases for the Capture correction flow",
+    "quality verifier sidecar pass for checkpoint, not complete"
+  ],
+  "residualRisks": [
+    "Public LifeMax remains browser-local demo behavior and does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, or cross-device sync.",
+    "The LifeMax lab boot/preflight remains red, so daily shared-context readiness is not complete.",
+    "Vercel deployment IDs are point-in-time and can be superseded by proof-only Git integration deploys; public aliases are authoritative for user-facing behavior."
+  ],
+  "rollbackPath": "Use Git/Vercel to redeploy the previous public app commit if needed; no credentials, auth settings, DNS, custom-domain settings, or backend services were changed by this checkpoint.",
+  "secretsRedacted": true,
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
   "clean_repo_path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
@@ -409,7 +452,7 @@
   },
   "latest_cycle": {
     "id": "capture-correction-local-evidence",
-    "generated_at": "2026-06-20T08:01:11Z",
+    "generated_at": "2026-06-20T08:09:40Z",
     "status": "checkpoint_deployed_and_smoked",
     "proof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-capture-correction-proof-2026-06-20.json",
     "local_checks_passed": true,
@@ -425,8 +468,8 @@
       },
       "life_max_omega": {
         "alias": "https://life-max-omega.vercel.app",
-        "deployment_id": "dpl_HSe9TWdGCULT2ob1nFmrBZpneL8Y",
-        "deployment_url": "https://life-elzsxk772-olivers-projects-25fda214.vercel.app",
+        "deployment_id": "dpl_BciwH8enyneaFa6HtFQVe8m7MDqX",
+        "deployment_url": "https://life-1ej9r6zg3-olivers-projects-25fda214.vercel.app",
         "status": "READY"
       },
       "live_smoke": {
@@ -439,7 +482,35 @@
         "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
         "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
         "errors": []
-      }
+      },
+      "deployment_id_note": "Deployment IDs are point-in-time verification details. The user-facing proof target is the public alias; Vercel/Git integration may supersede IDs after proof-only pushes without changing app behavior."
+    },
+    "lab_truth_boundary": {
+      "local_preflight_ok": false,
+      "local_preflight_generated_at": "2026-06-20T08:09:40.469Z",
+      "boot_packet_ok": false,
+      "boot_packet_generated_at": "2026-06-20T08:09:40.670Z",
+      "failures": [
+        "local-mcp-health-red",
+        "life-safety-state-not-loaded",
+        "grok-context-brief-not-loaded",
+        "local-agent-context-preflight-error",
+        "status_summary_current",
+        "local_agent_preflight_current",
+        "local_agent_preflight_green",
+        "shared_state_views_consistent",
+        "abnormally_tired_readiness_current"
+      ]
+    },
+    "independent_verification": {
+      "agent_id": "019ee40d-9b7e-76b2-b309-3c880dca0e31",
+      "verdict": "CHECKPOINT_OK",
+      "complete_ok": false,
+      "notes": [
+        "Verifier independently reran local gates and live Capture correction smoke.",
+        "Verifier flagged the omega deployment ID as superseded; this packet refreshes that point-in-time ID and records that alias readiness is authoritative.",
+        "Verifier rejected broad COMPLETE_OK because lab boot/preflight remains red."
+      ]
     }
   },
   "memory_inbox_repair": {
@@ -603,8 +674,8 @@
       },
       "life_max_omega": {
         "alias": "https://life-max-omega.vercel.app",
-        "deployment_id": "dpl_HSe9TWdGCULT2ob1nFmrBZpneL8Y",
-        "deployment_url": "https://life-elzsxk772-olivers-projects-25fda214.vercel.app",
+        "deployment_id": "dpl_BciwH8enyneaFa6HtFQVe8m7MDqX",
+        "deployment_url": "https://life-1ej9r6zg3-olivers-projects-25fda214.vercel.app",
         "status": "READY"
       },
       "live_smoke": {
@@ -617,7 +688,35 @@
         "flow": "On both aliases, saved a capture, edited label/note, saved and deleted a bad capture, refreshed and verified corrected evidence persisted while deleted evidence stayed gone, then opened Profile export and verified corrected capture appeared while deleted capture did not.",
         "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
         "errors": []
-      }
+      },
+      "deployment_id_note": "Deployment IDs are point-in-time verification details. The user-facing proof target is the public alias; Vercel/Git integration may supersede IDs after proof-only pushes without changing app behavior."
+    },
+    "lab_truth_boundary": {
+      "local_preflight_ok": false,
+      "local_preflight_generated_at": "2026-06-20T08:09:40.469Z",
+      "boot_packet_ok": false,
+      "boot_packet_generated_at": "2026-06-20T08:09:40.670Z",
+      "failures": [
+        "local-mcp-health-red",
+        "life-safety-state-not-loaded",
+        "grok-context-brief-not-loaded",
+        "local-agent-context-preflight-error",
+        "status_summary_current",
+        "local_agent_preflight_current",
+        "local_agent_preflight_green",
+        "shared_state_views_consistent",
+        "abnormally_tired_readiness_current"
+      ]
+    },
+    "independent_verification": {
+      "agent_id": "019ee40d-9b7e-76b2-b309-3c880dca0e31",
+      "verdict": "CHECKPOINT_OK",
+      "complete_ok": false,
+      "notes": [
+        "Verifier independently reran local gates and live Capture correction smoke.",
+        "Verifier flagged the omega deployment ID as superseded; this packet refreshes that point-in-time ID and records that alias readiness is authoritative.",
+        "Verifier rejected broad COMPLETE_OK because lab boot/preflight remains red."
+      ]
     }
   }
 }
