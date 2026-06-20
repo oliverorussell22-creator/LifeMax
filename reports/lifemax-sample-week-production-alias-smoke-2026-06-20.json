@@ -1,0 +1,57 @@
+{
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-lifemax-web-sample-week-today-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-lifemax-web-privacy-mobile-390.png"
+  ],
+  "todayLoaded": {
+    "clientWidth": 390,
+    "h1": "Check in, then keep the day honest.",
+    "labels": {
+      "Source freshness": "FreshnessSource statusManual check-inSaved locally 5:02 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled",
+      "Today command center": "What nowKeep the plan small.A lower intensity cap protects the day from turning into a productivity push.WhyManual check-in points to a smaller day. No wearable data was used.Next itemProtect first useful blockBoundaryDo not scale beyond one blockRescueTen minute walk without messagesRestartProtect first useful blockClose loopTomorrow hint: Protect first useful blockHistory cueRepeat \"Protect first useful block\" once more before changing the experiment.Plan builderUses check-in, restart, 3 captures, rescue, history cue. Nothing leaves this browser.Save check-inGenerate local planLower intensityLoad sample weekLoaded a sample browser-local week. No integration or backend data was created."
+    },
+    "scrollWidth": 390,
+    "url": "https://lifemax-web.vercel.app/today"
+  },
+  "status": [
+    "Loaded a sample browser-local week. No integration or backend data was created."
+  ],
+  "planInputs": [
+    "Protect first useful block",
+    "Capture one before/after signal",
+    "Close the loop before adding rules",
+    "Do not scale beyond one block",
+    "8:30 PM"
+  ],
+  "todayAfterRefresh": {
+    "clientWidth": 390,
+    "h1": "Check in, then keep the day honest.",
+    "labels": {
+      "Source freshness": "FreshnessSource statusManual check-inSaved locally 5:02 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled"
+    },
+    "scrollWidth": 390,
+    "url": "https://lifemax-web.vercel.app/today"
+  },
+  "planInputsAfterRefresh": [
+    "Protect first useful block",
+    "Capture one before/after signal",
+    "Close the loop before adding rules",
+    "Do not scale beyond one block",
+    "8:30 PM"
+  ],
+  "privacy": {
+    "clientWidth": 390,
+    "h1": "Privacy policy and local data boundary.",
+    "labels": {
+      "Privacy disconnected services": "What is not connected hereThis app shell does not connect WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, or production backend writes.",
+      "Privacy local product data": "Local product dataThe higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, its local decision note, local day history checkpoints, and pasted local export restores. These are browser-local records.",
+      "Privacy reachability": "ReachabilityLinked from app chromePrivacy is reachable from the top bar, desktop side navigation, and Profile controls."
+    },
+    "scrollWidth": 390,
+    "url": "https://lifemax-web.vercel.app/privacy"
+  },
+  "logs": [],
+  "createdAt": "2026-06-20T12:02:44.829Z",
+  "deploymentUrl": "https://lifemax-web.vercel.app/today",
+  "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-alias-smoke-2026-06-20.json"
+}

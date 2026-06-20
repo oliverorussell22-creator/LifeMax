@@ -60,7 +60,7 @@
     "path": "/today",
     "scrollWidth": 390
   },
-  "status": "local_proven_deploy_pending",
+  "status": "production_deployed_checkpoint_not_full_connected_lifemax",
   "planInputs": [
     "Protect first useful block",
     "Capture one before/after signal",
@@ -167,9 +167,9 @@
       "result": "passed"
     },
     {
-      "command": "git diff --unified=0 | rg -n \"sk-|secret|token|password|api[_-]?key|bearer\"",
+      "command": "git diff --unified=0 | rg -n -i \"sk-[A-Za-z0-9]{12,}|Bearer [A-Za-z0-9._-]{12,}|(api[_-]?key|token|password|secret)\\s*[=:]\\s*[\\'\\\"][^\\'\\\"]{8,}\"",
       "result": "passed",
-      "detail": "no matches"
+      "detail": "strict credential-shape scan returned no matches; broad word scan only matched proof text describing no-secrets handling"
     }
   ],
   "lifecycleEvidence": {
@@ -192,7 +192,7 @@
       "PWA",
       "browser smoke"
     ],
-    "stopContinueDecision": "continue_to_git_push_and_approved_vercel_production_deploy"
+    "stopContinueDecision": "checkpoint_after_git_push_and_production_deploy; alias smoke added; continue next with deeper product workflows or connected backend/lab recovery, not completion"
   },
   "environmentBlockers": [
     "Standalone Playwright mobile screenshot command is not used in this environment because the Codex parent process has a large <defunct> child backlog and Chromium launch previously timed out. In-app browser smoke is the current browser proof path."
@@ -203,10 +203,19 @@
     "generatedAt": "2026-06-20T11:45:21Z"
   },
   "deployment": {
-    "status": "pending",
-    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote"
+    "status": "production_ready_and_smoked",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote",
+    "vercelDeploymentId": "dpl_FZ6NPwRgseApDMY441fCcUQdmuXc",
+    "productionUrl": "https://lifemax-i2e3labv7-olivers-projects-25fda214.vercel.app",
+    "productionAlias": "https://lifemax-web.vercel.app",
+    "targetUrlSmoked": "https://life-max-omega.vercel.app/today",
+    "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/FZ6NPwRgseApDMY441fCcUQdmuXc",
+    "readyState": "READY",
+    "cliResult": "vercel deploy --prod completed and aliased production",
+    "aliasSmokePath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-alias-smoke-2026-06-20.json",
+    "aliasSmokeStatus": "passed"
   },
-  "updatedAt": "2026-06-20T11:54:24.220Z",
+  "updatedAt": "2026-06-20T12:04:02.369Z",
   "riskClass": "Q3",
   "verification": {
     "static": [
@@ -269,7 +278,23 @@
       "bootPacket": "red: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports",
       "generatedAt": "2026-06-20T11:45:21Z"
     },
-    "qualityGate": "codex-quality-gate script rerun after Q3 fields added"
+    "qualityGate": "codex-quality-gate script rerun after Q3 fields added",
+    "production": {
+      "command": "npm exec -- vercel deploy --prod -y",
+      "result": "passed",
+      "build": "Vercel next build completed; 10 static pages generated; deployment READY",
+      "smoke": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-smoke-2026-06-20.json",
+      "aliasSmoke": {
+        "command": "in-app browser smoke on https://lifemax-web.vercel.app/today",
+        "result": "passed",
+        "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-alias-smoke-2026-06-20.json"
+      },
+      "targetSmoke": {
+        "command": "in-app browser smoke on https://life-max-omega.vercel.app/today",
+        "result": "passed",
+        "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-smoke-2026-06-20.json"
+      }
+    }
   },
   "approvalStatus": "Approved for production deployment by user message: PRODUCTION_DEPLOY_APPROVED=true promote. No credential/auth/DNS/backend/service mutation approved or performed.",
   "preActionEvidence": {
@@ -297,12 +322,66 @@
     "User data rollback is not needed for backend records because this feature writes only browser-local demo state."
   ],
   "postActionEvidence": {
-    "local": "Local post-action proof passed; deployment post-action smoke pending until Vercel deploy finishes.",
+    "local": "Local post-action proof passed against next start on 127.0.0.1:3000.",
     "deployment": {
-      "status": "pending",
-      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote"
+      "status": "production_ready_and_smoked",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote",
+      "vercelDeploymentId": "dpl_FZ6NPwRgseApDMY441fCcUQdmuXc",
+      "productionUrl": "https://lifemax-i2e3labv7-olivers-projects-25fda214.vercel.app",
+      "productionAlias": "https://lifemax-web.vercel.app",
+      "targetUrlSmoked": "https://life-max-omega.vercel.app/today",
+      "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/FZ6NPwRgseApDMY441fCcUQdmuXc",
+      "readyState": "READY",
+      "cliResult": "vercel deploy --prod completed and aliased production"
+    },
+    "productionSmokePath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-smoke-2026-06-20.json",
+    "productionSmokeSummary": {
+      "todayLoaded": "FreshnessSource statusManual check-inSaved locally 4:56 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled",
+      "persistedAfterRefresh": true,
+      "privacyUrl": "https://life-max-omega.vercel.app/privacy",
+      "consoleErrors": [],
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-life-max-omega-sample-week-today-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-life-max-omega-privacy-mobile-390.png"
+      ]
+    },
+    "productionSmokeAlias": {
+      "url": "https://lifemax-web.vercel.app/today",
+      "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-alias-smoke-2026-06-20.json",
+      "todayLoaded": "FreshnessSource statusManual check-inSaved locally 5:02 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled",
+      "persistedAfterRefresh": true,
+      "privacyUrl": "https://lifemax-web.vercel.app/privacy",
+      "consoleErrors": [],
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-lifemax-web-sample-week-today-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-lifemax-web-privacy-mobile-390.png"
+      ]
+    },
+    "productionSmokeTarget": {
+      "url": "https://life-max-omega.vercel.app/today",
+      "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-production-smoke-2026-06-20.json",
+      "todayLoaded": "FreshnessSource statusManual check-inSaved locally 4:56 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled",
+      "persistedAfterRefresh": true,
+      "privacyUrl": "https://life-max-omega.vercel.app/privacy",
+      "consoleErrors": [],
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-life-max-omega-sample-week-today-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/production-life-max-omega-privacy-mobile-390.png"
+      ]
     }
   },
   "secretsRedacted": true,
-  "noSecretsHandling": "No secrets printed or edited. Diff scan for sk-/secret/token/password/api-key/bearer patterns returned no matches."
+  "noSecretsHandling": "No secrets printed or edited. Strict credential-shape diff scan returned no matches; a broad word scan only matched this proof text describing token/password/api-key/bearer checks.",
+  "independentVerifier": {
+    "status": "checkpoint_not_complete",
+    "verifier": "quality_verifier subagent 019ee4e4-87bd-7190-9b7d-efd2211f55e9",
+    "findingsAddressedThisUpdate": [
+      "Added exact production alias smoke for https://lifemax-web.vercel.app/today and /privacy.",
+      "Prepared uncommitted proof trail for commit/push."
+    ],
+    "findingsRemaining": [
+      "Full connected LifeMax readiness remains out of scope and unproven because lab/source boot reports are red.",
+      "Rendered loading-state artifact remains partial; ready/disabled/error truth is covered by code/tests and visible disabled integration state."
+    ]
+  }
 }
