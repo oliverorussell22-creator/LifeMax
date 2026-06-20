@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T08:28:30Z",
+  "generated_at": "2026-06-20T10:36:49Z",
   "objective": "Make the public LifeMax app visibly functional and credible through browser-local flows, proof artifacts, Git push, and Vercel deployment while preserving the truth boundary that backend/shared-context readiness remains unproved.",
   "risk_class": "Q3",
   "riskClass": "Q3",
@@ -19,7 +19,8 @@
     "tests/visual/mobile.spec.ts",
     "reports/lifemax-capture-correction-proof-2026-06-20.json",
     "reports/lifemax-vercel-ready-proof.json",
-    "reports/lifemax-day-history-proof-2026-06-20.json"
+    "reports/lifemax-day-history-proof-2026-06-20.json",
+    "reports/lifemax-focus-block-proof-2026-06-20.json"
   ],
   "postActionEvidence": [
     "Capture correction code was committed and pushed in 4df3dec.",
@@ -28,7 +29,8 @@
     "Independent verifier 019ee40d-9b7e-76b2-b309-3c880dca0e31 returned CHECKPOINT_OK and COMPLETE_OK=false for the broader goal.",
     "Day History archive code was committed and pushed in 53bad3b.",
     "Both public aliases were production-smoked for save review, archive day, refresh persistence, Profile summary, export preview, and no mobile overflow.",
-    "Independent verifier 019ee424-454b-75e3-92f7-908a1b539433 accepted CHECKPOINT_OK for Day History and rejected COMPLETE_OK for broader LifeMax."
+    "Independent verifier 019ee424-454b-75e3-92f7-908a1b539433 accepted CHECKPOINT_OK for Day History and rejected COMPLETE_OK for broader LifeMax.",
+    "Focus block local checkpoint implemented and locally verified; production deploy/live smoke pending at initial proof write."
   ],
   "verification": [
     "npm run typecheck pass",
@@ -44,7 +46,9 @@
     "quality verifier sidecar pass for checkpoint, not complete",
     "local day-history archive verification pass",
     "live browser smoke pass on both public aliases for Day History archive persistence and export propagation",
-    "quality verifier sidecar pass for Day History checkpoint, not complete"
+    "quality verifier sidecar pass for Day History checkpoint, not complete",
+    "focus block local flow pass: start from generated plan, complete with note, mark plan item done, create capture, persist after refresh",
+    "in-app browser local Today/Capture/Privacy smoke pass for focus block surface and local boundary"
   ],
   "residualRisks": [
     "Public LifeMax remains browser-local demo behavior and does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, or cross-device sync.",
@@ -52,7 +56,10 @@
     "Vercel deployment IDs are point-in-time and can be superseded by proof-only Git integration deploys; public aliases are authoritative for user-facing behavior.",
     "This slice is browser-local only and does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, or cross-device sync.",
     "LifeMax lab boot/preflight remains red, so the broader daily shared-context goal is not complete.",
-    "The new history archive does not create multi-day analytics or trend scoring beyond a local checkpoint list."
+    "The new history archive does not create multi-day analytics or trend scoring beyond a local checkpoint list.",
+    "This remains browser-local demo behavior only; it does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, timers, or cross-device sync.",
+    "LifeMax lab preflight and boot packet remain red, so full daily shared-context usability is not complete.",
+    "Production deployment and live smoke are still pending in this proof packet and must be updated after Vercel work completes."
   ],
   "rollbackPath": "Use Git/Vercel to redeploy the previous public app commit if needed; no credentials, auth settings, DNS, custom-domain settings, or backend services were changed by this checkpoint.",
   "secretsRedacted": true,
@@ -786,5 +793,60 @@
         "Verifier flagged stale proof-index fields, which this proof refresh corrects before final proof commit."
       ]
     }
+  },
+  "latestFocusBlockCheckpoint": {
+    "status": "local_checkpoint_pending_git_push_and_vercel_deploy",
+    "proof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-proof-2026-06-20.json",
+    "generatedAt": "2026-06-20T10:36:49Z",
+    "localChecks": [
+      {
+        "command": "npm run typecheck",
+        "result": "pass"
+      },
+      {
+        "command": "npm run lint",
+        "result": "pass"
+      },
+      {
+        "command": "npm test",
+        "result": "pass: 3 files, 18 tests"
+      },
+      {
+        "command": "npm run test:fixtures",
+        "result": "pass: 1 file, 2 tests"
+      },
+      {
+        "command": "npm run test:pwa",
+        "result": "pass: 1 file, 1 test"
+      },
+      {
+        "command": "npm run build",
+        "result": "pass via npm run screenshot:mobile; Next static routes include /, /today, /capture, /patterns, /experiments, /profile, /privacy"
+      },
+      {
+        "command": "npm run screenshot:mobile",
+        "result": "pass: 3 Playwright tests including focus block completion and capture persistence"
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass"
+      },
+      {
+        "command": "changed-file no-secrets scan",
+        "result": "pass: no secret-shaped diff matches"
+      },
+      {
+        "command": "in-app browser local smoke",
+        "result": "pass: Today/Capture/Privacy reachable on 127.0.0.1:3000 with no console errors"
+      }
+    ],
+    "screenshots": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-focus-block-completed-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-focus-capture-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-today-focus-127-3000.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-capture-127-3000.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-privacy-127-3000.png"
+    ],
+    "stopContinueDecision": "checkpoint_pending_deploy: local focus-block behavior is implemented and locally proven; continue to commit, push, deploy production as approved, smoke public aliases, update proof, and run a verifier/self-audit."
   }
 }

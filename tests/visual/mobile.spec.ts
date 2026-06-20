@@ -330,6 +330,42 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   expect(runtimeErrors()).toEqual([]);
 });
 
+test("local focus block completes a generated plan item and creates a capture", async ({ page }) => {
+  mkdirSync(highFunctionalityDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  await expect(page.getByTestId("start-focus-block")).toBeDisabled();
+  await page.getByLabel("One restart priority").fill("Open the client draft");
+  await page.getByLabel("What changed").fill("Travel broke the morning loop");
+  await page.getByTestId("save-quick-restart").click();
+  await expect(page.getByRole("heading", { name: "Quick restart saved." })).toBeVisible();
+  await page.getByTestId("generate-local-plan").click();
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Open the client draft");
+
+  await page.getByTestId("start-focus-block").click();
+  await expect(page.getByLabel("Plan focus block").getByRole("heading", { name: "Focus block active." })).toBeVisible();
+  await page.getByLabel("Completion note").fill("Finished the client draft without opening messages.");
+  await page.getByTestId("complete-focus-block").click();
+  await expect(page.getByLabel("Plan focus block").getByRole("heading", { name: "Focus block completed." })).toBeVisible();
+  await expect(page.getByLabel("Daily plan editor").getByText("1/3 done")).toBeVisible();
+  await page.locator('section[aria-label="Plan focus block"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Plan focus block"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-focus-block-completed-mobile-390.png")
+  });
+  await page.reload();
+  await expect(page.getByLabel("Plan focus block").getByRole("heading", { name: "Focus block completed." })).toBeVisible();
+  await expect(page.getByLabel("Daily plan editor").getByText("1/3 done")).toBeVisible();
+  await page.goto("/capture");
+  await expect(page.getByLabel("Capture list").getByLabel("Capture: Focus block: Open the client draft")).toBeVisible();
+  await page.locator('section[aria-label="Capture list"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Capture list"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-focus-capture-mobile-390.png")
+  });
+});
+
 test("desktop shell exposes side navigation and privacy route without overflow", async ({ page }) => {
   const runtimeErrors = collectRuntimeErrors(page);
   mkdirSync(screenshotDir, { recursive: true });

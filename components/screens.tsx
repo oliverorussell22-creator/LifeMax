@@ -4,6 +4,7 @@ import { useMemo, useState, useSyncExternalStore, type Dispatch, type SetStateAc
 import { AppShell } from "@/components/AppShell";
 import { ScreenHeader, StatusGrid } from "@/components/ui";
 import {
+  createFocusSessionFromPlan,
   createDayArchive,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
@@ -24,6 +25,7 @@ import {
   type LocalDayArchive,
   type LocalDemoState,
   type LocalDailyPlan,
+  type LocalFocusSession,
   type MemoryCandidate,
   type MemoryStatus,
   type PatternCard,
@@ -203,6 +205,7 @@ export function TodayScreen() {
         accepted_at: plan.accepted_at || now,
         updated_at: now
       },
+      focus_session: null,
       plan_done: Object.values(plan.item_statuses).every((status) => status === "done"),
       updated_at: now
     }));
@@ -218,10 +221,86 @@ export function TodayScreen() {
     setLocalState((current) => ({
       ...current,
       daily_plan: createPlanFromLocalSignals(current, now),
+      focus_session: null,
       plan_done: false,
       updated_at: now
     }));
     setPlanMessage("Generated a browser-local plan from current local signals.");
+  }
+
+  function startFocusBlock() {
+    const now = new Date().toISOString();
+    setLocalState((current) => {
+      const session = createFocusSessionFromPlan(current, now);
+      if (!session) return current;
+
+      return {
+        ...current,
+        focus_session: session,
+        updated_at: now
+      };
+    });
+  }
+
+  function completeFocusBlock(note: string) {
+    const now = new Date().toISOString();
+    setLocalState((current) => {
+      const session = current.focus_session;
+      if (!session || session.status !== "active" || !current.daily_plan) return current;
+      const nextPlan = {
+        ...current.daily_plan,
+        item_statuses: {
+          ...current.daily_plan.item_statuses,
+          [session.plan_slot]: "done" as const
+        },
+        updated_at: now
+      };
+      const captureNote = note.trim() || "Completed from Today focus block.";
+
+      return {
+        ...current,
+        daily_plan: nextPlan,
+        focus_session: {
+          ...session,
+          status: "completed",
+          ended_at: now,
+          note: captureNote
+        },
+        captures: [
+          {
+            id: `capture-focus-${Date.now()}`,
+            kind: "note" as const,
+            label: `Focus block: ${session.item_label}`,
+            note: captureNote,
+            impact: "helped" as const,
+            created_at: now,
+            updated_at: now
+          },
+          ...current.captures
+        ].slice(0, 25),
+        plan_done: Object.values(nextPlan.item_statuses).every((itemStatus) => itemStatus === "done"),
+        updated_at: now
+      };
+    });
+  }
+
+  function stopFocusBlock(note: string) {
+    const now = new Date().toISOString();
+    setLocalState((current) => {
+      const session = current.focus_session;
+      if (!session || session.status !== "active") return current;
+
+      return {
+        ...current,
+        focus_session: {
+          ...session,
+          status: "stopped",
+          ended_at: now,
+          note: note.trim() || "Stopped without marking the plan item done."
+        },
+        updated_at: now
+      };
+    });
   }
 
   function updatePlanItemStatus(slot: PlanSlot, status: PlanItemStatus) {
@@ -347,6 +426,7 @@ export function TodayScreen() {
         accepted_at: now,
         updated_at: now
       },
+      focus_session: null,
       lowered_today: true,
       plan_done: false,
       memory_candidates: [
@@ -502,6 +582,14 @@ export function TodayScreen() {
             summary={today.plan_summary}
             onSave={savePlan}
             onStatusChange={updatePlanItemStatus}
+          />
+          <FocusBlockPanel
+            key={getFocusSyncKey(state.focus_session, today.focus_summary.current_item, today.focus_summary.next_item)}
+            session={state.focus_session}
+            summary={today.focus_summary}
+            onComplete={completeFocusBlock}
+            onStart={startFocusBlock}
+            onStop={stopFocusBlock}
           />
           <MiddayRescuePanel
             key={getRescueSyncKey(state.midday_rescue, today.rescue_summary.next_move)}
@@ -1008,6 +1096,84 @@ function DailyPlanPanel({
   );
 }
 
+function FocusBlockPanel({
+  onComplete,
+  onStart,
+  onStop,
+  session,
+  summary
+}: Readonly<{
+  onComplete: (note: string) => void;
+  onStart: () => void;
+  onStop: (note: string) => void;
+  session: LocalFocusSession | null;
+  summary: ReturnType<typeof deriveTodayView>["focus_summary"];
+}>) {
+  const locked = summary.status === "locked";
+  const active = summary.status === "active";
+  const canStart = Boolean(summary.next_item) && !active;
+  const itemLabel = summary.status === "completed" || summary.status === "stopped" ? "Last item" : "Current item";
+  const startLabel = summary.status === "completed" || summary.status === "stopped"
+    ? summary.next_item
+      ? "Start next focus block"
+      : "No open plan item"
+    : "Start focus block";
+  const [note, setNote] = useState(session?.note ?? "");
+
+  return (
+    <section className="panel form-panel focus-panel" aria-label="Plan focus block">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Focus block</p>
+          <h2 className="panel-title">{summary.title}</h2>
+        </div>
+        <span className={summary.status === "completed" ? "state-pill state-pill-good" : "state-pill"}>{summary.status}</span>
+      </div>
+      <p className="panel-copy">{summary.detail}</p>
+      <div className="insight-callout">
+        <strong>{itemLabel}</strong>
+        <span>{summary.current_item}</span>
+      </div>
+      {summary.next_item && !active ? (
+        <div className="insight-callout subtle-callout">
+          <strong>Next item</strong>
+          <span>{summary.next_item}</span>
+        </div>
+      ) : null}
+      {active ? (
+        <label className="stacked-input" htmlFor="focus-note">
+          <span>Completion note</span>
+          <textarea
+            id="focus-note"
+            className="text-area compact-text-area"
+            maxLength={220}
+            placeholder="What actually happened during this block?"
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+          />
+        </label>
+      ) : null}
+      <div className="action-row">
+        {active ? (
+          <>
+            <button className="primary-action" type="button" onClick={() => onComplete(note)} data-testid="complete-focus-block">
+              Complete block
+            </button>
+            <button className="secondary-action" type="button" onClick={() => onStop(note)} data-testid="stop-focus-block">
+              Stop
+            </button>
+          </>
+        ) : (
+          <button className="primary-action full-width" type="button" disabled={locked || !canStart} onClick={onStart} data-testid="start-focus-block">
+            {startLabel}
+          </button>
+        )}
+      </div>
+      <p className="field-help">Focus blocks stay local. Completing one marks the plan item done and saves a local capture; no timer or reminder is created.</p>
+    </section>
+  );
+}
+
 function getPlanSyncKey(plan: LocalDailyPlan) {
   return [
     plan.accepted_at,
@@ -1021,6 +1187,11 @@ function getPlanSyncKey(plan: LocalDailyPlan) {
     plan.item_statuses.optional_1,
     plan.item_statuses.optional_2
   ].join("|");
+}
+
+function getFocusSyncKey(session: LocalFocusSession | null, currentItem: string, nextItem: string | null) {
+  if (!session) return `focus-open|${currentItem}|${nextItem ?? ""}`;
+  return [session.id, session.status, session.started_at, session.ended_at, session.item_label, session.note, nextItem ?? ""].join("|");
 }
 
 function getRestartSyncKey(restart: LocalDemoState["quick_restart"]) {
@@ -1630,6 +1801,7 @@ export function PatternsScreen() {
     setLocalState((current) => ({
       ...current,
       daily_plan: createPlanFromHistoryArchive(archive, current.daily_plan, now),
+      focus_session: null,
       plan_done: false,
       memory_candidates: [
         {

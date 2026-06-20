@@ -4,6 +4,7 @@ import commandMatrix from "../command-matrix.json";
 import { forbiddenWave0Dependencies, tabs, wave0CommandIds } from "../lib/contracts";
 import { emptyTodayState } from "../lib/demo-state";
 import {
+  createFocusSessionFromPlan,
   createDayArchive,
   createInitialLocalDemoState,
   createLocalDemoExport,
@@ -67,6 +68,7 @@ describe("Wave 0 scaffold contract", () => {
       pattern_decisions: [],
       experiment: null,
       day_archives: [],
+      focus_session: null,
       reviewed_at: null,
       plan_done: false,
       lowered_today: false,
@@ -157,6 +159,45 @@ describe("Wave 0 scaffold contract", () => {
     expect(generatedPlan.optional_2).toBe("Use history cue: Walk before opening messages");
     expect(generatedPlan.avoid_today).toBe("Do not repeat late messages without a pause");
     expect(generatedPlan.item_statuses).toEqual({ must_do: "open", optional_1: "open", optional_2: "open" });
+  });
+
+  test("starts and summarizes a browser-local focus session from the next open plan item", () => {
+    const plan = createSuggestedPlan(true, "2026-06-20T16:00:00.000Z");
+    const state: LocalDemoState = {
+      ...createInitialLocalDemoState(),
+      daily_plan: {
+        ...plan,
+        must_do: "Send one client update",
+        optional_1: "Capture one energy note",
+        item_statuses: {
+          must_do: "done",
+          optional_1: "open",
+          optional_2: "open"
+        }
+      }
+    };
+
+    const session = createFocusSessionFromPlan(state, "2026-06-20T16:05:00.000Z");
+    expect(session?.plan_slot).toBe("optional_1");
+    expect(session?.item_label).toBe("Capture one energy note");
+
+    const activeView = deriveTodayView({ ...state, focus_session: session });
+    expect(activeView.focus_summary.status).toBe("active");
+    expect(activeView.focus_summary.current_item).toBe("Capture one energy note");
+
+    const completedStored = readStoredLocalDemoState(
+      JSON.stringify({
+        ...state,
+        focus_session: {
+          ...session,
+          status: "completed",
+          ended_at: "2026-06-20T16:20:00.000Z",
+          note: "Finished a small block."
+        }
+      })
+    );
+    expect(completedStored.focus_session?.status).toBe("completed");
+    expect(createLocalDemoExport(completedStored, "2026-06-20T16:25:00.000Z").summary.focus_session).toBe("completed");
   });
 
   test("derives the higher-functionality local daily loop", () => {
@@ -259,6 +300,7 @@ describe("Wave 0 scaffold contract", () => {
         ]
       },
       day_archives: [],
+      focus_session: null,
       reviewed_at: null,
       plan_done: false,
       lowered_today: false,

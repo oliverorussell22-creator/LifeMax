@@ -20,6 +20,7 @@ export type RestartWindow = "one_day" | "three_days" | "seven_days";
 export type RestartSleep = "rough" | "ok" | "good";
 export type RestartReminderStance = "none_today" | "evening_only" | "tomorrow";
 export type MemoryStatus = "candidate" | "kept" | "rejected";
+export type FocusSessionStatus = "active" | "completed" | "stopped";
 
 export interface LocalCheckIn {
   energy: SignalLevel;
@@ -140,6 +141,16 @@ export interface LocalDayArchive {
   restart_used: boolean;
 }
 
+export interface LocalFocusSession {
+  id: string;
+  plan_slot: PlanSlot;
+  item_label: string;
+  status: FocusSessionStatus;
+  started_at: string;
+  ended_at: string | null;
+  note: string;
+}
+
 export interface LocalDemoState {
   schema_version: "lifemax.local_demo.v1";
   check_in: LocalCheckIn | null;
@@ -152,6 +163,7 @@ export interface LocalDemoState {
   pattern_decisions: PatternDecision[];
   experiment: LocalExperiment | null;
   day_archives: LocalDayArchive[];
+  focus_session: LocalFocusSession | null;
   reviewed_at: string | null;
   plan_done: boolean;
   lowered_today: boolean;
@@ -181,6 +193,7 @@ export interface LocalDemoExport {
     experiment_observations: number;
     day_archives: number;
     history_insight: "empty" | "checkpoint" | "emerging" | "trend";
+    focus_session: FocusSessionStatus | "none";
     review: "saved" | "open";
   };
   state: LocalDemoState;
@@ -226,6 +239,13 @@ export interface DerivedTodayView {
     title: string;
     detail: string;
     evidence: string[];
+  };
+  focus_summary: {
+    status: "locked" | "ready" | "active" | "completed" | "stopped";
+    title: string;
+    detail: string;
+    current_item: string;
+    next_item: string | null;
   };
   suggested_plan: LocalDailyPlan;
   evening_summary: {
@@ -333,6 +353,7 @@ export function createInitialLocalDemoState(): LocalDemoState {
     pattern_decisions: [],
     experiment: null,
     day_archives: [],
+    focus_session: null,
     reviewed_at: null,
     plan_done: false,
     lowered_today: false,
@@ -371,6 +392,7 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       experiment_observations: state.experiment?.observations.length ?? 0,
       day_archives: state.day_archives.length,
       history_insight: historyInsight.status,
+      focus_session: state.focus_session?.status ?? "none",
       review: state.reviewed_at ? "saved" : "open"
 	    },
 	    state
@@ -432,6 +454,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
       pattern_decisions: Array.isArray(parsed.pattern_decisions) ? parsed.pattern_decisions.slice(0, 20) : [],
       experiment: normalizeExperiment(parsed.experiment, parsed.experiment_started_at ?? null),
       day_archives: normalizeDayArchives(parsed.day_archives),
+      focus_session: normalizeFocusSession(parsed.focus_session),
       reviewed_at: parsed.reviewed_at ?? null,
       plan_done: Boolean(parsed.plan_done),
       lowered_today: Boolean(parsed.lowered_today),
@@ -465,6 +488,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const dayHistorySummary = summarizeDayHistory(state.day_archives);
   const historyInsight = summarizeHistoryInsight(state.day_archives);
   const planBuilder = summarizePlanBuilder(state);
+  const focusSummary = summarizeFocusSession(state, planSummary);
 
   if (!hasCheckIn) {
     return {
@@ -491,6 +515,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
         shutdown_target: activePlan.shutdown_target
       },
       plan_builder: planBuilder,
+      focus_summary: focusSummary,
       suggested_plan: activePlan,
       evening_summary: summarizeEveningClose(state.evening_close),
       rescue_summary: rescueSummary,
@@ -541,6 +566,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       : ["Pick one useful task", "Capture what changes energy", "Review patterns after repeated signals"],
     plan_summary: planSummary,
     plan_builder: planBuilder,
+    focus_summary: focusSummary,
     suggested_plan: activePlan,
     evening_summary: summarizeEveningClose(state.evening_close),
     rescue_summary: rescueSummary,
@@ -702,6 +728,30 @@ export function createPlanFromLocalSignals(state: LocalDemoState, timestamp: str
     },
     accepted_at: timestamp,
     updated_at: timestamp
+  };
+}
+
+export function createFocusSessionFromPlan(state: LocalDemoState, timestamp: string): LocalFocusSession | null {
+  const plan = state.daily_plan;
+  if (!plan) return null;
+  const nextEntry = (
+    [
+      ["must_do", plan.must_do],
+      ["optional_1", plan.optional_1],
+      ["optional_2", plan.optional_2]
+    ] satisfies Array<[PlanSlot, string]>
+  ).find(([slot, label]) => label.trim() && plan.item_statuses[slot] === "open");
+
+  if (!nextEntry) return null;
+
+  return {
+    id: `focus-${Date.parse(timestamp) || Date.now()}`,
+    plan_slot: nextEntry[0],
+    item_label: nextEntry[1].trim(),
+    status: "active",
+    started_at: timestamp,
+    ended_at: null,
+    note: ""
   };
 }
 
@@ -877,6 +927,30 @@ function normalizeDayArchives(value: unknown): LocalDayArchive[] {
     }));
 }
 
+function normalizeFocusSession(value: unknown): LocalFocusSession | null {
+  if (!value || typeof value !== "object") return null;
+  const session = value as Partial<LocalFocusSession>;
+  if (!session.id || !session.started_at || !session.item_label) return null;
+
+  return {
+    id: session.id,
+    plan_slot: normalizePlanSlot(session.plan_slot),
+    item_label: session.item_label.trim(),
+    status: normalizeFocusSessionStatus(session.status),
+    started_at: session.started_at,
+    ended_at: session.ended_at ?? null,
+    note: session.note?.trim() ?? ""
+  };
+}
+
+function normalizePlanSlot(value: unknown): PlanSlot {
+  return value === "optional_1" || value === "optional_2" || value === "must_do" ? value : "must_do";
+}
+
+function normalizeFocusSessionStatus(value: unknown): FocusSessionStatus {
+  return value === "completed" || value === "stopped" || value === "active" ? value : "active";
+}
+
 function normalizeNonNegativeNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
 }
@@ -1047,6 +1121,67 @@ function summarizePlanBuilder(state: LocalDemoState): DerivedTodayView["plan_bui
       ? `Uses ${evidence.join(", ")}. Nothing leaves this browser.`
       : "Uses the current check-in. Nothing leaves this browser.",
     evidence
+  };
+}
+
+function summarizeFocusSession(state: LocalDemoState, planSummary: DerivedTodayView["plan_summary"]): DerivedTodayView["focus_summary"] {
+  const session = state.focus_session;
+  if (session?.status === "active") {
+    return {
+      status: "active",
+      title: "Focus block active.",
+      detail: `Working on ${session.item_label}. Complete it locally or stop without changing the plan.`,
+      current_item: session.item_label,
+      next_item: null
+    };
+  }
+
+  if (session?.status === "completed") {
+    return {
+      status: "completed",
+      title: "Focus block completed.",
+      detail: session.note || "The latest focus block marked a plan item done and saved a local capture.",
+      current_item: session.item_label,
+      next_item: planSummary.next_item
+    };
+  }
+
+  if (session?.status === "stopped") {
+    return {
+      status: "stopped",
+      title: "Focus block stopped.",
+      detail: session.note || "The block stopped without marking the plan item done.",
+      current_item: session.item_label,
+      next_item: planSummary.next_item
+    };
+  }
+
+  if (!state.daily_plan) {
+    return {
+      status: "locked",
+      title: "Focus unlocks after a saved plan.",
+      detail: "Generate or save a local plan before starting a focus block.",
+      current_item: "No plan item selected",
+      next_item: null
+    };
+  }
+
+  if (!planSummary.next_item) {
+    return {
+      status: "locked",
+      title: "No open plan item.",
+      detail: "Reopen a plan item before starting another focus block.",
+      current_item: "No open item",
+      next_item: null
+    };
+  }
+
+  return {
+    status: "ready",
+    title: "Focus the next plan item.",
+    detail: "Start a browser-local block. No timer, reminder, or backend write is created.",
+    current_item: planSummary.next_item,
+    next_item: planSummary.next_item
   };
 }
 

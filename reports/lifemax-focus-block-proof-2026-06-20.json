@@ -1,0 +1,125 @@
+{
+  "schema": "lifemax.focus_block_proof.v1",
+  "objective": "Make Today feel more functional by adding a browser-local focus block that advances the daily plan into a completed local capture without claiming timers, reminders, backend writes, WHOOP, accounts, AI, or cross-device sync.",
+  "riskClass": "Q3 because the goal includes production deployment; this local proof packet records app/frontend behavior only before deployment.",
+  "approvalStatus": "Production deploy/promotion was explicitly approved earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote. No credentials, auth settings, DNS, backend services, databases, or external integrations were edited.",
+  "status": "local_checkpoint_pending_git_push_and_vercel_deploy",
+  "generatedAt": "2026-06-20T10:36:49Z",
+  "preActionEvidence": [
+    "Public repo /Users/oliverrussell/Desktop/LifeMax-vercel-ready was clean at 92dbdfc before this focus-block slice.",
+    "Fresh LifeMax lab preflight remained red at 2026-06-20T10:24:14.764Z: local MCP/life-safety/Grok context fetch failures.",
+    "Fresh LifeMax boot packet remained red at 2026-06-20T10:24:26.258Z: safe_to_claim_daily_usable=false.",
+    "Existing app behavior had local plans, captures, history, experiments, profile export/restore, and privacy, but Today still treated a generated plan as a static list rather than a worked daily action."
+  ],
+  "changedFiles": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/app/globals.css",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/components/screens.tsx",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/lib/local-demo-state.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/scaffold-smoke.test.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/visual/mobile.spec.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-focus-block-proof-2026-06-20.json",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-vercel-ready-proof.json"
+  ],
+  "changedBehavior": [
+    "Today now derives a browser-local focus summary from the daily plan.",
+    "Start focus block picks the next open plan item and creates an active local focus session.",
+    "Complete block marks that plan item done, saves the completion note, and creates a local Capture record labeled Focus block: <item>.",
+    "Stop block records that the session stopped without marking the plan item done.",
+    "Focus sessions persist through localStorage and appear in the local export summary as none, active, completed, or stopped.",
+    "Plan regeneration, quick restart, and history-cue plan replacement clear stale focus sessions to avoid false continuity.",
+    "Completed focus panels show Last item, Next item, and Start next focus block instead of ambiguous current-item copy.",
+    "All copy preserves the browser-local boundary: no timer, reminder, or backend write is created."
+  ],
+  "functionalFlowsProvenLocally": [
+    "Focus block is disabled before a saved/generated plan exists.",
+    "Quick restart plus Generate local plan creates a usable plan from local context.",
+    "Start focus block opens an active session for the next open plan item.",
+    "Complete block marks 1/3 plan items done, persists through refresh, and creates a Capture record.",
+    "Capture route shows the generated Focus block capture with note and helped impact.",
+    "Privacy route remains reachable and explicit about local-only data boundaries.",
+    "Mobile and desktop visual smoke show no horizontal overflow."
+  ],
+  "loopEvidence": [
+    {
+      "cycle": "implementation",
+      "defectOrRisk": "A focus workflow could accidentally imply timers, reminders, backend writes, AI planning, or wearable/account sync.",
+      "repair": "Implemented deterministic local-only state with explicit copy saying no timer, reminder, or backend write is created.",
+      "rerunEvidence": "typecheck, lint, vitest, fixtures, PWA test, build, and Playwright screenshot suite passed."
+    },
+    {
+      "cycle": "visual_critique",
+      "defectOrRisk": "First targeted screenshot showed completed block still labeled the finished task as Current item and button as Start focus block.",
+      "repair": "Added next_item to focus summary, switched completed/stopped panel to Last item plus Next item, and changed action to Start next focus block or disabled No open plan item.",
+      "rerunEvidence": "Updated local-focus-block-completed-mobile-390.png shows Focus block completed, Last item, Next item, and Start next focus block."
+    },
+    {
+      "cycle": "browser_proof",
+      "defectOrRisk": "The selected in-app browser tab was stuck on an old data: error page from a stale localhost outage.",
+      "repair": "Opened a fresh in-app browser tab against http://127.0.0.1:3000/today and captured Today, Capture, and Privacy route proof.",
+      "rerunEvidence": "In-app browser smoke found Today focus surface, local truth boundary, Capture route, Privacy route, and zero console errors."
+    }
+  ],
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "npm test",
+      "result": "pass: 3 files, 18 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass: 1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass via npm run screenshot:mobile; Next static routes include /, /today, /capture, /patterns, /experiments, /profile, /privacy"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "pass: 3 Playwright tests including focus block completion and capture persistence"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "changed-file no-secrets scan",
+      "result": "pass: no secret-shaped diff matches"
+    },
+    {
+      "command": "in-app browser local smoke",
+      "result": "pass: Today/Capture/Privacy reachable on 127.0.0.1:3000 with no console errors"
+    }
+  ],
+  "browserEvidence": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-focus-block-completed-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-focus-capture-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-today-focus-127-3000.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-capture-127-3000.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/in-app-local-privacy-127-3000.png"
+  ],
+  "deployment": {
+    "status": "pending_after_feature_commit_push",
+    "productionApproved": true,
+    "plannedCommand": "npx --yes vercel deploy --prod --yes",
+    "postDeployRequired": "Inspect both public aliases and browser-smoke the focus flow before final checkpoint."
+  },
+  "residualRisks": [
+    "This remains browser-local demo behavior only; it does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, timers, or cross-device sync.",
+    "LifeMax lab preflight and boot packet remain red, so full daily shared-context usability is not complete.",
+    "Production deployment and live smoke are still pending in this proof packet and must be updated after Vercel work completes."
+  ],
+  "rollbackPath": "Revert the focus-block feature commit, push main, and redeploy the previous public app commit if the live smoke fails. No credentials, auth settings, DNS, custom domains, databases, or backend services are changed by this slice.",
+  "secretsRedacted": true,
+  "stopContinueDecision": "checkpoint_pending_deploy: local focus-block behavior is implemented and locally proven; continue to commit, push, deploy production as approved, smoke public aliases, update proof, and run a verifier/self-audit."
+}

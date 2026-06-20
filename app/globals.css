@@ -1071,6 +1071,11 @@ button:disabled {
   text-transform: uppercase;
 }
 
+.subtle-callout {
+  border-color: var(--line);
+  background: var(--surface-strong);
+}
+
 .history-item {
   gap: 8px;
 }
