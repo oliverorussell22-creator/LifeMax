@@ -3,7 +3,14 @@ import packageJson from "../package.json";
 import commandMatrix from "../command-matrix.json";
 import { forbiddenWave0Dependencies, tabs, wave0CommandIds } from "../lib/contracts";
 import { emptyTodayState } from "../lib/demo-state";
-import { createInitialLocalDemoState, createLocalDemoExport, createSuggestedPlan, deriveTodayView, type LocalDemoState } from "../lib/local-demo-state";
+import {
+  createInitialLocalDemoState,
+  createLocalDemoExport,
+  createSuggestedPlan,
+  deriveTodayView,
+  readStoredLocalDemoState,
+  type LocalDemoState
+} from "../lib/local-demo-state";
 
 describe("Wave 0 scaffold contract", () => {
   test("keeps canonical five-tab navigation stable", () => {
@@ -134,7 +141,10 @@ describe("Wave 0 scaffold contract", () => {
           title: "Walk before messages",
           detail: "Afternoon friction",
           source: "evening_close",
-          created_at: "2026-06-19T20:30:00.000Z"
+          status: "kept",
+          created_at: "2026-06-19T20:30:00.000Z",
+          updated_at: "2026-06-19T20:31:00.000Z",
+          rejection_reason: null
         }
       ],
       pattern_decisions: [
@@ -230,6 +240,81 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
     expect(localExport.state.captures[0]?.label).toBe("export proof");
+  });
+
+  test("normalizes and summarizes local memory review state without backend claims", () => {
+    const stored = readStoredLocalDemoState(
+      JSON.stringify({
+        ...createInitialLocalDemoState(),
+        memory_candidates: [
+          {
+            id: "legacy-memory",
+            title: "Walk before messages",
+            detail: "Legacy candidate without status",
+            source: "evening_close",
+            created_at: "2026-06-19T20:30:00.000Z"
+          },
+          {
+            id: "rejected-memory",
+            title: "Ignore noisy late-night cue",
+            detail: "Rejected because it added pressure.",
+            source: "pattern",
+            status: "rejected",
+            created_at: "2026-06-19T20:31:00.000Z",
+            updated_at: "2026-06-19T20:32:00.000Z",
+            rejection_reason: "Rejected in local memory inbox."
+          },
+          {
+            id: "kept-memory",
+            title: "Protect first block",
+            detail: "Kept after review.",
+            source: "experiment",
+            status: "kept",
+            created_at: "2026-06-19T20:33:00.000Z",
+            updated_at: "2026-06-19T20:34:00.000Z",
+            rejection_reason: null
+          }
+        ],
+        updated_at: "2026-06-19T20:34:00.000Z"
+      })
+    );
+
+    const view = deriveTodayView(stored);
+    const localExport = createLocalDemoExport(stored, "2026-06-20T05:30:00.000Z");
+
+    expect(stored.memory_candidates[0]?.status).toBe("candidate");
+    expect(stored.memory_candidates[0]?.updated_at).toBe("2026-06-19T20:30:00.000Z");
+    expect(view.memory_summary.count).toBe(2);
+    expect(view.memory_summary.candidate_count).toBe(1);
+    expect(view.memory_summary.kept_count).toBe(1);
+    expect(view.memory_summary.rejected_count).toBe(1);
+    expect(view.memory_summary.latest?.title).toBe("Walk before messages");
+    expect(localExport.summary.memories).toBe(2);
+    expect(localExport.summary.memory_candidates).toBe(3);
+    expect(localExport.summary.kept_memories).toBe(1);
+    expect(localExport.summary.rejected_memories).toBe(1);
+    expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
+  });
+
+  test("defaults unknown local memory status back to a reviewable candidate", () => {
+    const stored = readStoredLocalDemoState(
+      JSON.stringify({
+        ...createInitialLocalDemoState(),
+        memory_candidates: [
+          {
+            id: "unknown-status-memory",
+            title: "Unknown status should be reviewable",
+            detail: "Future or malformed statuses must not disappear.",
+            source: "restart",
+            status: "archived",
+            created_at: "2026-06-19T20:30:00.000Z"
+          }
+        ]
+      })
+    );
+
+    expect(stored.memory_candidates[0]?.status).toBe("candidate");
+    expect(deriveTodayView(stored).memory_summary.candidate_count).toBe(1);
   });
 
   test("declares every required Wave 0 command", () => {

@@ -18,6 +18,7 @@ export type RescueReset = "breathe" | "walk" | "water" | "reduce_input";
 export type RestartWindow = "one_day" | "three_days" | "seven_days";
 export type RestartSleep = "rough" | "ok" | "good";
 export type RestartReminderStance = "none_today" | "evening_only" | "tomorrow";
+export type MemoryStatus = "candidate" | "kept" | "rejected";
 
 export interface LocalCheckIn {
   energy: SignalLevel;
@@ -63,7 +64,10 @@ export interface MemoryCandidate {
   title: string;
   detail: string;
   source: "evening_close" | "pattern" | "experiment" | "rescue" | "restart";
+  status: MemoryStatus;
   created_at: string;
+  updated_at: string;
+  rejection_reason: string | null;
 }
 
 export interface MiddayRescue {
@@ -144,6 +148,9 @@ export interface LocalDemoExport {
     close: "saved" | "open";
     captures: number;
     memories: number;
+    memory_candidates: number;
+    kept_memories: number;
+    rejected_memories: number;
     pattern_decisions: number;
     experiment: ExperimentStatus | "none";
     experiment_observations: number;
@@ -196,6 +203,10 @@ export interface DerivedTodayView {
   };
   memory_summary: {
     count: number;
+    candidate_count: number;
+    kept_count: number;
+    rejected_count: number;
+    total_count: number;
     latest: MemoryCandidate | null;
   };
   freshness_summary: Array<{
@@ -263,6 +274,8 @@ export function createInitialLocalDemoState(): LocalDemoState {
 }
 
 export function createLocalDemoExport(state: LocalDemoState, generatedAt: string): LocalDemoExport {
+  const memorySummary = summarizeMemoryCandidates(state.memory_candidates);
+
   return {
     schema_version: "lifemax.local_demo_export.v1",
     generated_at: generatedAt,
@@ -279,7 +292,10 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       restart: state.quick_restart ? "saved" : "open",
       close: state.evening_close ? "saved" : "open",
       captures: state.captures.length,
-      memories: state.memory_candidates.length,
+      memories: memorySummary.count,
+      memory_candidates: memorySummary.total_count,
+      kept_memories: memorySummary.kept_count,
+      rejected_memories: memorySummary.rejected_count,
       pattern_decisions: state.pattern_decisions.length,
       experiment: state.experiment?.status ?? "none",
       experiment_observations: state.experiment?.observations.length ?? 0,
@@ -317,7 +333,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
       midday_rescue: normalizeMiddayRescue(parsed.midday_rescue),
       quick_restart: normalizeQuickRestart(parsed.quick_restart),
       evening_close: normalizeEveningClose(parsed.evening_close),
-      memory_candidates: Array.isArray(parsed.memory_candidates) ? parsed.memory_candidates.slice(0, 25) : [],
+      memory_candidates: normalizeMemoryCandidates(parsed.memory_candidates),
       pattern_decisions: Array.isArray(parsed.pattern_decisions) ? parsed.pattern_decisions.slice(0, 20) : [],
       experiment: normalizeExperiment(parsed.experiment, parsed.experiment_started_at ?? null),
       reviewed_at: parsed.reviewed_at ?? null,
@@ -342,7 +358,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const activePlan = state.daily_plan ?? suggestedPlan;
   const planSummary = summarizePlan(state.daily_plan);
   const patternCards = buildPatternCards(state);
-  const latestMemory = state.memory_candidates[0] ?? null;
+  const memorySummary = summarizeMemoryCandidates(state.memory_candidates);
   const rescueSummary = summarizeMiddayRescue(state.midday_rescue, planSummary, hasCheckIn);
   const restartSummary = summarizeQuickRestart(state.quick_restart);
   const dayReview = buildDayReview(state, planSummary);
@@ -376,8 +392,12 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       rescue_summary: rescueSummary,
       restart_summary: restartSummary,
       memory_summary: {
-        count: state.memory_candidates.length,
-        latest: latestMemory
+        count: memorySummary.count,
+        candidate_count: memorySummary.candidate_count,
+        kept_count: memorySummary.kept_count,
+        rejected_count: memorySummary.rejected_count,
+        total_count: memorySummary.total_count,
+        latest: memorySummary.latest
       },
       freshness_summary: freshnessSummary("missing", captureCount, state.updated_at),
       pattern_cards: patternCards,
@@ -419,8 +439,12 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
     rescue_summary: rescueSummary,
     restart_summary: restartSummary,
     memory_summary: {
-      count: state.memory_candidates.length,
-      latest: latestMemory
+      count: memorySummary.count,
+      candidate_count: memorySummary.candidate_count,
+      kept_count: memorySummary.kept_count,
+      rejected_count: memorySummary.rejected_count,
+      total_count: memorySummary.total_count,
+      latest: memorySummary.latest
     },
     freshness_summary: freshnessSummary("fresh", captureCount, state.updated_at),
     pattern_cards: patternCards,
@@ -438,6 +462,22 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
           },
     experiment_summary: summarizeExperiment(state.experiment, captureCount > 0),
     day_review: dayReview
+  };
+}
+
+function summarizeMemoryCandidates(candidates: MemoryCandidate[]): DerivedTodayView["memory_summary"] {
+  const active = candidates.filter((candidate) => candidate.status !== "rejected");
+  const candidateCount = candidates.filter((candidate) => candidate.status === "candidate").length;
+  const keptCount = candidates.filter((candidate) => candidate.status === "kept").length;
+  const rejectedCount = candidates.filter((candidate) => candidate.status === "rejected").length;
+
+  return {
+    count: active.length,
+    candidate_count: candidateCount,
+    kept_count: keptCount,
+    rejected_count: rejectedCount,
+    total_count: candidates.length,
+    latest: active[0] ?? null
   };
 }
 
@@ -525,6 +565,37 @@ function normalizeQuickRestart(value: unknown): QuickRestart | null {
     reminder_stance: normalizeRestartReminderStance(restart.reminder_stance),
     saved_at: restart.saved_at
   };
+}
+
+function normalizeMemoryCandidates(value: unknown): MemoryCandidate[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .slice(0, 25)
+    .map((item) => item as Partial<MemoryCandidate>)
+    .filter((item) => item.id && (item.title || item.detail) && item.created_at)
+    .map((item) => {
+      const createdAt = item.created_at as string;
+
+      return {
+        id: item.id as string,
+        title: item.title?.trim() || "Local memory candidate",
+        detail: item.detail?.trim() || "No detail saved.",
+        source: normalizeMemorySource(item.source),
+        status: normalizeMemoryStatus(item.status),
+        created_at: createdAt,
+        updated_at: item.updated_at ?? createdAt,
+        rejection_reason: item.rejection_reason ?? null
+      };
+    });
+}
+
+function normalizeMemorySource(value: unknown): MemoryCandidate["source"] {
+  return value === "evening_close" || value === "pattern" || value === "experiment" || value === "rescue" || value === "restart" ? value : "pattern";
+}
+
+function normalizeMemoryStatus(value: unknown): MemoryStatus {
+  return value === "candidate" || value === "kept" || value === "rejected" ? value : "candidate";
 }
 
 function normalizeSignalLevel(value: unknown): SignalLevel {

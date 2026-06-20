@@ -1,0 +1,150 @@
+{
+  "schema": "lifemax.memory_inbox_checkpoint_proof.v1",
+  "generated_at": "2026-06-20T07:36:21Z",
+  "status": "checkpoint_local_proof_passed_pending_deploy",
+  "objective": "Make the LifeMax public app feel more credible and functional by adding browser-local memory candidate management without claiming backend or live integration readiness.",
+  "scope": "LifeMax-vercel-ready browser-local app only",
+  "truth_boundary": [
+    "Memory candidates are browser-local demo records only.",
+    "No WHOOP, account sync, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend memory, reminders, or cross-device sync are connected by this slice.",
+    "The LifeMax lab boot/preflight remains red, so daily shared-context usability is not claimed."
+  ],
+  "implementation_summary": [
+    "Added MemoryStatus candidate/kept/rejected and normalized legacy localStorage memory records.",
+    "Added active/candidate/kept/rejected memory summaries to Today derivation and local export summary.",
+    "Added Today Memory inbox with edit, keep, reject, restore, and delete controls that persist in localStorage.",
+    "Preserved kept/rejected same-source memory decisions when new source events create fresh candidates; only unreviewed same-source candidates are replaced.",
+    "Updated Profile and Privacy copy to show active/kept/rejected memory status honestly.",
+    "Added unit migration tests for legacy, mixed, and unknown memory statuses.",
+    "Extended Playwright smoke to create memory candidates from real flows, edit, keep, reject, delete, refresh, restore, and verify export counts."
+  ],
+  "files_changed": [
+    "lib/local-demo-state.ts",
+    "components/screens.tsx",
+    "app/globals.css",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts"
+  ],
+  "defects_found_and_repaired": [
+    {
+      "defect": "Existing unit fixture used old memory shape after schema evolution.",
+      "repair": "Updated fixture and added migration coverage for old/mixed/unknown statuses.",
+      "rerun": "npm run typecheck and npm run test passed."
+    },
+    {
+      "defect": "Vitest was first run with unsupported Jest --runInBand flag.",
+      "repair": "Reran using repo-native npm run test command.",
+      "rerun": "npm run test passed: 3 files, 12 tests."
+    },
+    {
+      "defect": "Playwright assertion became ambiguous after memory detail textarea duplicated evening-close text.",
+      "repair": "Scoped assertion to Memory inbox summary.",
+      "rerun": "npm run screenshot:mobile rerun."
+    },
+    {
+      "defect": "Memory edit/keep success feedback disappeared because the row remounted on updated_at key changes.",
+      "repair": "Stabilized MemoryCandidateItem key to candidate id.",
+      "rerun": "npm run typecheck and npm run screenshot:mobile passed."
+    },
+    {
+      "defect": "Loose Playwright text selectors for kept/rejected counts were ambiguous between header pill and count row.",
+      "repair": "Scoped assertions to aria-label Memory counts.",
+      "rerun": "npm run screenshot:mobile passed."
+    }
+  ],
+  "commands_run": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass"
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "npm run test",
+      "result": "pass: 3 files, 12 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass: 1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "pass: build plus 2 Playwright tests"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "redacted changed-file scan for secret-shaped strings",
+      "result": "pass"
+    }
+  ],
+  "browser_evidence": {
+    "playwright_smoke": {
+      "result": "pass",
+      "flow": [
+        "open Today",
+        "save quick restart",
+        "save check-in and plan",
+        "save midday rescue and evening close",
+        "save Capture entry",
+        "save Patterns review checkpoint",
+        "start/log/end local experiment",
+        "return to Today and verify five memory candidates",
+        "edit first memory, keep it, reject one, delete one",
+        "refresh and verify persistence",
+        "restore rejected memory, delete another, verify Profile/export counts",
+        "open Privacy and confirm local-only copy"
+      ]
+    },
+    "in_app_browser_inspection": {
+      "url": "http://127.0.0.1:3000/today",
+      "result": "pass",
+      "details": "Memory inbox rendered; counts visible; privacy links present; Today/Capture/Patterns/Experiments/Profile routes present; consoleErrors empty."
+    },
+    "screenshots": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
+    ]
+  },
+  "planner_critic": {
+    "agent_id": "019ee3ec-ed66-7053-a8c9-7552f90cedfc",
+    "used": true,
+    "fixes_integrated": [
+      "Acceptance proof is behavior-based, not feature-exists based.",
+      "Profile uses derived memory summary rather than raw memory candidate length.",
+      "Kept/rejected memory decisions survive new same-source candidate creation.",
+      "Legacy/malformed localStorage migration proof added.",
+      "Truth boundary remains browser-local only."
+    ]
+  },
+  "lab_truth_boundary": {
+    "local_preflight_ok": false,
+    "boot_packet_ok": false,
+    "failures": [
+      "local-mcp-health-red",
+      "life-safety-state-not-loaded",
+      "grok-context-brief-not-loaded",
+      "status_summary_current",
+      "local_agent_preflight_green",
+      "abnormally_tired_readiness_current"
+    ]
+  },
+  "deployment": {
+    "status": "pending_after_local_proof",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread."
+  },
+  "stop_continue_decision": "continue: local proof passed, next action is git commit/push, Vercel production deploy, live smoke, proof update, independent verifier."
+}

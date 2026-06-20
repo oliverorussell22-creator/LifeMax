@@ -737,7 +737,8 @@ button:disabled {
 }
 
 .source-list,
-.event-list {
+.event-list,
+.memory-list {
   display: grid;
   gap: 8px;
   margin: 0;
@@ -825,6 +826,69 @@ button:disabled {
 .event-item time {
   color: var(--soft);
   font-size: 12px;
+}
+
+.memory-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.memory-count-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.memory-count-row span {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 740;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.memory-item {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--surface-strong);
+}
+
+.memory-item strong,
+.memory-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.memory-item-muted {
+  background: var(--surface-muted);
+  opacity: 0.84;
+}
+
+.rejected-memory-block {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px;
+  background: var(--surface-muted);
+}
+
+.rejected-memory-block summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.rejected-memory-block .memory-list {
+  margin-top: 8px;
 }
 
 .pattern-card-list {

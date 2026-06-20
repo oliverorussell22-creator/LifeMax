@@ -17,6 +17,8 @@ import {
   type ExperimentObservationSignal,
   type LocalDemoState,
   type LocalDailyPlan,
+  type MemoryCandidate,
+  type MemoryStatus,
   type PatternCard,
   type PatternDecisionStatus,
   type PlanItemStatus,
@@ -224,7 +226,10 @@ export function TodayScreen() {
           title: close.tomorrow_hint || "Tomorrow cue from evening close",
           detail: close.why || close.completed || "Evening close saved without a long note.",
           source: "evening_close" as const,
-          created_at: now
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
         },
         ...current.memory_candidates
       ].slice(0, 20),
@@ -253,9 +258,12 @@ export function TodayScreen() {
           title: `Midday rescue: ${labelForRescueReset(rescue.reset)}`,
           detail: rescue.note || rescue.next_move,
           source: "rescue" as const,
-          created_at: now
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
         },
-        ...current.memory_candidates.filter((candidate) => candidate.source !== "rescue")
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "rescue" || candidate.status !== "candidate")
       ].slice(0, 20),
       updated_at: now
     }));
@@ -316,10 +324,45 @@ export function TodayScreen() {
           title: `Restart priority: ${trimmedPriority}`,
           detail: changed || `Sleep ${restart.sleep}; reminders ${labelForRestartReminder(restart.reminder_stance)}.`,
           source: "restart" as const,
-          created_at: now
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
         },
-        ...current.memory_candidates.filter((candidate) => candidate.source !== "restart")
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "restart" || candidate.status !== "candidate")
       ].slice(0, 20),
+      updated_at: now
+    }));
+  }
+
+  function updateMemoryCandidate(
+    memoryId: string,
+    patch: Partial<Pick<MemoryCandidate, "title" | "detail" | "status" | "rejection_reason">>
+  ) {
+    const now = new Date().toISOString();
+    setLocalState((current) => ({
+      ...current,
+      memory_candidates: current.memory_candidates.map((candidate) =>
+        candidate.id === memoryId
+          ? {
+              ...candidate,
+              ...patch,
+              title: patch.title?.trim() || candidate.title,
+              detail: patch.detail?.trim() || candidate.detail,
+              rejection_reason: patch.status === "rejected" ? patch.rejection_reason ?? "Rejected in local memory inbox." : patch.rejection_reason ?? null,
+              updated_at: now
+            }
+          : candidate
+      ),
+      updated_at: now
+    }));
+  }
+
+  function deleteMemoryCandidate(memoryId: string) {
+    const now = new Date().toISOString();
+    setLocalState((current) => ({
+      ...current,
+      memory_candidates: current.memory_candidates.filter((candidate) => candidate.id !== memoryId),
       updated_at: now
     }));
   }
@@ -442,15 +485,12 @@ export function TodayScreen() {
             </button>
           </section>
 
-          <section className="panel" aria-label="Memory candidates">
-            <p className="kicker">Memory</p>
-            <h2 className="panel-title">{today.memory_summary.count ? `${today.memory_summary.count} local candidate` : "No memory candidate yet"}</h2>
-            <p className="panel-copy">
-              {today.memory_summary.latest
-                ? `${today.memory_summary.latest.title}: ${today.memory_summary.latest.detail}`
-                : "Evening close can create a local candidate for tomorrow without claiming backend memory."}
-            </p>
-          </section>
+          <MemoryInboxPanel
+            candidates={state.memory_candidates}
+            summary={today.memory_summary}
+            onDelete={deleteMemoryCandidate}
+            onUpdate={updateMemoryCandidate}
+          />
 
           <FreshnessPanel items={today.freshness_summary} />
         </aside>
@@ -511,6 +551,177 @@ function WorkflowRail({
         </a>
       ))}
     </section>
+  );
+}
+
+function MemoryInboxPanel({
+  candidates,
+  summary,
+  onUpdate,
+  onDelete
+}: Readonly<{
+  candidates: MemoryCandidate[];
+  summary: ReturnType<typeof deriveTodayView>["memory_summary"];
+  onUpdate: (memoryId: string, patch: Partial<Pick<MemoryCandidate, "title" | "detail" | "status" | "rejection_reason">>) => void;
+  onDelete: (memoryId: string) => void;
+}>) {
+  const activeCandidates = candidates.filter((candidate) => candidate.status !== "rejected").slice(0, 5);
+  const rejectedCandidates = candidates.filter((candidate) => candidate.status === "rejected").slice(0, 3);
+
+  return (
+    <section className="panel memory-panel" aria-label="Memory inbox">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Memory</p>
+          <h2 className="panel-title">
+            {summary.count ? `${summary.count} active local ${summary.count === 1 ? "memory" : "memories"}` : "No active memory yet"}
+          </h2>
+        </div>
+        <span className={summary.kept_count ? "state-pill state-pill-good" : "state-pill"}>{summary.kept_count} kept</span>
+      </div>
+      <p className="panel-copy">
+        {summary.latest
+          ? `${summary.latest.title}: ${summary.latest.detail}`
+          : "Close, rescue, restart, review, or experiment notes can create local candidates. Nothing is sent to a server."}
+      </p>
+      <div className="memory-count-row" aria-label="Memory counts">
+        <span>{summary.candidate_count} candidate{summary.candidate_count === 1 ? "" : "s"}</span>
+        <span>{summary.kept_count} kept</span>
+        <span>{summary.rejected_count} rejected</span>
+      </div>
+      {activeCandidates.length ? (
+        <ul className="memory-list" aria-label="Active memory candidates">
+          {activeCandidates.map((candidate) => (
+            <MemoryCandidateItem
+              candidate={candidate}
+              key={candidate.id}
+              onDelete={onDelete}
+              onUpdate={onUpdate}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p className="field-help">No active local memories. Rejected items stay out of Today guidance unless restored.</p>
+      )}
+      {rejectedCandidates.length ? (
+        <details className="rejected-memory-block" aria-label="Rejected memory candidates">
+          <summary>{summary.rejected_count} rejected local memory</summary>
+          <ul className="memory-list">
+            {rejectedCandidates.map((candidate) => (
+              <li className="memory-item memory-item-muted" key={candidate.id}>
+                <span className="event-kind">{labelForMemorySource(candidate.source)}</span>
+                <strong>{candidate.title}</strong>
+                <span>{candidate.detail}</span>
+                <p className="field-help">{candidate.rejection_reason ?? "Rejected locally."}</p>
+                <div className="action-row">
+                  <button className="secondary-action" type="button" onClick={() => onUpdate(candidate.id, { status: "candidate", rejection_reason: null })}>
+                    Restore
+                  </button>
+                  <button className="secondary-action" type="button" onClick={() => onDelete(candidate.id)}>
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+      <p className="field-help">Keep means “use this locally.” Reject removes it from active Today guidance. Delete removes the browser-local record.</p>
+    </section>
+  );
+}
+
+function MemoryCandidateItem({
+  candidate,
+  onUpdate,
+  onDelete
+}: Readonly<{
+  candidate: MemoryCandidate;
+  onUpdate: (memoryId: string, patch: Partial<Pick<MemoryCandidate, "title" | "detail" | "status" | "rejection_reason">>) => void;
+  onDelete: (memoryId: string) => void;
+}>) {
+  const [draft, setDraft] = useState({
+    title: candidate.title,
+    detail: candidate.detail
+  });
+  const [message, setMessage] = useState("");
+  const titleId = `memory-title-${candidate.id}`;
+  const detailId = `memory-detail-${candidate.id}`;
+
+  function saveEdit() {
+    const title = draft.title.trim();
+    const detail = draft.detail.trim();
+    if (!title && !detail) {
+      setMessage("Keep at least a title or detail before saving.");
+      return;
+    }
+
+    onUpdate(candidate.id, {
+      title: title || "Local memory candidate",
+      detail: detail || "No detail saved."
+    });
+    setMessage("Memory edit saved locally.");
+  }
+
+  function setStatus(status: MemoryStatus) {
+    onUpdate(candidate.id, {
+      status,
+      rejection_reason: status === "rejected" ? "Rejected in local memory inbox." : null
+    });
+    setMessage(status === "kept" ? "Memory kept locally." : "Memory rejected locally.");
+  }
+
+  return (
+    <li className="memory-item" aria-label={`Memory candidate: ${candidate.title}`}>
+      <div className="section-heading-row">
+        <span className="event-kind">{labelForMemorySource(candidate.source)}</span>
+        <span className={candidate.status === "kept" ? "state-pill state-pill-good" : "state-pill"}>{candidate.status}</span>
+      </div>
+      <label className="stacked-input" htmlFor={titleId}>
+        <span>Memory title</span>
+        <input
+          id={titleId}
+          aria-label={`Memory title: ${candidate.title}`}
+          className="text-input"
+          value={draft.title}
+          onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
+        />
+      </label>
+      <label className="stacked-input" htmlFor={detailId}>
+        <span>Memory detail</span>
+        <textarea
+          id={detailId}
+          aria-label={`Memory detail: ${candidate.title}`}
+          className="text-area compact-text-area"
+          value={draft.detail}
+          onChange={(event) => setDraft((current) => ({ ...current, detail: event.target.value }))}
+        />
+      </label>
+      <div className="action-row">
+        <button className="secondary-action" type="button" onClick={saveEdit}>
+          Save edit
+        </button>
+        <button
+          className="secondary-action"
+          type="button"
+          aria-pressed={candidate.status === "kept"}
+          onClick={() => setStatus("kept")}
+        >
+          Keep
+        </button>
+        <button className="secondary-action" type="button" onClick={() => setStatus("rejected")}>
+          Reject
+        </button>
+        <button className="secondary-action" type="button" onClick={() => onDelete(candidate.id)}>
+          Delete
+        </button>
+      </div>
+      {message ? (
+        <p className="field-help" role="status">
+          {message}
+        </p>
+      ) : null}
+    </li>
   );
 }
 
@@ -1168,9 +1379,12 @@ export function PatternsScreen() {
           title: review.tomorrow_cue,
           detail: review.summary,
           source: "pattern" as const,
-          created_at: now
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
         },
-        ...current.memory_candidates.filter((candidate) => candidate.source !== "pattern")
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "pattern" || candidate.status !== "candidate")
       ].slice(0, 20),
       updated_at: now
     }));
@@ -1368,9 +1582,12 @@ export function ExperimentsScreen() {
           title: `Experiment observation: ${labelForExperimentSignal(observationSignal)}`,
           detail: note,
           source: "experiment" as const,
-          created_at: now
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
         },
-        ...current.memory_candidates.filter((candidate) => candidate.source !== "experiment")
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "experiment" || candidate.status !== "candidate")
       ].slice(0, 20),
       updated_at: now
     }));
@@ -1520,6 +1737,7 @@ export function ProfileScreen() {
     tone: "idle",
     message: "Export stays on this device until you choose where to save it."
   });
+  const today = useMemo(() => deriveTodayView(state), [state]);
   const exportPreview = useMemo(() => serializeLocalDemoExport(state, state.updated_at ?? "not-exported-yet"), [state]);
 
   function createFreshExportJson() {
@@ -1573,12 +1791,14 @@ export function ProfileScreen() {
             <StatusGrid
               items={[
                 { label: "Check-in", value: state.check_in ? "saved" : "empty" },
-                { label: "Plan", value: state.daily_plan ? deriveTodayView(state).plan_summary.progress_label : "empty" },
+                { label: "Plan", value: state.daily_plan ? today.plan_summary.progress_label : "empty" },
                 { label: "Rescue", value: state.midday_rescue ? "saved" : "open" },
                 { label: "Restart", value: state.quick_restart ? "saved" : "open" },
                 { label: "Close", value: state.evening_close ? "saved" : "open" },
                 { label: "Captures", value: String(state.captures.length) },
-                { label: "Memories", value: String(state.memory_candidates.length) },
+                { label: "Active memories", value: String(today.memory_summary.count) },
+                { label: "Kept memories", value: String(today.memory_summary.kept_count) },
+                { label: "Rejected memories", value: String(today.memory_summary.rejected_count) },
                 { label: "Experiment", value: state.experiment?.status ?? "none" },
                 { label: "Experiment observations", value: String(state.experiment?.observations.length ?? 0) },
                 { label: "Review", value: state.reviewed_at ? "saved" : "open" }
@@ -1660,7 +1880,7 @@ export function PrivacyScreen() {
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
+              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">
@@ -1842,6 +2062,22 @@ function labelForRestartReminder(stance: RestartReminderStance) {
 
 function labelForExperimentSignal(signal: ExperimentObservationSignal) {
   return experimentSignalOptions.find((item) => item.value === signal)?.label ?? "Unclear";
+}
+
+function labelForMemorySource(source: MemoryCandidate["source"]) {
+  switch (source) {
+    case "evening_close":
+      return "Evening close";
+    case "pattern":
+      return "Review";
+    case "experiment":
+      return "Experiment";
+    case "rescue":
+      return "Rescue";
+    case "restart":
+    default:
+      return "Restart";
+  }
 }
 
 function formatExperimentObservationCount(count: number) {
