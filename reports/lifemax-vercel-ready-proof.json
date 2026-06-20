@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.vercel_ready_proof.v2",
   "version": 2,
-  "generated_at": "2026-06-20T07:36:21Z",
+  "generated_at": "2026-06-20T07:43:25Z",
   "risk_class": "Q3",
   "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel, then explicitly approved production promotion with PRODUCTION_DEPLOY_APPROVED=true promote. This packet records browser-local demo deployment proof only; credential changes, backend/service activation, auth setting edits, and DNS/custom-domain mutation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
@@ -409,14 +409,41 @@
   },
   "latest_cycle": {
     "id": "memory-inbox-local-review",
-    "generated_at": "2026-06-20T07:36:21Z",
-    "status": "checkpoint_local_proof_passed_pending_deploy",
+    "generated_at": "2026-06-20T07:43:25Z",
+    "status": "checkpoint_deployed_and_smoked",
     "proof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-memory-inbox-proof-2026-06-20.json",
     "local_checks_passed": true,
-    "deploy_status": "pending"
+    "deploy_status": "production_deployed_and_smoked",
+    "deployment": {
+      "status": "production_deployed_and_smoked",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+      "lifemax_web": {
+        "alias": "https://lifemax-web.vercel.app",
+        "deployment_id": "dpl_GUH7KC5mAyGJjP865jtvH8mQsuEM",
+        "deployment_url": "https://lifemax-ahs6b7yo5-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "life_max_omega": {
+        "alias": "https://life-max-omega.vercel.app",
+        "deployment_id": "dpl_2YQdGAEiYWP4bgbRatS78McGpKXF",
+        "deployment_url": "https://life-niirwudr9-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "live_smoke": {
+        "result": "pass",
+        "generated_at": "2026-06-20T07:43:25Z",
+        "targets": [
+          "https://life-max-omega.vercel.app/today",
+          "https://lifemax-web.vercel.app/today"
+        ],
+        "flow": "On both aliases, saved quick restart, midday rescue, and evening close; verified 3 memory candidates; edited and kept one, rejected one, deleted one; refreshed and verified persistence; opened Profile export and verified kept/rejected counts.",
+        "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+        "errors": []
+      }
+    }
   },
   "memory_inbox_repair": {
-    "status": "checkpoint_local_proof_passed_pending_deploy",
+    "status": "checkpoint_deployed_and_smoked",
     "proof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-memory-inbox-proof-2026-06-20.json",
     "files_changed": [
       "lib/local-demo-state.ts",
@@ -471,7 +498,38 @@
     "screenshots": [
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
-      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
-    ]
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-memory-inbox-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-memory-profile-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-memory-inbox-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-memory-profile-mobile-390.png"
+    ],
+    "deployment": {
+      "status": "production_deployed_and_smoked",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+      "lifemax_web": {
+        "alias": "https://lifemax-web.vercel.app",
+        "deployment_id": "dpl_GUH7KC5mAyGJjP865jtvH8mQsuEM",
+        "deployment_url": "https://lifemax-ahs6b7yo5-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "life_max_omega": {
+        "alias": "https://life-max-omega.vercel.app",
+        "deployment_id": "dpl_2YQdGAEiYWP4bgbRatS78McGpKXF",
+        "deployment_url": "https://life-niirwudr9-olivers-projects-25fda214.vercel.app",
+        "status": "READY"
+      },
+      "live_smoke": {
+        "result": "pass",
+        "generated_at": "2026-06-20T07:43:25Z",
+        "targets": [
+          "https://life-max-omega.vercel.app/today",
+          "https://lifemax-web.vercel.app/today"
+        ],
+        "flow": "On both aliases, saved quick restart, midday rescue, and evening close; verified 3 memory candidates; edited and kept one, rejected one, deleted one; refreshed and verified persistence; opened Profile export and verified kept/rejected counts.",
+        "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+        "errors": []
+      }
+    }
   }
 }

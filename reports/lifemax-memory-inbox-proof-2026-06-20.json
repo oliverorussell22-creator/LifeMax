@@ -1,7 +1,7 @@
 {
   "schema": "lifemax.memory_inbox_checkpoint_proof.v1",
-  "generated_at": "2026-06-20T07:36:21Z",
-  "status": "checkpoint_local_proof_passed_pending_deploy",
+  "generated_at": "2026-06-20T07:43:25Z",
+  "status": "checkpoint_deployed_and_smoked",
   "objective": "Make the LifeMax public app feel more credible and functional by adding browser-local memory candidate management without claiming backend or live integration readiness.",
   "scope": "LifeMax-vercel-ready browser-local app only",
   "truth_boundary": [
@@ -116,8 +116,23 @@
     "screenshots": [
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
       "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png",
-      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png"
-    ]
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-memory-inbox-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-memory-profile-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-memory-inbox-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-memory-profile-mobile-390.png"
+    ],
+    "deployed_smoke": {
+      "result": "pass",
+      "generated_at": "2026-06-20T07:43:25Z",
+      "targets": [
+        "https://life-max-omega.vercel.app/today",
+        "https://lifemax-web.vercel.app/today"
+      ],
+      "flow": "On both aliases, saved quick restart, midday rescue, and evening close; verified 3 memory candidates; edited and kept one, rejected one, deleted one; refreshed and verified persistence; opened Profile export and verified kept/rejected counts.",
+      "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+      "errors": []
+    }
   },
   "planner_critic": {
     "agent_id": "019ee3ec-ed66-7053-a8c9-7552f90cedfc",
@@ -143,8 +158,31 @@
     ]
   },
   "deployment": {
-    "status": "pending_after_local_proof",
-    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread."
+    "status": "production_deployed_and_smoked",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_GUH7KC5mAyGJjP865jtvH8mQsuEM",
+      "deployment_url": "https://lifemax-ahs6b7yo5-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_2YQdGAEiYWP4bgbRatS78McGpKXF",
+      "deployment_url": "https://life-niirwudr9-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "live_smoke": {
+      "result": "pass",
+      "generated_at": "2026-06-20T07:43:25Z",
+      "targets": [
+        "https://life-max-omega.vercel.app/today",
+        "https://lifemax-web.vercel.app/today"
+      ],
+      "flow": "On both aliases, saved quick restart, midday rescue, and evening close; verified 3 memory candidates; edited and kept one, rejected one, deleted one; refreshed and verified persistence; opened Profile export and verified kept/rejected counts.",
+      "dimensions": "390/390 mobile scrollWidth/clientWidth on both aliases",
+      "errors": []
+    }
   },
-  "stop_continue_decision": "continue: local proof passed, next action is git commit/push, Vercel production deploy, live smoke, proof update, independent verifier."
+  "stop_continue_decision": "checkpoint, not complete: memory inbox product code and proof are pushed/deployed/smoked on both public aliases; shared-context/Wave 1 readiness remains red and unproved."
 }
