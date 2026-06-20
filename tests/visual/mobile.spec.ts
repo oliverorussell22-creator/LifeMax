@@ -169,9 +169,25 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.getByTestId("save-experiment-decision").click();
   await expect(page.getByRole("heading", { name: "Experiment decision saved." })).toBeVisible();
   await expect(page.getByLabel("Experiment result").getByText("Decision: keep")).toBeVisible();
+  await expect(page.getByLabel("Experiment result").getByText("Plan handoff")).toBeVisible();
+  await page.getByTestId("use-experiment-plan").click();
+  await expect(page.getByLabel("Experiment result").getByRole("status")).toContainText(
+    "Experiment decision moved into Today's browser-local plan."
+  );
   await page.locator('section[aria-label="Experiment result"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
   await page.locator('section[aria-label="Experiment result"]').screenshot({
-    path: path.join(highFunctionalityDir, "local-experiment-decision-mobile-390.png")
+    path: path.join(highFunctionalityDir, "local-experiment-plan-handoff-mobile-390.png")
+  });
+  await page.goto("/today");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Repeat kept part: protect first useful block");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 1")).toHaveValue("Capture one before/after signal");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 2")).toHaveValue("Close the loop without adding another rule");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Avoid today")).toHaveValue("Do not scale beyond one block");
+  await page.reload();
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Repeat kept part: protect first useful block");
+  await page.locator('section[aria-label="Daily plan editor"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Daily plan editor"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-experiment-plan-today-mobile-390.png")
   });
 
   await page.goto("/privacy");
@@ -183,15 +199,15 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.reload();
   await expect(page.getByText("Saved locally")).toBeVisible();
   await expect(page.getByText("Local captures")).toBeVisible();
-  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Walk before opening messages");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Repeat kept part: protect first useful block");
   await expect(page.getByLabel("Today command center").getByText("Ten minute walk without phone")).toBeVisible();
   await expect(page.getByLabel("Current state summary").getByText("0/3 done")).toBeVisible();
   await expect(page.getByLabel("Rescue: saved")).toBeVisible();
   await expect(page.getByLabel("Restart: saved")).toBeVisible();
   const memoryInbox = page.getByLabel("Memory inbox");
   const memoryCounts = memoryInbox.getByLabel("Memory counts");
-  await expect(memoryInbox.getByRole("heading", { name: "6 active local memories" })).toBeVisible();
-  await expect(memoryCounts.getByText("6 candidates")).toBeVisible();
+  await expect(memoryInbox.getByRole("heading", { name: "7 active local memories" })).toBeVisible();
+  await expect(memoryCounts.getByText("7 candidates")).toBeVisible();
   const firstMemory = memoryInbox.locator(".memory-item").first();
   await firstMemory.getByLabel(/Memory title:/).fill("Protected first block worked");
   await firstMemory.getByLabel(/Memory detail:/).fill("Morning block felt cleaner after the protected start.");
@@ -201,17 +217,17 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(firstMemory.getByRole("status")).toContainText("Memory kept locally");
   await expect(memoryCounts.getByText("1 kept")).toBeVisible();
   await memoryInbox.locator(".memory-item").nth(1).getByRole("button", { name: "Reject" }).click();
-  await expect(memoryInbox.getByRole("heading", { name: "5 active local memories" })).toBeVisible();
+  await expect(memoryInbox.getByRole("heading", { name: "6 active local memories" })).toBeVisible();
   await expect(memoryCounts.getByText("1 rejected")).toBeVisible();
   await memoryInbox.locator(".memory-item").nth(2).getByRole("button", { name: "Delete" }).click();
-  await expect(memoryInbox.getByRole("heading", { name: "4 active local memories" })).toBeVisible();
-  await expect(memoryCounts.getByText("3 candidates")).toBeVisible();
+  await expect(memoryInbox.getByRole("heading", { name: "5 active local memories" })).toBeVisible();
+  await expect(memoryCounts.getByText("4 candidates")).toBeVisible();
   await expect(page.getByLabel("One restart priority")).toHaveValue("Open the client draft");
   await expect(page.getByLabel("What changed")).toHaveValue("Missed yesterday after travel");
-  await expect(page.getByLabel("Must-do")).toHaveValue("Walk before opening messages");
-  await expect(page.getByLabel("Optional move 1")).toHaveValue("Draft the client note");
-  await expect(page.getByLabel("Optional move 2")).toHaveValue("Close the loop and archive the result");
-  await expect(page.getByLabel("Avoid today")).toHaveValue("Do not treat one archived day as a trend");
+  await expect(page.getByLabel("Must-do")).toHaveValue("Repeat kept part: protect first useful block");
+  await expect(page.getByLabel("Optional move 1")).toHaveValue("Capture one before/after signal");
+  await expect(page.getByLabel("Optional move 2")).toHaveValue("Close the loop without adding another rule");
+  await expect(page.getByLabel("Avoid today")).toHaveValue("Do not scale beyond one block");
   await expect(page.getByLabel("Next lower-intensity move")).toHaveValue("Ten minute walk without phone");
   await expect(page.getByLabel("Defer until")).toHaveValue("after lunch");
   await expect(page.getByLabel("Rescue note")).toHaveValue("Messages scattered the plan");
@@ -220,17 +236,17 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Why")).toHaveValue("Afternoon friction was higher than expected.");
   await expect(page.getByLabel("Tomorrow hint")).toHaveValue("Walk before opening messages");
   await page.reload();
-  await expect(memoryInbox.getByRole("heading", { name: "4 active local memories" })).toBeVisible();
+  await expect(memoryInbox.getByRole("heading", { name: "5 active local memories" })).toBeVisible();
   await expect(memoryInbox.getByRole("textbox", { name: "Memory title: Protected first block worked" })).toHaveValue("Protected first block worked");
   await expect(memoryCounts.getByText("1 kept")).toBeVisible();
   await expect(memoryCounts.getByText("1 rejected")).toBeVisible();
   await memoryInbox.getByText("1 rejected local memory").click();
   await expect(memoryInbox.getByLabel("Rejected memory candidates").getByText("Rejected in local memory inbox.")).toBeVisible();
   await memoryInbox.locator('section,details').filter({ hasText: "1 rejected local memory" }).getByRole("button", { name: "Restore" }).click();
-  await expect(memoryInbox.getByRole("heading", { name: "5 active local memories" })).toBeVisible();
+  await expect(memoryInbox.getByRole("heading", { name: "6 active local memories" })).toBeVisible();
   await expect(memoryCounts.getByText("0 rejected")).toBeVisible();
   await memoryInbox.locator(".memory-item").last().getByRole("button", { name: "Delete" }).click();
-  await expect(memoryInbox.getByRole("heading", { name: "4 active local memories" })).toBeVisible();
+  await expect(memoryInbox.getByRole("heading", { name: "5 active local memories" })).toBeVisible();
 
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,

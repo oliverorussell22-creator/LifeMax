@@ -755,6 +755,88 @@ export function createFocusSessionFromPlan(state: LocalDemoState, timestamp: str
   };
 }
 
+export function createPlanFromExperimentDecision(
+  experiment: LocalExperiment,
+  currentPlan: LocalDailyPlan | null,
+  timestamp: string
+): LocalDailyPlan {
+  const intervention = experiment.intervention.trim() || "the tested intervention";
+  const compactIntervention = compactExperimentIntervention(intervention);
+  const decision = experiment.decision ?? "inconclusive";
+  const observationCount = experiment.observations.length;
+  const baseShutdown = currentPlan?.shutdown_target || "8:30 PM";
+
+  if (decision === "keep") {
+    return {
+      must_do: `Repeat kept part: ${compactIntervention}`,
+      optional_1: "Capture one before/after signal",
+      optional_2: "Close the loop without adding another rule",
+      avoid_today: "Do not scale beyond one block",
+      shutdown_target: baseShutdown,
+      item_statuses: createOpenPlanStatuses(),
+      accepted_at: timestamp,
+      updated_at: timestamp
+    };
+  }
+
+  if (decision === "adjust") {
+    return {
+      must_do: `Adjust one variable: ${compactIntervention}`,
+      optional_1: "Capture what changes after the adjustment",
+      optional_2: "Keep the old version easy to drop",
+      avoid_today: "Do not change more than one variable today",
+      shutdown_target: baseShutdown,
+      item_statuses: createOpenPlanStatuses(),
+      accepted_at: timestamp,
+      updated_at: timestamp
+    };
+  }
+
+  if (decision === "drop") {
+    return {
+      must_do: "Leave the tested intervention out today",
+      optional_1: "Capture what gets easier without it",
+      optional_2: currentPlan?.must_do || "Pick one replacement priority",
+      avoid_today: "Do not retry without new evidence",
+      shutdown_target: baseShutdown,
+      item_statuses: createOpenPlanStatuses(),
+      accepted_at: timestamp,
+      updated_at: timestamp
+    };
+  }
+
+  return {
+    must_do: currentPlan?.must_do || "Keep watching without changing the routine",
+    optional_1: observationCount ? "Capture one cleaner comparison signal" : "Capture one clean observation",
+    optional_2: "Review before starting another experiment",
+    avoid_today: "Do not treat an inconclusive result as proof",
+    shutdown_target: baseShutdown,
+    item_statuses: createOpenPlanStatuses(),
+    accepted_at: timestamp,
+    updated_at: timestamp
+  };
+}
+
+function compactExperimentIntervention(value: string): string {
+  const normalized = value.trim().replace(/\s+/g, " ");
+  if (!normalized) return "tested intervention";
+  if (normalized.toLowerCase().includes("protect the first useful block")) return "protect first useful block";
+  if (normalized.length <= 28) return normalized;
+
+  const firstClause = normalized.split(/[,.]/)[0]?.trim();
+  if (firstClause && firstClause.length <= 28) return firstClause;
+
+  return `${normalized.slice(0, 25).trim()}...`;
+}
+
+function createOpenPlanStatuses(): Record<PlanSlot, PlanItemStatus> {
+  return {
+    must_do: "open",
+    optional_1: "open",
+    optional_2: "open"
+  };
+}
+
 function normalizeDailyPlan(value: unknown): LocalDailyPlan | null {
   if (!value || typeof value !== "object") return null;
   const plan = value as Partial<LocalDailyPlan>;
@@ -1488,7 +1570,7 @@ function nextExperimentAction(counts: Record<ExperimentObservationSignal, number
 function nextEndedExperimentAction(experiment: LocalExperiment): string {
   switch (experiment.decision) {
     case "keep":
-      return "Use the kept decision as a local memory cue, not as medical advice.";
+      return "Use the kept decision as a local plan draft or memory cue, not as medical advice.";
     case "adjust":
       return "Change one variable before starting another local experiment.";
     case "drop":

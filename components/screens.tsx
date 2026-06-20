@@ -6,6 +6,7 @@ import { ScreenHeader, StatusGrid } from "@/components/ui";
 import {
   createFocusSessionFromPlan,
   createDayArchive,
+  createPlanFromExperimentDecision,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
   deriveTodayView,
@@ -2095,8 +2096,9 @@ export function ExperimentsScreen() {
   });
   const [decisionMessage, setDecisionMessage] = useState<{ tone: "idle" | "success" | "error"; text: string }>({
     tone: "idle",
-    text: "A decision creates a local memory candidate only."
+    text: "A decision creates a local memory candidate and optional plan handoff."
   });
+  const [planHandoffMessage, setPlanHandoffMessage] = useState("");
   const activeExperiment = state.experiment?.status === "active" ? state.experiment : null;
   const endedExperiment = state.experiment && state.experiment.status !== "active" ? state.experiment : null;
   const canStart = today.pattern_summary.ready && !activeExperiment;
@@ -2106,6 +2108,7 @@ export function ExperimentsScreen() {
 
   function startExperiment() {
     const now = new Date().toISOString();
+    setPlanHandoffMessage("");
     setLocalState((current) => ({
       ...current,
       experiment: createExperimentFromPattern(today.pattern_cards[0], now),
@@ -2157,6 +2160,7 @@ export function ExperimentsScreen() {
     }));
     setObservationNote("");
     setObservationSignal("unclear");
+    setPlanHandoffMessage("");
     setObservationMessage({ tone: "success", text: "Observation saved locally. It now appears in the log and export preview." });
   }
 
@@ -2204,7 +2208,39 @@ export function ExperimentsScreen() {
       updated_at: now
     }));
     setDecisionNote("");
+    setPlanHandoffMessage("");
     setDecisionMessage({ tone: "success", text: "Experiment decision saved locally and added to the memory inbox." });
+  }
+
+  function useExperimentDecisionInPlan() {
+    if (!endedExperiment || !endedExperiment.decision) {
+      setPlanHandoffMessage("Save an experiment decision before using it in Today.");
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const decisionLabel = labelForExperimentDecision(endedExperiment.decision);
+    setLocalState((current) => ({
+      ...current,
+      daily_plan: createPlanFromExperimentDecision(endedExperiment, current.daily_plan, now),
+      focus_session: null,
+      plan_done: false,
+      memory_candidates: [
+        {
+          id: `memory-experiment-plan-${Date.now()}`,
+          title: `Plan from experiment: ${decisionLabel}`,
+          detail: endedExperiment.result_note || endedExperiment.intervention,
+          source: "experiment" as const,
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
+        },
+        ...current.memory_candidates.filter((candidate) => !candidate.id.startsWith("memory-experiment-plan-"))
+      ].slice(0, 20),
+      updated_at: now
+    }));
+    setPlanHandoffMessage("Experiment decision moved into Today's browser-local plan.");
   }
 
   return (
@@ -2343,7 +2379,26 @@ export function ExperimentsScreen() {
               <p className="kicker">Result</p>
               <h2 className="panel-title">{today.experiment_summary.title}</h2>
               <p className="panel-copy">{today.experiment_summary.detail}</p>
+              <div className="insight-callout">
+                <strong>Plan handoff</strong>
+                <span>Use the saved decision as a cautious local plan draft. No routine changes automatically.</span>
+              </div>
+              <button
+                className="primary-action full-width"
+                type="button"
+                disabled={!endedExperiment?.decision}
+                onClick={useExperimentDecisionInPlan}
+                data-testid="use-experiment-plan"
+              >
+                Use decision in Today plan
+              </button>
+              {planHandoffMessage ? (
+                <p className="export-status export-status-success" role="status">
+                  {planHandoffMessage}
+                </p>
+              ) : null}
               <p className="field-help">Next: {today.experiment_summary.next_action}</p>
+              <p className="field-help">This replaces the browser-local Today plan, clears any active focus block, and resets plan items to open.</p>
             </section>
           ) : null}
         </div>

@@ -8,6 +8,7 @@ import {
   createDayArchive,
   createInitialLocalDemoState,
   createLocalDemoExport,
+  createPlanFromExperimentDecision,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
   createSuggestedPlan,
@@ -375,6 +376,11 @@ describe("Wave 0 scaffold contract", () => {
 
     const view = deriveTodayView(stored);
     const localExport = createLocalDemoExport(stored, "2026-06-20T22:00:00.000Z");
+    const handoffPlan = createPlanFromExperimentDecision(
+      stored.experiment!,
+      createSuggestedPlan(false, "2026-06-20T21:00:00.000Z"),
+      "2026-06-20T22:05:00.000Z"
+    );
 
     expect(view.experiment_summary.status).toBe("stopped");
     expect(view.experiment_summary.title).toBe("Experiment decision saved.");
@@ -382,7 +388,11 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.experiment_summary.better_count).toBe(2);
     expect(view.experiment_summary.same_count).toBe(1);
     expect(view.experiment_summary.detail).toContain("Decision: keep");
-    expect(view.experiment_summary.next_action).toContain("local memory cue");
+    expect(view.experiment_summary.next_action).toContain("local plan draft");
+    expect(handoffPlan.must_do).toBe("Repeat kept part: protect first useful block");
+    expect(handoffPlan.optional_1).toBe("Capture one before/after signal");
+    expect(handoffPlan.avoid_today).toBe("Do not scale beyond one block");
+    expect(handoffPlan.item_statuses).toEqual({ must_do: "open", optional_1: "open", optional_2: "open" });
     expect(localExport.summary.experiment).toBe("stopped");
     expect(localExport.summary.experiment_decision).toBe("keep");
     expect(localExport.summary.experiment_observations).toBe(3);

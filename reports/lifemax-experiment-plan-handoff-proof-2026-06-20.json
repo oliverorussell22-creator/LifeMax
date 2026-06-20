@@ -1,0 +1,130 @@
+{
+  "schema": "lifemax.experiment_plan_handoff_proof.v1",
+  "objective": "Make the Experiments surface higher-functionality by letting a saved browser-local experiment decision create a cautious Today plan, while preserving the truth boundary that no backend, medical automation, reminders, WHOOP, accounts, AI, Telegram, n8n, public MCP, Grok, Postgres, or cross-device sync is connected.",
+  "riskClass": "Q3 because this checkpoint is intended for Git push and Vercel production deployment under prior explicit production approval; no credentials, auth settings, DNS, backend services, or destructive service state are changed.",
+  "approvalStatus": "Production promotion was explicitly approved earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote. This report covers browser-local demo behavior only.",
+  "status": "local_proven_deploy_pending_not_complete",
+  "generatedAt": "2026-06-20T11:20:23Z",
+  "changedFiles": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/components/screens.tsx",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/lib/local-demo-state.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/next.config.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/scaffold-smoke.test.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/tests/visual/mobile.spec.ts",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-experiment-plan-handoff-proof-2026-06-20.json"
+  ],
+  "changedBehavior": [
+    "A saved local experiment decision now exposes a real Use decision in Today plan control.",
+    "The handoff replaces the browser-local Today plan, clears stale focus session state, resets plan item statuses to open, and adds a local memory candidate explaining the plan source.",
+    "Generated plan copy is compact enough for mobile inputs after visual repair.",
+    "The result panel copy explicitly says the handoff is local, cautious, and not automatic routine change.",
+    "Next build workers are capped at one in next.config.ts to avoid local EAGAIN worker-spawn failures on this process-constrained machine."
+  ],
+  "functionalFlowsProvenLocally": [
+    "Reset local demo data from Profile.",
+    "Saved a manual check-in.",
+    "Saved one Capture event for protected first block.",
+    "Started a local experiment from the unlocked Experiments builder.",
+    "Logged a Better observation.",
+    "Saved a Keep experiment decision with a decision note.",
+    "Clicked Use decision in Today plan and saw a visible success status.",
+    "Navigated to Today and verified plan fields changed to the experiment-derived plan.",
+    "Reloaded Today and verified the plan persisted.",
+    "Opened Privacy and verified the WHOOP/backend boundary copy remained reachable.",
+    "Checked mobile viewport width and scroll width at 390px; no horizontal overflow.",
+    "Checked browser console errors in the in-app browser; none were reported."
+  ],
+  "verifiedPlanAfterReload": {
+    "must_do": "Repeat kept part: protect first useful block",
+    "optional_1": "Capture one before/after signal",
+    "optional_2": "Close the loop without adding another rule",
+    "avoid_today": "Do not scale beyond one block",
+    "shutdown_target": "8:30 PM",
+    "memory_heading": "3 active local memories"
+  },
+  "loopEvidence": [
+    {
+      "cycle": "implementation",
+      "defectOrRisk": "An experiment decision could remain passive proof rather than changing any visible daily workflow.",
+      "repair": "Added createPlanFromExperimentDecision and wired the Experiment result panel to create a browser-local Today plan."
+    },
+    {
+      "cycle": "local_checks",
+      "defectOrRisk": "Next build failed after compile/typecheck because it tried to spawn 11 page-data workers and hit EAGAIN.",
+      "repair": "Set next.config.ts experimental.cpus to 1 and reran build successfully with one worker."
+    },
+    {
+      "cycle": "browser_tooling",
+      "defectOrRisk": "Standalone headless Playwright mobile test failed twice before app interaction because Chromium launch timed out.",
+      "repair": "Changed strategy to the in-app browser after repeated identical launch failure and completed the focused mobile flow there."
+    },
+    {
+      "cycle": "visual_critique",
+      "defectOrRisk": "The first generated must-do value clipped inside the mobile input.",
+      "repair": "Compacted the generated intervention label to Repeat kept part: protect first useful block and reran checks/proof."
+    },
+    {
+      "cycle": "visual_critique",
+      "defectOrRisk": "The first avoid_today value also clipped in the mobile input.",
+      "repair": "Shortened the boundary to Do not scale beyond one block and reran checks/proof."
+    }
+  ],
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "result": "pass"
+    },
+    {
+      "command": "npm test",
+      "result": "pass: 3 files, 18 tests"
+    },
+    {
+      "command": "npm run lint",
+      "result": "pass"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass after worker cap; static routes include /, /today, /capture, /patterns, /experiments, /profile, and /privacy"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "pass: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "pass: 1 file, 1 test"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "blocked: browserType.launch timed out twice before app interaction; recorded as an environment/tooling blocker, not app proof"
+    },
+    {
+      "command": "in-app browser focused mobile proof",
+      "result": "pass: experiment handoff changed Today plan, persisted after reload, opened Privacy, no console errors, no 390px horizontal overflow"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "changed diff no-secrets scan",
+      "result": "pass: no secret-shaped diff matches"
+    }
+  ],
+  "browserEvidence": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/iab-experiment-plan-handoff-viewport-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/iab-experiment-plan-today-top-mobile-390.png"
+  ],
+  "deployment": {
+    "status": "pending_after_local_proof",
+    "productionApproved": true,
+    "nextStep": "Commit and push this slice, deploy/promote under the recorded approval, then live-smoke the public aliases and update proof."
+  },
+  "residualRisks": [
+    "This proves browser-local demo behavior only.",
+    "The LifeMax lab/control-plane preflight and boot packet remain red, so full LifeMax daily shared-context usability is not complete.",
+    "Standalone headless Playwright mobile screenshots remain blocked by local Chromium launch timeout; in-app browser proof is the current visible fallback.",
+    "No backend, account, WHOOP, AI, Telegram, n8n, public MCP, Grok, Postgres, reminder, timer, or cross-device sync behavior is proven."
+  ],
+  "completionDecision": "checkpoint, not complete: local experiment-to-plan behavior is proven and ready to deploy, but deployment/live smoke and independent verifier audit still need to run."
+}
