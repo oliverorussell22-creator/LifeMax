@@ -949,7 +949,8 @@ button:disabled {
 }
 
 .experiment-log-form,
-.experiment-observation-block {
+.experiment-observation-block,
+.experiment-decision-panel {
   display: grid;
   gap: 10px;
   border: 1px solid var(--line);
@@ -962,7 +963,13 @@ button:disabled {
   margin-top: 2px;
 }
 
-.experiment-observation-block h3 {
+.experiment-decision-panel {
+  border-color: #9fc6bc;
+  background: #f5fbf8;
+}
+
+.experiment-observation-block h3,
+.experiment-decision-panel h3 {
   margin: 0;
   font-size: 16px;
   line-height: 1.2;

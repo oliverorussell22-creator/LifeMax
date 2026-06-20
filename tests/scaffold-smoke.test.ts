@@ -170,6 +170,7 @@ describe("Wave 0 scaffold contract", () => {
         status: "active",
         started_at: "2026-06-19T20:32:00.000Z",
         stopped_at: null,
+        decision: null,
         result_note: null,
         observations: [
           {
@@ -200,6 +201,8 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.pattern_cards.find((card) => card.id === "local-pattern-energy")?.decision).toBe("watching");
     expect(view.experiment_summary.status).toBe("active");
     expect(view.experiment_summary.detail).toContain("1 observation logged");
+    expect(view.experiment_summary.better_count).toBe(1);
+    expect(view.experiment_summary.next_action).toContain("at least three local observations");
     expect(view.day_review.status).toBe("ready");
     expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(8);
     expect(view.day_review.risk_flags).toContain("quick restart used");
@@ -208,6 +211,63 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.day_review.risk_flags).toContain("health integrations disabled");
     expect(view.day_history_summary.count).toBe(0);
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+  });
+
+  test("summarizes a saved local experiment decision without causal claims", () => {
+    const stored = readStoredLocalDemoState(
+      JSON.stringify({
+        ...createInitialLocalDemoState(),
+        experiment: {
+          id: "experiment-decision-test",
+          pattern_id: "local-pattern-energy",
+          hypothesis: "Protected first block may reduce friction",
+          intervention: "Protect the first useful block",
+          target_signal: "energy and follow-through",
+          minimum_window_days: 3,
+          stop_condition: "Stop if it adds pressure",
+          status: "stopped",
+          started_at: "2026-06-19T20:32:00.000Z",
+          stopped_at: "2026-06-20T20:32:00.000Z",
+          decision: "keep",
+          result_note: "Keep the first-block protection, but do not add more rules.",
+          observations: [
+            {
+              id: "observation-better-1",
+              signal: "better",
+              note: "Morning block felt cleaner",
+              captured_at: "2026-06-19T20:45:00.000Z"
+            },
+            {
+              id: "observation-better-2",
+              signal: "better",
+              note: "Second morning stayed calmer",
+              captured_at: "2026-06-20T20:45:00.000Z"
+            },
+            {
+              id: "observation-same",
+              signal: "same",
+              note: "Afternoon still needed a rescue",
+              captured_at: "2026-06-20T21:45:00.000Z"
+            }
+          ]
+        }
+      })
+    );
+
+    const view = deriveTodayView(stored);
+    const localExport = createLocalDemoExport(stored, "2026-06-20T22:00:00.000Z");
+
+    expect(view.experiment_summary.status).toBe("stopped");
+    expect(view.experiment_summary.title).toBe("Experiment decision saved.");
+    expect(view.experiment_summary.decision).toBe("keep");
+    expect(view.experiment_summary.better_count).toBe(2);
+    expect(view.experiment_summary.same_count).toBe(1);
+    expect(view.experiment_summary.detail).toContain("Decision: keep");
+    expect(view.experiment_summary.next_action).toContain("local memory cue");
+    expect(localExport.summary.experiment).toBe("stopped");
+    expect(localExport.summary.experiment_decision).toBe("keep");
+    expect(localExport.summary.experiment_observations).toBe(3);
+    expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
   });
 
   test("exports only browser-local demo state with an explicit boundary", () => {
@@ -246,6 +306,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.summary.review).toBe("open");
     expect(localExport.summary.day_archives).toBe(0);
     expect(localExport.summary.history_insight).toBe("empty");
+    expect(localExport.summary.experiment_decision).toBe("none");
     expect(localExport.summary.experiment_observations).toBe(0);
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");

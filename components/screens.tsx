@@ -16,6 +16,7 @@ import {
   type CaptureKind,
   type DayReview,
   type EveningClose,
+  type ExperimentDecision,
   type ExperimentObservationSignal,
   type LocalDayArchive,
   type LocalDemoState,
@@ -90,6 +91,13 @@ const experimentSignalOptions: Array<{ value: ExperimentObservationSignal; label
   { value: "same", label: "Same" },
   { value: "worse", label: "Worse" },
   { value: "unclear", label: "Unclear" }
+];
+
+const experimentDecisionOptions: Array<{ value: ExperimentDecision; label: string }> = [
+  { value: "keep", label: "Keep" },
+  { value: "adjust", label: "Adjust" },
+  { value: "drop", label: "Drop" },
+  { value: "inconclusive", label: "Inconclusive" }
 ];
 
 const rescueTriggerOptions: Array<{ value: RescueTrigger; label: string }> = [
@@ -1822,9 +1830,15 @@ export function ExperimentsScreen() {
   const today = useMemo(() => deriveTodayView(state), [state]);
   const [observationSignal, setObservationSignal] = useState<ExperimentObservationSignal>("unclear");
   const [observationNote, setObservationNote] = useState("");
+  const [decisionChoice, setDecisionChoice] = useState<ExperimentDecision>("inconclusive");
+  const [decisionNote, setDecisionNote] = useState("");
   const [observationMessage, setObservationMessage] = useState<{ tone: "idle" | "success" | "error"; text: string }>({
     tone: "idle",
     text: "Observations stay in this browser and do not update any backend."
+  });
+  const [decisionMessage, setDecisionMessage] = useState<{ tone: "idle" | "success" | "error"; text: string }>({
+    tone: "idle",
+    text: "A decision creates a local memory candidate only."
   });
   const activeExperiment = state.experiment?.status === "active" ? state.experiment : null;
   const endedExperiment = state.experiment && state.experiment.status !== "active" ? state.experiment : null;
@@ -1889,24 +1903,51 @@ export function ExperimentsScreen() {
     setObservationMessage({ tone: "success", text: "Observation saved locally. It now appears in the log and export preview." });
   }
 
-  function stopExperiment(status: "stopped" | "inconclusive") {
+  function saveExperimentDecision() {
+    const note = decisionNote.trim();
+
+    if (!activeExperiment) return;
+    if (!activeExperiment.observations.length) {
+      setDecisionMessage({ tone: "error", text: "Log at least one observation before saving a decision." });
+      return;
+    }
+    if (!note) {
+      setDecisionMessage({ tone: "error", text: "Add a short decision note before saving." });
+      return;
+    }
+
     const now = new Date().toISOString();
+    const resultStatus = decisionChoice === "inconclusive" ? "inconclusive" : "stopped";
     setLocalState((current) => ({
       ...current,
-      experiment: current.experiment
-        ? {
-            ...current.experiment,
-            status,
-            stopped_at: now,
-            result_note:
-              status === "inconclusive"
-                ? `Not enough local evidence yet. ${formatExperimentObservationCount(current.experiment.observations.length)} saved; keep watching without changing routines.`
-                : `Stopped by user before conclusion. ${formatExperimentObservationCount(current.experiment.observations.length)} saved.`
-          }
-        : null,
+      experiment:
+        current.experiment?.status === "active"
+          ? {
+              ...current.experiment,
+              status: resultStatus,
+              stopped_at: now,
+              decision: decisionChoice,
+              result_note: note
+            }
+          : current.experiment,
+      memory_candidates: [
+        {
+          id: `memory-experiment-decision-${Date.now()}`,
+          title: `Experiment decision: ${labelForExperimentDecision(decisionChoice)}`,
+          detail: note,
+          source: "experiment" as const,
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
+        },
+        ...current.memory_candidates.filter((candidate) => !candidate.id.startsWith("memory-experiment-decision-"))
+      ].slice(0, 20),
       experiment_started_at: null,
       updated_at: now
     }));
+    setDecisionNote("");
+    setDecisionMessage({ tone: "success", text: "Experiment decision saved locally and added to the memory inbox." });
   }
 
   return (
@@ -1973,14 +2014,50 @@ export function ExperimentsScreen() {
                   <p className="panel-copy">Log at least one observation before ending the experiment. This is manual evidence only.</p>
                 )}
               </section>
-              <div className="action-row">
-                <button className="secondary-action" type="button" onClick={() => stopExperiment("inconclusive")} data-testid="mark-inconclusive">
-                  Mark inconclusive
+              <section className="experiment-decision-panel" aria-label="Experiment decision">
+                <div className="section-heading-row">
+                  <div>
+                    <p className="kicker">Decision</p>
+                    <h3>{today.experiment_summary.next_action}</h3>
+                  </div>
+                  <span className="state-pill">{today.experiment_summary.observation_count} logged</span>
+                </div>
+                <div className="history-insight-grid" aria-label="Experiment signal counts">
+                  <span>
+                    <strong>{today.experiment_summary.better_count}</strong>
+                    Better
+                  </span>
+                  <span>
+                    <strong>{today.experiment_summary.same_count}</strong>
+                    Same
+                  </span>
+                  <span>
+                    <strong>{today.experiment_summary.worse_count}</strong>
+                    Worse
+                  </span>
+                  <span>
+                    <strong>{today.experiment_summary.unclear_count}</strong>
+                    Unclear
+                  </span>
+                </div>
+                <SegmentedControl label="Local decision" value={decisionChoice} options={experimentDecisionOptions} onChange={setDecisionChoice} />
+                <label className="stacked-input">
+                  <span>Decision note</span>
+                  <textarea
+                    className="text-area compact-text-area"
+                    value={decisionNote}
+                    onChange={(event) => setDecisionNote(event.target.value)}
+                    placeholder="Example: keep the protected first block, but do not add more rules."
+                  />
+                </label>
+                <p className={`export-status export-status-${decisionMessage.tone}`} role="status">
+                  {decisionMessage.text}
+                </p>
+                <button className="primary-action full-width" type="button" onClick={saveExperimentDecision} data-testid="save-experiment-decision">
+                  Save experiment decision
                 </button>
-                <button className="secondary-action" type="button" onClick={() => stopExperiment("stopped")} data-testid="stop-experiment">
-                  Stop local experiment
-                </button>
-              </div>
+                <p className="field-help">Decision stays local. It updates the result panel, memory inbox, and export preview without changing routines automatically.</p>
+              </section>
             </section>
           ) : (
             <section className="panel primary-panel" aria-label="Experiment builder">
@@ -2009,6 +2086,7 @@ export function ExperimentsScreen() {
               <p className="kicker">Result</p>
               <h2 className="panel-title">{today.experiment_summary.title}</h2>
               <p className="panel-copy">{today.experiment_summary.detail}</p>
+              <p className="field-help">Next: {today.experiment_summary.next_action}</p>
             </section>
           ) : null}
         </div>
@@ -2177,7 +2255,7 @@ export function PrivacyScreen() {
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, and local day history checkpoints. These are browser-local records.
+              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, its local decision note, and local day history checkpoints. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">
@@ -2361,6 +2439,10 @@ function labelForExperimentSignal(signal: ExperimentObservationSignal) {
   return experimentSignalOptions.find((item) => item.value === signal)?.label ?? "Unclear";
 }
 
+function labelForExperimentDecision(decision: ExperimentDecision) {
+  return experimentDecisionOptions.find((item) => item.value === decision)?.label ?? "Inconclusive";
+}
+
 function labelForMemorySource(source: MemoryCandidate["source"]) {
   switch (source) {
     case "evening_close":
@@ -2393,6 +2475,7 @@ function createExperimentFromPattern(card: PatternCard | undefined, startedAt: s
     status: "active" as const,
     started_at: startedAt,
     stopped_at: null,
+    decision: null,
     result_note: null,
     observations: []
   };

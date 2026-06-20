@@ -13,6 +13,7 @@ export type RecoveryImpact = "restored" | "neutral" | "draining";
 export type PatternDecisionStatus = "watching" | "confirmed" | "rejected";
 export type ExperimentStatus = "active" | "stopped" | "inconclusive";
 export type ExperimentObservationSignal = "better" | "same" | "worse" | "unclear";
+export type ExperimentDecision = "keep" | "adjust" | "drop" | "inconclusive";
 export type RescueTrigger = "drift" | "overloaded" | "body_noise" | "plan_broke";
 export type RescueReset = "breathe" | "walk" | "water" | "reduce_input";
 export type RestartWindow = "one_day" | "three_days" | "seven_days";
@@ -114,6 +115,7 @@ export interface LocalExperiment {
   status: ExperimentStatus;
   started_at: string;
   stopped_at: string | null;
+  decision: ExperimentDecision | null;
   result_note: string | null;
   observations: ExperimentObservation[];
 }
@@ -175,6 +177,7 @@ export interface LocalDemoExport {
     rejected_memories: number;
     pattern_decisions: number;
     experiment: ExperimentStatus | "none";
+    experiment_decision: ExperimentDecision | "none";
     experiment_observations: number;
     day_archives: number;
     history_insight: "empty" | "checkpoint" | "emerging" | "trend";
@@ -248,6 +251,13 @@ export interface DerivedTodayView {
     status: "locked" | "ready" | "active" | "stopped" | "inconclusive";
     title: string;
     detail: string;
+    decision: ExperimentDecision | null;
+    observation_count: number;
+    better_count: number;
+    same_count: number;
+    worse_count: number;
+    unclear_count: number;
+    next_action: string;
   };
   day_review: DayReview;
   day_history_summary: {
@@ -339,6 +349,7 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       rejected_memories: memorySummary.rejected_count,
       pattern_decisions: state.pattern_decisions.length,
       experiment: state.experiment?.status ?? "none",
+      experiment_decision: state.experiment?.decision ?? "none",
       experiment_observations: state.experiment?.observations.length ?? 0,
       day_archives: state.day_archives.length,
       history_insight: historyInsight.status,
@@ -789,6 +800,7 @@ function normalizeExperiment(value: unknown, legacyStartedAt: string | null): Lo
         status: experiment.status ?? "active",
         started_at: experiment.started_at,
         stopped_at: experiment.stopped_at ?? null,
+        decision: normalizeExperimentDecision(experiment.decision),
         result_note: experiment.result_note ?? null,
         observations: normalizeExperimentObservations(experiment.observations)
       };
@@ -807,6 +819,7 @@ function normalizeExperiment(value: unknown, legacyStartedAt: string | null): Lo
     status: "active",
     started_at: legacyStartedAt,
     stopped_at: null,
+    decision: null,
     result_note: null,
     observations: []
   };
@@ -829,6 +842,10 @@ function normalizeExperimentObservations(value: unknown): ExperimentObservation[
 
 function normalizeExperimentSignal(value: unknown): ExperimentObservationSignal {
   return value === "better" || value === "same" || value === "worse" || value === "unclear" ? value : "unclear";
+}
+
+function normalizeExperimentDecision(value: unknown): ExperimentDecision | null {
+  return value === "keep" || value === "adjust" || value === "drop" || value === "inconclusive" ? value : null;
 }
 
 function summarizePlan(plan: LocalDailyPlan | null): DerivedTodayView["plan_summary"] {
@@ -1107,14 +1124,32 @@ function summarizeExperiment(
       ? {
           status: "ready",
           title: "Ready for one cautious local test.",
-          detail: "Use a weak pattern to create a reversible three-day experiment."
+          detail: "Use a weak pattern to create a reversible three-day experiment.",
+          decision: null,
+          observation_count: 0,
+          better_count: 0,
+          same_count: 0,
+          worse_count: 0,
+          unclear_count: 0,
+          next_action: "Start one local experiment only if it keeps the day smaller."
         }
       : {
           status: "locked",
           title: "No experiment yet.",
-          detail: "Save a check-in and capture before starting a local experiment."
+          detail: "Save a check-in and capture before starting a local experiment.",
+          decision: null,
+          observation_count: 0,
+          better_count: 0,
+          same_count: 0,
+          worse_count: 0,
+          unclear_count: 0,
+          next_action: "Add one capture before running an experiment."
         };
   }
+
+  const signalCounts = countExperimentSignals(experiment.observations);
+  const observationDetail = formatObservationCount(experiment.observations.length);
+  const decisionPrefix = experiment.decision ? `Decision: ${formatExperimentDecision(experiment.decision)}. ` : "";
 
   return {
     status: experiment.status,
@@ -1123,12 +1158,68 @@ function summarizeExperiment(
         ? experiment.hypothesis
         : experiment.status === "inconclusive"
           ? "Experiment ended inconclusive."
-          : "Experiment stopped.",
+          : experiment.decision
+            ? "Experiment decision saved."
+            : "Experiment stopped.",
     detail:
       experiment.status === "active"
-        ? `${experiment.minimum_window_days}-day minimum. Target: ${experiment.target_signal}. ${formatObservationCount(experiment.observations.length)} logged.`
-        : `${experiment.result_note ?? "No result note saved."} ${formatObservationCount(experiment.observations.length)} logged.`
+        ? `${experiment.minimum_window_days}-day minimum. Target: ${experiment.target_signal}. ${observationDetail} logged.`
+        : `${decisionPrefix}${experiment.result_note ?? "No result note saved."} ${observationDetail} logged.`,
+    decision: experiment.decision,
+    observation_count: experiment.observations.length,
+    better_count: signalCounts.better,
+    same_count: signalCounts.same,
+    worse_count: signalCounts.worse,
+    unclear_count: signalCounts.unclear,
+    next_action: experiment.status === "active" ? nextExperimentAction(signalCounts) : nextEndedExperimentAction(experiment)
   };
+}
+
+function countExperimentSignals(observations: ExperimentObservation[]) {
+  return observations.reduce(
+    (counts, observation) => ({
+      ...counts,
+      [observation.signal]: counts[observation.signal] + 1
+    }),
+    { better: 0, same: 0, worse: 0, unclear: 0 } satisfies Record<ExperimentObservationSignal, number>
+  );
+}
+
+function nextExperimentAction(counts: Record<ExperimentObservationSignal, number>): string {
+  const total = counts.better + counts.same + counts.worse + counts.unclear;
+  if (total === 0) return "Log one observation before deciding anything.";
+  if (total < 3) return "Keep the test reversible until there are at least three local observations.";
+  if (counts.worse > 0) return "Adjust or drop the test if it adds pressure or worsens the day.";
+  if (counts.better >= 2) return "Consider keeping the smallest useful part, still as a local note.";
+  return "Mark the result as inconclusive or adjust the test before repeating it.";
+}
+
+function nextEndedExperimentAction(experiment: LocalExperiment): string {
+  switch (experiment.decision) {
+    case "keep":
+      return "Use the kept decision as a local memory cue, not as medical advice.";
+    case "adjust":
+      return "Change one variable before starting another local experiment.";
+    case "drop":
+      return "Leave the intervention out unless new evidence appears.";
+    case "inconclusive":
+      return "Keep watching without changing routines.";
+    default:
+      return "Add a decision note before starting another experiment.";
+  }
+}
+
+function formatExperimentDecision(decision: ExperimentDecision): string {
+  switch (decision) {
+    case "keep":
+      return "keep";
+    case "adjust":
+      return "adjust";
+    case "drop":
+      return "drop";
+    case "inconclusive":
+      return "inconclusive";
+  }
 }
 
 function summarizeHistoryInsight(archives: LocalDayArchive[]): DerivedTodayView["history_insight"] {
