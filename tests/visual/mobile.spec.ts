@@ -33,6 +33,15 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.getByTestId("plan-must_do-done").click();
   await page.getByTestId("plan-optional_1-skipped").click();
   await expect(page.getByLabel("Daily plan editor").getByText("1/3 done")).toBeVisible();
+  await page.getByRole("button", { name: "Overloaded" }).click();
+  await page.getByRole("button", { name: "Short walk" }).click();
+  await page.getByLabel("Next lower-intensity move").fill("Ten minute walk without phone");
+  await page.getByLabel("Defer until").fill("after lunch");
+  await page.getByLabel("Rescue note").fill("Messages scattered the plan");
+  await page.getByTestId("save-midday-rescue").click();
+  await expect(page.getByRole("heading", { name: "Midday rescue saved." })).toBeVisible();
+  await expect(page.getByLabel("Today command center").getByText("Ten minute walk without phone")).toBeVisible();
+  await expect(page.getByLabel("Current state summary").getByText("Rescue")).toBeVisible();
   await page.getByLabel("What got done").fill("Client note drafted");
   await page.getByLabel("What slipped").fill("Walk moved to tomorrow");
   await page.getByLabel("Why").fill("Afternoon friction was higher than expected.");
@@ -87,18 +96,27 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.goto("/privacy");
   await expect(page.getByRole("heading", { name: "Privacy policy and local data boundary." })).toBeVisible();
   await expect(page.getByText("This app shell does not connect WHOOP")).toBeVisible();
-  await expect(page.getByText("daily plan, evening close, memory candidates")).toBeVisible();
+  await expect(page.getByText("daily plan, midday rescue, evening close")).toBeVisible();
 
   await page.goto("/today");
   await page.reload();
   await expect(page.getByText("Saved locally")).toBeVisible();
   await expect(page.getByText("Local captures")).toBeVisible();
   await expect(page.getByLabel("Today command center").getByText("Walk before opening messages")).toBeVisible();
+  await expect(page.getByLabel("Today command center").getByText("Ten minute walk without phone")).toBeVisible();
   await expect(page.getByLabel("Current state summary").getByText("1/3 done")).toBeVisible();
+  await expect(page.getByLabel("Current state summary").getByText("saved")).toBeVisible();
   await expect(page.getByLabel("Must-do")).toHaveValue("Draft the client note");
   await expect(page.getByLabel("Optional move 1")).toHaveValue("Ten minute walk");
   await expect(page.getByLabel("Optional move 2")).toHaveValue("Capture caffeine timing");
   await expect(page.getByLabel("Avoid today")).toHaveValue("No second priority after lunch");
+  await expect(page.getByLabel("Next lower-intensity move")).toHaveValue("Ten minute walk without phone");
+  await expect(page.getByLabel("Defer until")).toHaveValue("after lunch");
+  await expect(page.getByLabel("Rescue note")).toHaveValue("Messages scattered the plan");
+  await expect(page.getByLabel("What got done")).toHaveValue("Client note drafted");
+  await expect(page.getByLabel("What slipped")).toHaveValue("Walk moved to tomorrow");
+  await expect(page.getByLabel("Why")).toHaveValue("Afternoon friction was higher than expected.");
+  await expect(page.getByLabel("Tomorrow hint")).toHaveValue("Walk before opening messages");
 
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
@@ -125,8 +143,9 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("heading", { name: "Local app truth and data controls." })).toBeVisible();
   await expect(page.getByText("Export and reset apply only to this browser demo state.")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("Review")).toBeVisible();
+  await expect(page.getByLabel("Rescue: saved")).toBeVisible();
   await expect(page.getByLabel("Experiment observations: 1")).toBeVisible();
-  await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(3);
+  await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(4);
   const downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-local-export").click();
   const download = await downloadPromise;
@@ -135,6 +154,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.getByText("View local export preview").click();
   await expect(page.getByLabel("Local export preview").getByText("lifemax.local_demo_export.v1")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Draft the client note")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("midday_rescue")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("Messages scattered the plan")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("reviewed_at")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Morning block felt cleaner")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("experiment_observations")).toBeVisible();

@@ -47,6 +47,7 @@ describe("Wave 0 scaffold contract", () => {
         }
       ],
       daily_plan: null,
+      midday_rescue: null,
       evening_close: null,
       memory_candidates: [],
       pattern_decisions: [],
@@ -61,6 +62,7 @@ describe("Wave 0 scaffold contract", () => {
     const signalView = deriveTodayView(withLocalSignals);
     expect(signalView.confidence).toBe("medium");
     expect(signalView.pattern_summary.ready).toBe(true);
+    expect(signalView.rescue_summary.status).toBe("open");
     expect(signalView.plan_summary.status).toBe("missing");
     expect(signalView.day_review.status).toBe("locked");
     expect(signalView.day_review.missing_inputs).toContain("saved plan");
@@ -99,6 +101,14 @@ describe("Wave 0 scaffold contract", () => {
           optional_1: "open",
           optional_2: "skipped"
         }
+      },
+      midday_rescue: {
+        trigger: "overloaded",
+        reset: "walk",
+        next_move: "Walk without messages",
+        defer_until: "after lunch",
+        note: "Messages scattered the plan",
+        saved_at: "2026-06-19T19:10:00.000Z"
       },
       evening_close: {
         completed: "Client note drafted",
@@ -155,13 +165,16 @@ describe("Wave 0 scaffold contract", () => {
     const view = deriveTodayView(state);
 
     expect(view.plan_summary.progress_label).toBe("1/3 done");
+    expect(view.rescue_summary.status).toBe("saved");
+    expect(view.rescue_summary.detail).toContain("Walk without messages");
     expect(view.evening_summary.status).toBe("closed");
     expect(view.memory_summary.latest?.title).toBe("Walk before messages");
     expect(view.pattern_cards.find((card) => card.id === "local-pattern-energy")?.decision).toBe("watching");
     expect(view.experiment_summary.status).toBe("active");
     expect(view.experiment_summary.detail).toContain("1 observation logged");
     expect(view.day_review.status).toBe("ready");
-    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(6);
+    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(7);
+    expect(view.day_review.risk_flags).toContain("midday rescue used");
     expect(view.day_review.tomorrow_cue).toBe("Walk before messages");
     expect(view.day_review.risk_flags).toContain("health integrations disabled");
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
@@ -197,6 +210,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.schema_version).toBe("lifemax.local_demo_export.v1");
     expect(localExport.summary.check_in).toBe("saved");
     expect(localExport.summary.captures).toBe(1);
+    expect(localExport.summary.rescue).toBe("open");
     expect(localExport.summary.review).toBe("open");
     expect(localExport.summary.experiment_observations).toBe(0);
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");

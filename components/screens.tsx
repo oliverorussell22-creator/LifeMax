@@ -22,6 +22,8 @@ import {
   type PlanItemStatus,
   type PlanSlot,
   type RecoveryImpact,
+  type RescueReset,
+  type RescueTrigger,
   type SignalLevel,
   type StressLevel
 } from "@/lib/local-demo-state";
@@ -80,6 +82,20 @@ const experimentSignalOptions: Array<{ value: ExperimentObservationSignal; label
   { value: "same", label: "Same" },
   { value: "worse", label: "Worse" },
   { value: "unclear", label: "Unclear" }
+];
+
+const rescueTriggerOptions: Array<{ value: RescueTrigger; label: string }> = [
+  { value: "drift", label: "Drift" },
+  { value: "overloaded", label: "Overloaded" },
+  { value: "body_noise", label: "Body noise" },
+  { value: "plan_broke", label: "Plan broke" }
+];
+
+const rescueResetOptions: Array<{ value: RescueReset; label: string }> = [
+  { value: "breathe", label: "Breathe" },
+  { value: "walk", label: "Short walk" },
+  { value: "water", label: "Water" },
+  { value: "reduce_input", label: "Reduce input" }
 ];
 
 export function TodayScreen() {
@@ -195,6 +211,35 @@ export function TodayScreen() {
     }));
   }
 
+  function saveMiddayRescue(rescue: {
+    trigger: RescueTrigger;
+    reset: RescueReset;
+    next_move: string;
+    defer_until: string;
+    note: string;
+  }) {
+    const now = new Date().toISOString();
+    setLocalState((current) => ({
+      ...current,
+      midday_rescue: {
+        ...rescue,
+        saved_at: now
+      },
+      lowered_today: true,
+      memory_candidates: [
+        {
+          id: `memory-rescue-${Date.now()}`,
+          title: `Midday rescue: ${labelForRescueReset(rescue.reset)}`,
+          detail: rescue.note || rescue.next_move,
+          source: "rescue" as const,
+          created_at: now
+        },
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "rescue")
+      ].slice(0, 20),
+      updated_at: now
+    }));
+  }
+
   return (
     <AppShell active="today">
       <section className="screen today-layout" data-screen="today-functional">
@@ -210,7 +255,8 @@ export function TodayScreen() {
               { label: "State", value: today.state.replace("_", " ") },
               { label: "Confidence", value: today.confidence },
               { label: "Intensity cap", value: String(today.intensity_cap) },
-              { label: "Plan", value: today.plan_summary.progress_label }
+              { label: "Plan", value: today.plan_summary.progress_label },
+              { label: "Rescue", value: today.rescue_summary.status }
             ]}
           />
           <WorkflowRail state={state} today={today} />
@@ -233,6 +279,10 @@ export function TodayScreen() {
               <span>
                 <strong>Boundary</strong>
                 {today.plan_summary.avoid_today}
+              </span>
+              <span>
+                <strong>Rescue</strong>
+                {today.rescue_summary.next_move}
               </span>
               <span>
                 <strong>Close loop</strong>
@@ -262,7 +312,14 @@ export function TodayScreen() {
             onSave={savePlan}
             onStatusChange={updatePlanItemStatus}
           />
-          <EveningClosePanel close={state.evening_close} onSave={saveEveningClose} />
+          <MiddayRescuePanel
+            key={getRescueSyncKey(state.midday_rescue, today.rescue_summary.next_move)}
+            rescue={state.midday_rescue}
+            summary={today.rescue_summary}
+            suggestedNextMove={today.plan_summary.next_item ?? activePlan.must_do}
+            onSave={saveMiddayRescue}
+          />
+          <EveningClosePanel key={getEveningCloseSyncKey(state.evening_close)} close={state.evening_close} onSave={saveEveningClose} />
         </div>
 
         <aside className="screen-aside" aria-label="Today state">
@@ -332,6 +389,13 @@ function WorkflowRail({
       detail: today.evening_summary.status === "closed" ? "memory ready" : "tonight",
       href: "/today",
       tone: today.evening_summary.status === "closed" ? "good" : "active"
+    },
+    {
+      label: "Rescue",
+      value: today.rescue_summary.status,
+      detail: today.rescue_summary.status === "saved" ? today.rescue_summary.reset_label : "if drift hits",
+      href: "/today",
+      tone: today.rescue_summary.status === "saved" ? "good" : today.rescue_summary.status === "locked" ? "muted" : "active"
     },
     {
       label: "Learn",
@@ -514,6 +578,16 @@ function getPlanSyncKey(plan: LocalDailyPlan) {
   ].join("|");
 }
 
+function getRescueSyncKey(rescue: LocalDemoState["midday_rescue"], fallbackNextMove: string) {
+  if (!rescue) return `open-rescue|${fallbackNextMove}`;
+  return [rescue.saved_at, rescue.trigger, rescue.reset, rescue.next_move, rescue.defer_until, rescue.note].join("|");
+}
+
+function getEveningCloseSyncKey(close: EveningClose | null) {
+  if (!close) return "open-close";
+  return [close.saved_at, close.completed, close.missed, close.why, close.recovery_impact, close.tomorrow_hint].join("|");
+}
+
 function PlanInput({
   label,
   value,
@@ -558,6 +632,104 @@ function PlanStatusRow({
         ))}
       </div>
     </div>
+  );
+}
+
+function MiddayRescuePanel({
+  rescue,
+  summary,
+  suggestedNextMove,
+  onSave
+}: Readonly<{
+  rescue: LocalDemoState["midday_rescue"];
+  summary: ReturnType<typeof deriveTodayView>["rescue_summary"];
+  suggestedNextMove: string;
+  onSave: (rescue: {
+    trigger: RescueTrigger;
+    reset: RescueReset;
+    next_move: string;
+    defer_until: string;
+    note: string;
+  }) => void;
+}>) {
+  const locked = summary.status === "locked";
+  const [draft, setDraft] = useState({
+    trigger: rescue?.trigger ?? ("drift" as RescueTrigger),
+    reset: rescue?.reset ?? ("breathe" as RescueReset),
+    next_move: rescue?.next_move ?? suggestedNextMove,
+    defer_until: rescue?.defer_until ?? "",
+    note: rescue?.note ?? ""
+  });
+  const [error, setError] = useState("");
+
+  function saveRescue() {
+    const nextMove = draft.next_move.trim();
+    if (locked) return;
+    if (!nextMove) {
+      setError("Choose one lower-intensity next move before saving.");
+      return;
+    }
+
+    setError("");
+    onSave({
+      trigger: draft.trigger,
+      reset: draft.reset,
+      next_move: nextMove,
+      defer_until: draft.defer_until.trim(),
+      note: draft.note.trim()
+    });
+  }
+
+  return (
+    <section className="panel form-panel rescue-panel" aria-label="Midday rescue">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Midday rescue</p>
+          <h2 className="panel-title">{summary.title}</h2>
+        </div>
+        <span className={summary.status === "saved" ? "state-pill state-pill-good" : "state-pill"}>{summary.status}</span>
+      </div>
+      <p className="panel-copy">{summary.detail}</p>
+      <SegmentedControl
+        label="What happened?"
+        value={draft.trigger}
+        options={rescueTriggerOptions}
+        onChange={(trigger) => setDraft((current) => ({ ...current, trigger }))}
+      />
+      <SegmentedControl
+        label="One reset"
+        value={draft.reset}
+        options={rescueResetOptions}
+        onChange={(reset) => setDraft((current) => ({ ...current, reset }))}
+      />
+      <PlanInput
+        label="Next lower-intensity move"
+        value={draft.next_move}
+        onChange={(next_move) => setDraft((current) => ({ ...current, next_move }))}
+      />
+      <PlanInput label="Defer until" value={draft.defer_until} onChange={(defer_until) => setDraft((current) => ({ ...current, defer_until }))} />
+      <label className="stacked-input" htmlFor="rescue-note">
+        <span>Rescue note</span>
+        <textarea
+          id="rescue-note"
+          className="text-area compact-text-area"
+          value={draft.note}
+          onChange={(event) => setDraft((current) => ({ ...current, note: event.target.value }))}
+          placeholder="What pulled the day off track?"
+        />
+      </label>
+      {error ? (
+        <p className="error-message" role="alert">
+          {error}
+        </p>
+      ) : (
+        <p className="field-help">Saving lowers intensity for this browser-local day. No reminder or backend write is sent.</p>
+      )}
+      <button className="primary-action full-width" type="button" disabled={locked} onClick={saveRescue} data-testid="save-midday-rescue">
+        {rescue ? "Update rescue" : "Save rescue"}
+      </button>
+      {locked ? <p className="field-help">Locked until a manual check-in gives LifeMax a local state.</p> : null}
+    </section>
   );
 }
 
@@ -1216,6 +1388,7 @@ export function ProfileScreen() {
               items={[
                 { label: "Check-in", value: state.check_in ? "saved" : "empty" },
                 { label: "Plan", value: state.daily_plan ? deriveTodayView(state).plan_summary.progress_label : "empty" },
+                { label: "Rescue", value: state.midday_rescue ? "saved" : "open" },
                 { label: "Close", value: state.evening_close ? "saved" : "open" },
                 { label: "Captures", value: String(state.captures.length) },
                 { label: "Memories", value: String(state.memory_candidates.length) },
@@ -1294,13 +1467,13 @@ export function PrivacyScreen() {
             <p className="kicker">Last updated</p>
             <h2 className="panel-title">June 19, 2026</h2>
             <p className="panel-copy">
-              LifeMax currently stores the demo check-in, captures, plan status, local experiment status, and observation notes in this browser only.
+              LifeMax currently stores the demo check-in, captures, plan status, midday rescue, local experiment status, and observation notes in this browser only.
             </p>
           </section>
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, evening close, memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
+              The higher-functionality demo can store a daily plan, midday rescue, evening close, memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">
@@ -1470,6 +1643,10 @@ function getServerSnapshot() {
 
 function labelForKind(kind: CaptureKind) {
   return captureKinds.find((item) => item.value === kind)?.label ?? "Note";
+}
+
+function labelForRescueReset(reset: RescueReset) {
+  return rescueResetOptions.find((item) => item.value === reset)?.label ?? "Breathe";
 }
 
 function labelForExperimentSignal(signal: ExperimentObservationSignal) {

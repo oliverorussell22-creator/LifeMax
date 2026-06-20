@@ -13,6 +13,8 @@ export type RecoveryImpact = "restored" | "neutral" | "draining";
 export type PatternDecisionStatus = "watching" | "confirmed" | "rejected";
 export type ExperimentStatus = "active" | "stopped" | "inconclusive";
 export type ExperimentObservationSignal = "better" | "same" | "worse" | "unclear";
+export type RescueTrigger = "drift" | "overloaded" | "body_noise" | "plan_broke";
+export type RescueReset = "breathe" | "walk" | "water" | "reduce_input";
 
 export interface LocalCheckIn {
   energy: SignalLevel;
@@ -57,8 +59,17 @@ export interface MemoryCandidate {
   id: string;
   title: string;
   detail: string;
-  source: "evening_close" | "pattern" | "experiment";
+  source: "evening_close" | "pattern" | "experiment" | "rescue";
   created_at: string;
+}
+
+export interface MiddayRescue {
+  trigger: RescueTrigger;
+  reset: RescueReset;
+  next_move: string;
+  defer_until: string;
+  note: string;
+  saved_at: string;
 }
 
 export interface PatternDecision {
@@ -94,6 +105,7 @@ export interface LocalDemoState {
   check_in: LocalCheckIn | null;
   captures: CaptureEvent[];
   daily_plan: LocalDailyPlan | null;
+  midday_rescue: MiddayRescue | null;
   evening_close: EveningClose | null;
   memory_candidates: MemoryCandidate[];
   pattern_decisions: PatternDecision[];
@@ -113,6 +125,7 @@ export interface LocalDemoExport {
   summary: {
     check_in: "saved" | "empty";
     plan: "saved" | "empty";
+    rescue: "saved" | "open";
     close: "saved" | "open";
     captures: number;
     memories: number;
@@ -152,6 +165,13 @@ export interface DerivedTodayView {
     status: "open" | "closed";
     title: string;
     detail: string;
+  };
+  rescue_summary: {
+    status: "locked" | "open" | "saved";
+    title: string;
+    detail: string;
+    reset_label: string;
+    next_move: string;
   };
   memory_summary: {
     count: number;
@@ -207,6 +227,7 @@ export function createInitialLocalDemoState(): LocalDemoState {
     check_in: null,
     captures: [],
     daily_plan: null,
+    midday_rescue: null,
     evening_close: null,
     memory_candidates: [],
     pattern_decisions: [],
@@ -232,6 +253,7 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
     summary: {
       check_in: state.check_in ? "saved" : "empty",
       plan: state.daily_plan ? "saved" : "empty",
+      rescue: state.midday_rescue ? "saved" : "open",
       close: state.evening_close ? "saved" : "open",
       captures: state.captures.length,
       memories: state.memory_candidates.length,
@@ -269,6 +291,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
           }))
         : [],
       daily_plan: normalizeDailyPlan(parsed.daily_plan),
+      midday_rescue: normalizeMiddayRescue(parsed.midday_rescue),
       evening_close: normalizeEveningClose(parsed.evening_close),
       memory_candidates: Array.isArray(parsed.memory_candidates) ? parsed.memory_candidates.slice(0, 25) : [],
       pattern_decisions: Array.isArray(parsed.pattern_decisions) ? parsed.pattern_decisions.slice(0, 20) : [],
@@ -296,6 +319,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const planSummary = summarizePlan(state.daily_plan);
   const patternCards = buildPatternCards(state);
   const latestMemory = state.memory_candidates[0] ?? null;
+  const rescueSummary = summarizeMiddayRescue(state.midday_rescue, planSummary, hasCheckIn);
   const dayReview = buildDayReview(state, planSummary);
 
   if (!hasCheckIn) {
@@ -324,6 +348,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
       },
       suggested_plan: activePlan,
       evening_summary: summarizeEveningClose(state.evening_close),
+      rescue_summary: rescueSummary,
       memory_summary: {
         count: state.memory_candidates.length,
         latest: latestMemory
@@ -365,6 +390,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
     plan_summary: planSummary,
     suggested_plan: activePlan,
     evening_summary: summarizeEveningClose(state.evening_close),
+    rescue_summary: rescueSummary,
     memory_summary: {
       count: state.memory_candidates.length,
       latest: latestMemory
@@ -441,6 +467,29 @@ function normalizeEveningClose(value: unknown): EveningClose | null {
     tomorrow_hint: close.tomorrow_hint ?? "",
     saved_at: close.saved_at
   };
+}
+
+function normalizeMiddayRescue(value: unknown): MiddayRescue | null {
+  if (!value || typeof value !== "object") return null;
+  const rescue = value as Partial<MiddayRescue>;
+  if (!rescue.saved_at || !rescue.next_move) return null;
+
+  return {
+    trigger: normalizeRescueTrigger(rescue.trigger),
+    reset: normalizeRescueReset(rescue.reset),
+    next_move: rescue.next_move,
+    defer_until: rescue.defer_until ?? "",
+    note: rescue.note ?? "",
+    saved_at: rescue.saved_at
+  };
+}
+
+function normalizeRescueTrigger(value: unknown): RescueTrigger {
+  return value === "drift" || value === "overloaded" || value === "body_noise" || value === "plan_broke" ? value : "drift";
+}
+
+function normalizeRescueReset(value: unknown): RescueReset {
+  return value === "breathe" || value === "walk" || value === "water" || value === "reduce_input" ? value : "breathe";
 }
 
 function normalizeExperiment(value: unknown, legacyStartedAt: string | null): LocalExperiment | null {
@@ -556,6 +605,7 @@ function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["pl
   const evidenceCount =
     (state.check_in ? 1 : 0) +
     (state.daily_plan ? 1 : 0) +
+    (state.midday_rescue ? 1 : 0) +
     state.captures.length +
     (state.evening_close ? 1 : 0) +
     (state.experiment ? 1 : 0) +
@@ -575,6 +625,7 @@ function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["pl
     "health integrations disabled",
     state.check_in?.stress === "high" ? "high stress check-in" : null,
     state.check_in?.body === "rough" ? "rough body signal" : null,
+    state.midday_rescue ? "midday rescue used" : null,
     state.evening_close?.recovery_impact === "draining" ? "draining close" : null
   ].filter((item): item is string => Boolean(item));
 
@@ -617,6 +668,55 @@ function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["pl
     risk_flags: riskFlags,
     reviewed_at: state.reviewed_at
   };
+}
+
+function summarizeMiddayRescue(
+  rescue: MiddayRescue | null,
+  planSummary: DerivedTodayView["plan_summary"],
+  hasCheckIn: boolean
+): DerivedTodayView["rescue_summary"] {
+  if (!hasCheckIn) {
+    return {
+      status: "locked",
+      title: "Rescue unlocks after check-in.",
+      detail: "LifeMax needs a manual state before suggesting a lower-intensity reset.",
+      reset_label: "None",
+      next_move: "Save check-in first"
+    };
+  }
+
+  if (!rescue) {
+    const nextMove = planSummary.next_item ?? "Pick the smallest useful next move";
+    return {
+      status: "open",
+      title: "Midday rescue is ready if the plan drifts.",
+      detail: "Use one reset and one lower-intensity move. No shame loop.",
+      reset_label: "Choose reset",
+      next_move: nextMove
+    };
+  }
+
+  return {
+    status: "saved",
+    title: "Midday rescue saved.",
+    detail: `${labelForRescueReset(rescue.reset)} reset. Next: ${rescue.next_move}${rescue.defer_until ? ` after ${rescue.defer_until}` : ""}.`,
+    reset_label: labelForRescueReset(rescue.reset),
+    next_move: rescue.next_move
+  };
+}
+
+function labelForRescueReset(reset: RescueReset) {
+  switch (reset) {
+    case "walk":
+      return "Short walk";
+    case "water":
+      return "Water break";
+    case "reduce_input":
+      return "Reduce input";
+    case "breathe":
+    default:
+      return "Breathe";
+  }
 }
 
 function summarizeEveningClose(close: EveningClose | null): DerivedTodayView["evening_summary"] {
