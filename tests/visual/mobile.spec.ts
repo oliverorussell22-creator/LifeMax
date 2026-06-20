@@ -391,11 +391,23 @@ test("sample week loader makes high-level local state visible and persistent", a
 
   await page.getByTestId("load-sample-week").click();
   await expect(page.getByRole("status")).toContainText("Loaded a sample browser-local week");
+  const todayWeeklyBoard = page.getByLabel("Today weekly board summary");
+  await expect(todayWeeklyBoard.getByRole("heading", { name: "Weekly board ready from local history." })).toBeVisible();
+  await expect(todayWeeklyBoard.getByText("browser-local operating board")).toBeVisible();
+  await expect(todayWeeklyBoard.getByLabel("Today weekly plan preview").getByText("Protect first useful block")).toBeVisible();
+  await todayWeeklyBoard.getByTestId("use-weekly-board-today").click();
+  await expect(page.getByLabel("Today command center").getByRole("status")).toContainText("Moved weekly board cue");
   await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Protect first useful block");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 2")).toHaveValue("Close and archive one more local day");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Avoid today")).toHaveValue("Do not start with messages before plan");
   await expect(page.getByLabel("Source freshness").getByText("3 events in this browser")).toBeVisible();
   await page.reload();
   await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Protect first useful block");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 2")).toHaveValue("Close and archive one more local day");
   await page.locator('section[aria-label="Today command center"]').evaluate((node) => node.scrollIntoView({ block: "start" }));
+  await page.locator('section[aria-label="Today weekly board summary"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-sample-week-today-board-mobile-390.png")
+  });
   await page.screenshot({
     path: path.join(highFunctionalityDir, "local-sample-week-today-mobile-390.png"),
     fullPage: false

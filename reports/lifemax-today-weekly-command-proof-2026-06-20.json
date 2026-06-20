@@ -1,0 +1,130 @@
+{
+  "schema": "lifemax.high-functionality-proof.v1",
+  "createdAt": "2026-06-20T12:40:31Z",
+  "updatedAt": "2026-06-20T12:40:31Z",
+  "objective": "Make the Weekly operating board visibly useful from the Today first screen by showing the browser-local weekly summary and providing a real Today action that writes the weekly plan into local state.",
+  "riskClass": "Q3 because this run includes production deployment/promotion after local proof; app code itself is Q2 browser-local frontend state.",
+  "status": "local_verified_pending_git_push_and_vercel_deploy",
+  "approvalStatus": "Production promotion was previously approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote. This slice does not edit credentials, auth, DNS, backend services, n8n, Telegram, Postgres, public MCP, or WHOOP settings.",
+  "changedFiles": [
+    "app/globals.css",
+    "components/screens.tsx",
+    "tests/visual/mobile.spec.ts",
+    "reports/lifemax-today-weekly-command-proof-2026-06-20.json"
+  ],
+  "truthBoundary": [
+    "The Today weekly command is browser-local demo behavior only.",
+    "No WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Postgres, backend writes, reminders, timers, or cross-device sync are connected or claimed.",
+    "The separate LifeMax lab/source boot reports remain red, so connected daily usability is not claimed."
+  ],
+  "defectsFound": [
+    "The prior weekly-board slice worked from Patterns, but a user landing on /today still had to discover the higher-level board elsewhere.",
+    "The Today first screen did not visibly summarize the weekly board after loading the sample week.",
+    "Standalone Playwright/Chromium timed out launching after 180 seconds in this desktop environment; in-app browser proof was required instead.",
+    "Initial in-app browser smoke selectors were too strict for exposed accessibility/input-value behavior and were repaired before proof was accepted."
+  ],
+  "repairsMade": [
+    "Added TodayWeeklyBoardSummary inside the Today command center when the derived weekly_board is ready.",
+    "Added a Use week plan action on Today that calls createPlanFromWeeklyBoard, clears any focus session, resets plan_done, creates a local memory candidate, and shows a role=status message.",
+    "Added compact CSS for the Today weekly summary without nesting another full panel/card.",
+    "Extended the sample-week visual test so the Today-first weekly-board block and action are asserted before navigating to Patterns."
+  ],
+  "verification": {
+    "localChecks": [
+      {
+        "command": "npm run typecheck",
+        "result": "passed"
+      },
+      {
+        "command": "npm test",
+        "result": "passed",
+        "detail": "3 test files, 19 tests"
+      },
+      {
+        "command": "npm run lint",
+        "result": "passed"
+      },
+      {
+        "command": "npm run build",
+        "result": "passed",
+        "detail": "Next.js 16.2.7 static build generated 10 routes including /today, /capture, /patterns, /experiments, /profile, /privacy"
+      },
+      {
+        "command": "npm run test:fixtures",
+        "result": "passed",
+        "detail": "1 test file, 2 tests"
+      },
+      {
+        "command": "npm run test:pwa",
+        "result": "passed",
+        "detail": "1 test file, 1 test"
+      },
+      {
+        "command": "npx playwright test tests/visual/mobile.spec.ts --workers=1",
+        "result": "failed_infrastructure",
+        "detail": "browserType.launch timed out after 180000ms before app assertions; interrupted second test. This was not accepted as product proof."
+      },
+      {
+        "command": "git diff --check",
+        "result": "passed"
+      },
+      {
+        "command": "rg secret-pattern scan over changed source/test files",
+        "result": "passed",
+        "detail": "no matches"
+      }
+    ],
+    "browserLocal": {
+      "server": "npm run start -- --hostname 127.0.0.1 --port 3000 after production build",
+      "tool": "Codex in-app browser",
+      "mobileViewport": "390x844",
+      "desktopViewport": "1280x800",
+      "flow": [
+        "Open /profile and reset browser-local demo state.",
+        "Open /today and click Load sample week.",
+        "Verify Today weekly board summary is visible and says Weekly board ready from local history.",
+        "Click Use week plan from Today.",
+        "Verify status message says the weekly board cue moved into Today's browser-local plan.",
+        "Verify Daily plan fields: Must-do Protect first useful block, Optional move 2 Close and archive one more local day, Avoid today Do not start with messages before plan.",
+        "Refresh /today and verify the plan and Today weekly board persist.",
+        "Open /capture and verify three capture items, including protected first block and messages before plan.",
+        "Open /patterns and verify Weekly operating board plus 3-checkpoint local trend.",
+        "Open /privacy and verify privacy policy plus WHOOP disconnected-services copy.",
+        "Open /today at 1280x800 and verify no horizontal overflow."
+      ],
+      "result": "passed",
+      "consoleErrors": [],
+      "desktopOverflow": {
+        "clientWidth": 1280,
+        "scrollWidth": 1280,
+        "passed": true
+      }
+    },
+    "labBoundary": {
+      "localPreflight": "red at 2026-06-20T12:23:46.151Z: local-mcp-health-red, life-safety-state-not-loaded, grok-context-brief-not-loaded, fetch failed",
+      "bootPacket": "red at 2026-06-20T12:23:52.887Z: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports"
+    },
+    "deployment": {
+      "status": "pending_after_local_proof"
+    }
+  },
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/browser-local-today-weekly-board-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/browser-local-sample-capture-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/browser-local-weekly-board-patterns-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/browser-local-privacy-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/browser-local-today-weekly-board-desktop-1280.png"
+  ],
+  "residualRisks": [
+    "This is still browser-local demo behavior; real backend/account/integration readiness is unverified and currently red in lab boot artifacts.",
+    "Standalone Playwright remains unreliable in this desktop process state; in-app browser proof is the accepted visual evidence for this checkpoint.",
+    "Production smoke is still pending in this packet and must be added before claiming the deployed slice is proven."
+  ],
+  "rollbackPath": [
+    "Git rollback: revert the Today weekly command commit and redeploy the previous production commit if needed.",
+    "Runtime rollback: promote the previous Vercel production deployment. No database/auth/credential migration is part of this slice.",
+    "User-data rollback is not needed for backend records because this feature writes only browser-local demo state."
+  ],
+  "secretsRedacted": true,
+  "stopContinueDecision": "checkpoint_not_complete_until_git_push_vercel_deploy_and_production_smoke_finish"
+}

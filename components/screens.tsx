@@ -237,6 +237,34 @@ export function TodayScreen() {
     setPlanMessage("Loaded a sample browser-local week. No integration or backend data was created.");
   }
 
+  function useWeeklyBoardTodayPlan() {
+    if (today.weekly_board.status !== "ready") return;
+
+    const now = new Date().toISOString();
+    const board = today.weekly_board;
+    setLocalState((current) => ({
+      ...current,
+      daily_plan: createPlanFromWeeklyBoard(board, current.daily_plan, now),
+      focus_session: null,
+      plan_done: false,
+      memory_candidates: [
+        {
+          id: `memory-weekly-today-${Date.now()}`,
+          title: `Weekly board: ${board.primary_cue}`,
+          detail: `${board.detail} ${board.truth_boundary}`,
+          source: "pattern" as const,
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
+        },
+        ...current.memory_candidates.filter((candidate) => !candidate.title.startsWith("Weekly board:"))
+      ].slice(0, 20),
+      updated_at: now
+    }));
+    setPlanMessage(`Moved weekly board cue "${board.primary_cue}" into Today's browser-local plan.`);
+  }
+
   function startFocusBlock() {
     const now = new Date().toISOString();
     setLocalState((current) => {
@@ -549,6 +577,7 @@ export function TodayScreen() {
                 {today.plan_builder.detail}
               </span>
             </div>
+            <TodayWeeklyBoardSummary board={today.weekly_board} onUsePlan={useWeeklyBoardTodayPlan} />
             <div className="action-row">
               <button className="primary-action" type="button" onClick={saveCheckIn} data-testid="save-checkin">
                 Save check-in
@@ -649,6 +678,65 @@ export function TodayScreen() {
         </aside>
       </section>
     </AppShell>
+  );
+}
+
+function TodayWeeklyBoardSummary({
+  board,
+  onUsePlan
+}: Readonly<{
+  board: ReturnType<typeof deriveTodayView>["weekly_board"];
+  onUsePlan: () => void;
+}>) {
+  if (board.status !== "ready") return null;
+
+  return (
+    <section className="weekly-today-summary" aria-label="Today weekly board summary">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Weekly board</p>
+          <h3 className="compact-title">{board.title}</h3>
+        </div>
+        <span className="state-pill state-pill-good">{board.status}</span>
+      </div>
+      <p className="panel-copy">{board.detail}</p>
+      <div className="history-insight-grid" aria-label="Today weekly board metrics">
+        {board.metrics.map((metric) => (
+          <span key={metric.label}>
+            <strong>{metric.value}</strong>
+            {metric.label}
+          </span>
+        ))}
+      </div>
+      <div className="insight-callout">
+        <strong>Primary cue</strong>
+        <span>{board.primary_cue}</span>
+      </div>
+      <div className="command-grid review-grid" aria-label="Today weekly plan preview">
+        <span>
+          <strong>Must-do</strong>
+          {board.plan_preview.must_do}
+        </span>
+        <span>
+          <strong>Keep</strong>
+          {board.keep_doing}
+        </span>
+        <span>
+          <strong>Reduce</strong>
+          {board.reduce}
+        </span>
+        <span>
+          <strong>Boundary</strong>
+          {board.plan_preview.avoid_today}
+        </span>
+      </div>
+      <div className="action-row data-action-row">
+        <button className="primary-action" type="button" onClick={onUsePlan} data-testid="use-weekly-board-today">
+          Use week plan
+        </button>
+      </div>
+      <p className="field-help">{board.truth_boundary}</p>
+    </section>
   );
 }
 
