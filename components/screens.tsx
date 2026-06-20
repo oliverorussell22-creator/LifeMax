@@ -9,6 +9,7 @@ import {
   createPlanFromExperimentDecision,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
+  createSampleWeekDemoState,
   deriveTodayView,
   formatShortTime,
   localDemoStorageKey,
@@ -227,6 +228,12 @@ export function TodayScreen() {
       updated_at: now
     }));
     setPlanMessage("Generated a browser-local plan from current local signals.");
+  }
+
+  function loadSampleWeek() {
+    const now = new Date().toISOString();
+    setLocalState(() => createSampleWeekDemoState(now));
+    setPlanMessage("Loaded a sample browser-local week. No integration or backend data was created.");
   }
 
   function startFocusBlock() {
@@ -556,6 +563,9 @@ export function TodayScreen() {
               </button>
               <button className="secondary-action" type="button" onClick={lowerIntensity} data-testid="lower-intensity">
                 Lower intensity
+              </button>
+              <button className="secondary-action" type="button" onClick={loadSampleWeek} data-testid="load-sample-week">
+                Load sample week
               </button>
             </div>
             {planMessage ? (
@@ -2482,6 +2492,14 @@ export function ProfileScreen() {
     });
   }
 
+  function loadProfileSampleWeek() {
+    const now = new Date().toISOString();
+    setLocalState(() => createSampleWeekDemoState(now));
+    setImportText("");
+    setResetArmed(false);
+    setExportStatus({ tone: "success", message: "Loaded a sample browser-local week. It uses demo state only, not integrations or backend records." });
+  }
+
   function askForResetConfirmation() {
     setResetArmed(true);
     setExportStatus({ tone: "idle", message: "Reset is staged. Confirm below to clear only this browser's demo data." });
@@ -2542,6 +2560,9 @@ export function ProfileScreen() {
               </button>
               <button className="secondary-action" type="button" onClick={() => void copyLocalExport()} data-testid="copy-local-export">
                 Copy JSON
+              </button>
+              <button className="secondary-action" type="button" onClick={loadProfileSampleWeek} data-testid="load-sample-week-profile">
+                Load sample week
               </button>
               <button className="secondary-action danger-action" type="button" onClick={askForResetConfirmation} data-testid="reset-local">
                 Reset local demo
@@ -2632,32 +2653,32 @@ export function PrivacyScreen() {
             title="Privacy policy and local data boundary."
             copy="This policy describes the current app shell truth, not future backend promises."
           />
-          <section className="panel legal-panel">
+          <section className="panel legal-panel" aria-label="Privacy last updated">
             <p className="kicker">Last updated</p>
             <h2 className="panel-title">June 19, 2026</h2>
             <p className="panel-copy">
               LifeMax currently stores the demo check-in, captures, plan status, quick restart, midday rescue, local experiment status, and observation notes in this browser only.
             </p>
           </section>
-          <section className="panel legal-panel">
+          <section className="panel legal-panel" aria-label="Privacy local product data">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
               The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, its local decision note, local day history checkpoints, and pasted local export restores. These are browser-local records.
             </p>
           </section>
-          <section className="panel legal-panel">
+          <section className="panel legal-panel" aria-label="Privacy disconnected services">
             <h2 className="panel-title">What is not connected here</h2>
             <p className="panel-copy">
               This app shell does not connect WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, or production backend writes.
             </p>
           </section>
-          <section className="panel legal-panel">
+          <section className="panel legal-panel" aria-label="Privacy wellness boundary">
             <h2 className="panel-title">Wellness and safety claims</h2>
             <p className="panel-copy">
               LifeMax is for personal wellness reflection. It does not diagnose, treat, prescribe, or replace qualified medical advice.
             </p>
           </section>
-          <section className="panel legal-panel">
+          <section className="panel legal-panel" aria-label="Privacy beta requirements">
             <h2 className="panel-title">Before beta</h2>
             <p className="panel-copy">
               Real export/delete, auth isolation, redacted logging, consent, and reviewed privacy copy must exist before external users or live health-data claims.
@@ -2665,7 +2686,7 @@ export function PrivacyScreen() {
           </section>
         </div>
         <aside className="screen-aside">
-          <section className="panel">
+          <section className="panel" aria-label="Privacy reachability">
             <p className="kicker">Reachability</p>
             <h2 className="panel-title">Linked from app chrome</h2>
             <p className="panel-copy">Privacy is reachable from the top bar, desktop side navigation, and Profile controls.</p>

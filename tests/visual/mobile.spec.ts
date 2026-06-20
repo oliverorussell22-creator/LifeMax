@@ -382,6 +382,64 @@ test("local focus block completes a generated plan item and creates a capture", 
   });
 });
 
+test("sample week loader makes high-level local state visible and persistent", async ({ page }) => {
+  mkdirSync(highFunctionalityDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  await page.getByTestId("load-sample-week").click();
+  await expect(page.getByRole("status")).toContainText("Loaded a sample browser-local week");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Protect first useful block");
+  await expect(page.getByLabel("Source freshness").getByText("3 events in this browser")).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Protect first useful block");
+  await page.locator('section[aria-label="Today command center"]').evaluate((node) => node.scrollIntoView({ block: "start" }));
+  await page.screenshot({
+    path: path.join(highFunctionalityDir, "local-sample-week-today-mobile-390.png"),
+    fullPage: false
+  });
+
+  await page.goto("/patterns");
+  await expect(page.getByLabel("Local history insight").getByRole("heading", { name: "3 checkpoints form a local trend" })).toBeVisible();
+  await expect(page.getByLabel("Local day history").getByRole("heading", { name: "3 local days archived" })).toBeVisible();
+  await page.screenshot({
+    path: path.join(highFunctionalityDir, "local-sample-week-patterns-mobile-390.png"),
+    fullPage: false
+  });
+
+  await page.goto("/experiments");
+  await expect(page.getByLabel("Experiment result").getByText("Decision: keep")).toBeVisible();
+
+  await page.goto("/capture");
+  await expect(page.getByLabel("Captures: 3")).toBeVisible();
+  await expect(page.getByLabel("Capture list").getByLabel("Capture: protected first block")).toBeVisible();
+  await expect(page.getByLabel("Capture list").getByLabel("Capture: messages before plan")).toBeVisible();
+  await page.locator('section[aria-label="Capture list"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Capture list"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-sample-week-capture-mobile-390.png")
+  });
+
+  await page.goto("/profile");
+  await expect(page.getByLabel("Captures: 3")).toBeVisible();
+  await expect(page.getByLabel("Day history: 3")).toBeVisible();
+  await expect(page.getByLabel("Experiment observations: 2")).toBeVisible();
+  await expect(page.getByText("View local export preview")).toBeVisible();
+  await expect(page.getByText("WHOOP")).toBeVisible();
+
+  await page.goto("/privacy");
+  await expect(page.getByRole("heading", { name: "Privacy policy and local data boundary." })).toBeVisible();
+  await expect(page.getByLabel("Privacy disconnected services").getByText("WHOOP")).toBeVisible();
+  await expect(page.getByLabel("Privacy local product data").getByText("browser-local records")).toBeVisible();
+
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth
+  }));
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+});
+
 test("desktop shell exposes side navigation and privacy route without overflow", async ({ page }) => {
   const runtimeErrors = collectRuntimeErrors(page);
   mkdirSync(screenshotDir, { recursive: true });

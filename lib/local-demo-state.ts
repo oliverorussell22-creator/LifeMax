@@ -362,6 +362,217 @@ export function createInitialLocalDemoState(): LocalDemoState {
   };
 }
 
+export function createSampleWeekDemoState(timestamp: string): LocalDemoState {
+  const baseTime = Date.parse(timestamp) || Date.now();
+  const iso = (daysAgo: number, hourOffset = 0) => new Date(baseTime - daysAgo * 86_400_000 + hourOffset * 3_600_000).toISOString();
+  const archiveTimeOne = iso(1, -2);
+  const archiveTimeTwo = iso(2, -2);
+  const archiveTimeThree = iso(3, -2);
+
+  return {
+    schema_version: "lifemax.local_demo.v1",
+    check_in: {
+      energy: "ok",
+      mood: "ok",
+      stress: "medium",
+      body: "ok",
+      friction_tags: ["schedule friction", "good momentum"],
+      note: "Sample browser-local week loaded for inspection.",
+      saved_at: timestamp
+    },
+    captures: [
+      {
+        id: `capture-sample-focus-${baseTime}`,
+        kind: "habit",
+        label: "protected first block",
+        note: "Morning felt cleaner when the first useful block stayed small.",
+        impact: "helped",
+        created_at: iso(0, -1),
+        updated_at: iso(0, -1)
+      },
+      {
+        id: `capture-sample-hydration-${baseTime}`,
+        kind: "hydration",
+        label: "water before coffee",
+        note: "Neutral but easy to repeat.",
+        impact: "neutral",
+        created_at: iso(1, -4),
+        updated_at: iso(1, -4)
+      },
+      {
+        id: `capture-sample-input-${baseTime}`,
+        kind: "habit",
+        label: "messages before plan",
+        note: "Drained the morning when it happened first.",
+        impact: "drained",
+        created_at: iso(2, -5),
+        updated_at: iso(2, -5)
+      }
+    ],
+    daily_plan: {
+      must_do: "Protect first useful block",
+      optional_1: "Capture one before/after signal",
+      optional_2: "Close the loop before adding rules",
+      avoid_today: "Do not scale beyond one block",
+      shutdown_target: "8:30 PM",
+      item_statuses: {
+        must_do: "open",
+        optional_1: "open",
+        optional_2: "open"
+      },
+      accepted_at: timestamp,
+      updated_at: timestamp
+    },
+    midday_rescue: {
+      trigger: "overloaded",
+      reset: "walk",
+      next_move: "Ten minute walk without messages",
+      defer_until: "after lunch",
+      note: "Sample rescue kept the day smaller.",
+      saved_at: iso(0, -2)
+    },
+    quick_restart: {
+      window: "three_days",
+      energy: "ok",
+      sleep: "ok",
+      priority: "Protect first useful block",
+      changed: "Sample week shows a missed-day restart without pressure.",
+      reminder_stance: "evening_only",
+      saved_at: iso(0, -3)
+    },
+    evening_close: {
+      completed: "Protected first useful block",
+      missed: "Second priority stayed optional",
+      why: "Sample local data kept the plan small.",
+      recovery_impact: "restored",
+      tomorrow_hint: "Protect first useful block",
+      saved_at: iso(0, -1)
+    },
+    memory_candidates: [
+      {
+        id: `memory-sample-kept-${baseTime}`,
+        title: "Protect first useful block",
+        detail: "Kept because it appears across the sample local week.",
+        source: "pattern",
+        status: "kept",
+        created_at: iso(1, -1),
+        updated_at: iso(1, -1),
+        rejection_reason: null
+      },
+      {
+        id: `memory-sample-candidate-${baseTime}`,
+        title: "Messages after plan",
+        detail: "Candidate memory from a drained capture.",
+        source: "evening_close",
+        status: "candidate",
+        created_at: iso(0, -1),
+        updated_at: iso(0, -1),
+        rejection_reason: null
+      }
+    ],
+    pattern_decisions: [
+      {
+        pattern_id: "local-pattern-energy",
+        status: "watching",
+        updated_at: iso(0, -1)
+      }
+    ],
+    experiment: {
+      id: `experiment-sample-${baseTime}`,
+      pattern_id: "local-pattern-energy",
+      hypothesis: "A smaller first block may reduce friction.",
+      intervention: "Keep one must-do, protect the first useful block, and capture any energy shift.",
+      target_signal: "energy, friction, and follow-through",
+      minimum_window_days: 3,
+      stop_condition: "Stop if the experiment adds pressure, worsens symptoms, or crowds out recovery.",
+      status: "stopped",
+      started_at: iso(3, -6),
+      stopped_at: iso(0, -1),
+      decision: "keep",
+      result_note: "Keep the protected first block, but keep it small.",
+      observations: [
+        {
+          id: `observation-sample-better-${baseTime}`,
+          signal: "better",
+          note: "Morning block felt cleaner.",
+          captured_at: iso(2, -1)
+        },
+        {
+          id: `observation-sample-same-${baseTime}`,
+          signal: "same",
+          note: "Afternoon still needed a rescue.",
+          captured_at: iso(1, -1)
+        }
+      ]
+    },
+    day_archives: [
+      {
+        id: `day-archive-sample-1-${baseTime}`,
+        archived_at: archiveTimeOne,
+        day_label: formatArchiveDayLabel(archiveTimeOne),
+        review_title: "Local day archived",
+        review_summary: "2/3 plan items; protected first block helped.",
+        tomorrow_cue: "Protect first useful block",
+        follow_through: "2/3 done",
+        evidence_count: 5,
+        confidence: "medium",
+        plan_progress: "2/3 done",
+        capture_count: 2,
+        kept_memory_count: 1,
+        rejected_memory_count: 0,
+        experiment_status: "stopped",
+        experiment_observation_count: 2,
+        rescue_used: true,
+        restart_used: false
+      },
+      {
+        id: `day-archive-sample-2-${baseTime}`,
+        archived_at: archiveTimeTwo,
+        day_label: formatArchiveDayLabel(archiveTimeTwo),
+        review_title: "Local day archived",
+        review_summary: "1/3 plan items; messages before plan added friction.",
+        tomorrow_cue: "Protect first useful block",
+        follow_through: "1/3 done",
+        evidence_count: 4,
+        confidence: "medium",
+        plan_progress: "1/3 done",
+        capture_count: 1,
+        kept_memory_count: 0,
+        rejected_memory_count: 0,
+        experiment_status: "active",
+        experiment_observation_count: 1,
+        rescue_used: false,
+        restart_used: true
+      },
+      {
+        id: `day-archive-sample-3-${baseTime}`,
+        archived_at: archiveTimeThree,
+        day_label: formatArchiveDayLabel(archiveTimeThree),
+        review_title: "Local day archived",
+        review_summary: "2/3 plan items; the small plan stayed doable.",
+        tomorrow_cue: "Walk before messages",
+        follow_through: "2/3 done",
+        evidence_count: 4,
+        confidence: "medium",
+        plan_progress: "2/3 done",
+        capture_count: 1,
+        kept_memory_count: 0,
+        rejected_memory_count: 0,
+        experiment_status: "none",
+        experiment_observation_count: 0,
+        rescue_used: false,
+        restart_used: false
+      }
+    ],
+    focus_session: null,
+    reviewed_at: iso(0, -1),
+    plan_done: false,
+    lowered_today: true,
+    experiment_started_at: null,
+    updated_at: timestamp
+  };
+}
+
 export function createLocalDemoExport(state: LocalDemoState, generatedAt: string): LocalDemoExport {
   const memorySummary = summarizeMemoryCandidates(state.memory_candidates);
   const historyInsight = summarizeHistoryInsight(state.day_archives);

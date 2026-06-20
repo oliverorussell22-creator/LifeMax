@@ -11,6 +11,7 @@ import {
   createPlanFromExperimentDecision,
   createPlanFromLocalSignals,
   createPlanFromHistoryArchive,
+  createSampleWeekDemoState,
   createSuggestedPlan,
   deriveTodayView,
   parseLocalDemoImport,
@@ -160,6 +161,25 @@ describe("Wave 0 scaffold contract", () => {
     expect(generatedPlan.optional_2).toBe("Use history cue: Walk before opening messages");
     expect(generatedPlan.avoid_today).toBe("Do not repeat late messages without a pause");
     expect(generatedPlan.item_statuses).toEqual({ must_do: "open", optional_1: "open", optional_2: "open" });
+  });
+
+  test("loads a sample browser-local week without integration claims", () => {
+    const sample = createSampleWeekDemoState("2026-06-20T18:00:00.000Z");
+    const view = deriveTodayView(sample);
+    const localExport = createLocalDemoExport(sample, "2026-06-20T18:05:00.000Z");
+
+    expect(sample.check_in?.note).toContain("Sample browser-local week");
+    expect(sample.captures).toHaveLength(3);
+    expect(sample.day_archives).toHaveLength(3);
+    expect(sample.daily_plan?.must_do).toBe("Protect first useful block");
+    expect(sample.experiment?.status).toBe("stopped");
+    expect(sample.experiment?.decision).toBe("keep");
+    expect(view.history_insight.status).toBe("trend");
+    expect(view.history_insight.truth_boundary).toContain("browser-local trend summary");
+    expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
+    expect(localExport.summary.day_archives).toBe(3);
+    expect(localExport.summary.experiment).toBe("stopped");
+    expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
   });
 
   test("starts and summarizes a browser-local focus session from the next open plan item", () => {

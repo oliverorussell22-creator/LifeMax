@@ -1,0 +1,308 @@
+{
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-today-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-capture-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-patterns-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-privacy-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-today-desktop-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-capture-list-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-pattern-trend-mobile-390.png"
+  ],
+  "nav": [
+    {
+      "clientWidth": 390,
+      "h1": "Save the signal before it disappears.",
+      "labels": {
+        "Capture list": "HistoryLocal captures3HabithelpedCapture labelCapture noteMorning felt cleaner when the first useful block stayed small.Saved typeSupplementHabitSymptomHydrationNoteSaved impactHelpedNeutralDrainedUnsureSave editRepeatDeleteCreated 3:51 AM. Capture corrections stay in this browser.HydrationneutralCapture labelCapture noteNeutral but easy to repeat.Saved typeSupplementHabitSymptomHydrationNoteSaved impactHelpedNeutralDrainedUnsureSave editRepeatDeleteCreated 12:51 AM. Capture corrections stay in this browser.HabitdrainedCapture labelCapture noteDrained the morning when it happened first.Saved typeSupplementHabitSymptomHydrationNoteSaved impactHelpedNeutralDrainedUnsureSave editRepeatDeleteCreated 11:51 PM. Capture corrections stay in this browser."
+      },
+      "path": "/capture",
+      "scrollWidth": 390
+    },
+    {
+      "clientWidth": 390,
+      "h1": "Only show patterns the local data can support.",
+      "labels": {
+        "Local day history": "History3 local days archived3Jun 19: 2/3 done; 5 evidence points. Next cue: Protect first useful blockJun 19mediumProtect first useful block2/3 plan items; protected first block helped.2/3 done5 evidence2 captures2 observationsRescue used. Archived 2:51 AM in this browser.Use cue in Today planJun 18mediumProtect first useful block1/3 plan items; messages before plan added friction.1/3 done4 evidence1 captures1 observationsRestart used. Archived 2:51 AM in this browser.Use cue in Today planJun 17mediumWalk before messages2/3 plan items; the small plan stayed doable.2/3 done4 evidence1 captures0 observationsArchived 2:51 AM in this browser.Use cue in Today plan",
+        "Local history insight": "Insight3 checkpoints form a local trendlocal trend4.3 evidence points per checkpoint; 5 plan items completed; 1 rescue and 1 restart records.3Checkpoints4.3Evidence/day4Captures3ObservationsNext actionRepeat \"Protect first useful block\" once more before changing the experiment.This is a browser-local trend summary, not a causal or medical claim."
+      },
+      "path": "/patterns",
+      "scrollWidth": 390
+    },
+    {
+      "clientWidth": 390,
+      "h1": "Turn a weak signal into a cautious local test.",
+      "labels": {
+        "Experiment builder": "BuilderProtect energy for three morningsreadyThe previous local experiment result is saved below. Starting again replaces the single browser-local experiment record.Start another local experiment",
+        "Experiment result": "ResultExperiment decision saved.Decision: keep. Keep the protected first block, but keep it small. 2 observations logged.Plan handoffUse the saved decision as a cautious local plan draft. No routine changes automatically.Use decision in Today planNext: Use the kept decision as a local plan draft or memory cue, not as medical advice.This replaces the browser-local Today plan, clears any active focus block, and resets plan items to open."
+      },
+      "path": "/experiments",
+      "scrollWidth": 390
+    },
+    {
+      "clientWidth": 390,
+      "h1": "Local app truth and data controls.",
+      "labels": {
+        "Data controls": "ControlsBrowser-local demo datalocal onlyExport, import, and reset apply only to this browser demo state. They do not touch Postgres, Telegram, n8n, WHOOP, Grok, public MCP, or backend records.Download local JSONCopy JSONLoad sample weekReset local demoOpen privacyRestoreImport a local exportvalidated JSONPaste local export JSONValidate and importImport replaces only the local demo state in this browser after schema validation. Nothing is uploaded or synced.Export stays on this device until you choose where to save it.",
+        "Local data summary": "Check-insavedPlan0/3 doneRescuesavedRestartsavedClosesavedCaptures3Active memories2Kept memories1Rejected memories0Day history3History insightlocal trendExperimentstoppedExperiment observations2Reviewsaved"
+      },
+      "path": "/profile",
+      "scrollWidth": 390
+    }
+  ],
+  "todayLoaded": {
+    "clientWidth": 390,
+    "h1": "Check in, then keep the day honest.",
+    "labels": {
+      "Current state summary": "Statelow energyConfidencemediumIntensity cap1Plan0/3 doneRescuesavedRestartsaved",
+      "Daily workflow map": "Check-insaved4:51 AMPlan0/3 doneProtect first useful blockCloseclosedmemory readyRescuesavedShort walkLearnstoppedpatterns ready",
+      "Source freshness": "FreshnessSource statusManual check-inSaved locally 4:51 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled"
+    },
+    "path": "/today",
+    "scrollWidth": 390
+  },
+  "status": "local_proven_deploy_pending",
+  "planInputs": [
+    "Protect first useful block",
+    "Capture one before/after signal",
+    "Close the loop before adding rules",
+    "Do not scale beyond one block",
+    "8:30 PM"
+  ],
+  "todayAfterRefresh": {
+    "clientWidth": 390,
+    "h1": "Check in, then keep the day honest.",
+    "labels": {
+      "Source freshness": "FreshnessSource statusManual check-inSaved locally 4:51 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled"
+    },
+    "path": "/today",
+    "scrollWidth": 390
+  },
+  "planInputsAfterRefresh": [
+    "Protect first useful block",
+    "Capture one before/after signal",
+    "Close the loop before adding rules",
+    "Do not scale beyond one block",
+    "8:30 PM"
+  ],
+  "privacy": {
+    "clientWidth": 390,
+    "h1": "Privacy policy and local data boundary.",
+    "labels": {
+      "Privacy disconnected services": "What is not connected hereThis app shell does not connect WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, or production backend writes.",
+      "Privacy local product data": "Local product dataThe higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, its local decision note, local day history checkpoints, and pasted local export restores. These are browser-local records.",
+      "Privacy reachability": "ReachabilityLinked from app chromePrivacy is reachable from the top bar, desktop side navigation, and Profile controls.",
+      "Privacy wellness boundary": "Wellness and safety claimsLifeMax is for personal wellness reflection. It does not diagnose, treat, prescribe, or replace qualified medical advice."
+    },
+    "path": "/privacy",
+    "scrollWidth": 390
+  },
+  "mobileLogs": [],
+  "desktopToday": {
+    "clientWidth": 1280,
+    "h1": "Check in, then keep the day honest.",
+    "labels": {
+      "Primary sections": "TodayCapturePatternsExperimentsProfile",
+      "Source freshness": "FreshnessSource statusManual check-inSaved locally 4:51 AMfreshLocal captures3 events in this browserfreshHealth integrationsWHOOP, accounts, AI, and backend sync are not connected in this app shell.disabled",
+      "Today command center": "What nowKeep the plan small.A lower intensity cap protects the day from turning into a productivity push.WhyManual check-in points to a smaller day. No wearable data was used.Next itemProtect first useful blockBoundaryDo not scale beyond one blockRescueTen minute walk without messagesRestartProtect first useful blockClose loopTomorrow hint: Protect first useful blockHistory cueRepeat \"Protect first useful block\" once more before changing the experiment.Plan builderUses check-in, restart, 3 captures, rescue, history cue. Nothing leaves this browser.Save check-inGenerate local planLower intensityLoad sample week"
+    },
+    "path": "/today",
+    "scrollWidth": 1280
+  },
+  "desktopLogs": [],
+  "createdAt": "2026-06-20T11:51:34.610Z",
+  "proofPath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-proof-2026-06-20.json",
+  "visualInspectionAddendum": {
+    "reason": "Initial mobile screenshots showed top-of-page or clicked state; added focused shots for loaded sample capture list and local trend/history section.",
+    "addedAt": "2026-06-20T11:52:36.573Z",
+    "addedScreenshots": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-capture-list-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-pattern-trend-mobile-390.png"
+    ]
+  },
+  "schema": "lifemax.high-functionality-proof.v1",
+  "objective": "Make the public LifeMax app visibly higher-functionality by adding a browser-local sample week that immediately populates Today, Capture, Patterns, Experiments, Profile, and Privacy without fake integration claims.",
+  "truthBoundary": [
+    "Browser-local demo state only.",
+    "No WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Postgres, backend writes, reminders, timers, or cross-device sync are connected or claimed.",
+    "Lab/shared-context LifeMax boot reports are red, so daily usable connected LifeMax is not claimed."
+  ],
+  "changedFiles": [
+    "components/screens.tsx",
+    "lib/local-demo-state.ts",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts",
+    "reports/lifemax-sample-week-proof-2026-06-20.json"
+  ],
+  "localChecks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "detail": "3 files, 19 tests"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "detail": "Next.js static routes generated for /, /today, /capture, /patterns, /experiments, /profile, /privacy, /manifest.webmanifest"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "passed",
+      "detail": "1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "passed",
+      "detail": "1 file, 1 test"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --unified=0 | rg -n \"sk-|secret|token|password|api[_-]?key|bearer\"",
+      "result": "passed",
+      "detail": "no matches"
+    }
+  ],
+  "lifecycleEvidence": {
+    "defectsFound": [
+      "Visual test expected a Today summary phrase that was not an actual accessible UI contract.",
+      "Privacy panels were reachable but lacked stable section labels for proof/accessibility.",
+      "Initial screenshots did not show the most representative Capture list and Pattern trend surfaces."
+    ],
+    "repairsMade": [
+      "Aligned visual test expectations to real Source freshness and Capture list accessible names.",
+      "Added aria labels to Privacy policy sections and included Privacy in the sample-week visual path.",
+      "Captured focused mobile screenshots for the sample Capture list and Pattern trend/history section."
+    ],
+    "rerunChecks": [
+      "typecheck",
+      "unit tests",
+      "lint",
+      "build",
+      "fixtures",
+      "PWA",
+      "browser smoke"
+    ],
+    "stopContinueDecision": "continue_to_git_push_and_approved_vercel_production_deploy"
+  },
+  "environmentBlockers": [
+    "Standalone Playwright mobile screenshot command is not used in this environment because the Codex parent process has a large <defunct> child backlog and Chromium launch previously timed out. In-app browser smoke is the current browser proof path."
+  ],
+  "labBootBoundary": {
+    "localPreflight": "red: local MCP health unknown; life safety state and Grok context brief not loaded; fetch failed",
+    "bootPacket": "red: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports",
+    "generatedAt": "2026-06-20T11:45:21Z"
+  },
+  "deployment": {
+    "status": "pending",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote"
+  },
+  "updatedAt": "2026-06-20T11:54:24.220Z",
+  "riskClass": "Q3",
+  "verification": {
+    "static": [
+      {
+        "command": "npm run typecheck",
+        "result": "passed"
+      },
+      {
+        "command": "npm test",
+        "result": "passed",
+        "detail": "3 files, 19 tests"
+      },
+      {
+        "command": "npm run lint",
+        "result": "passed"
+      },
+      {
+        "command": "npm run build",
+        "result": "passed",
+        "detail": "Next.js static routes generated for /, /today, /capture, /patterns, /experiments, /profile, /privacy, /manifest.webmanifest"
+      },
+      {
+        "command": "npm run test:fixtures",
+        "result": "passed",
+        "detail": "1 file, 2 tests"
+      },
+      {
+        "command": "npm run test:pwa",
+        "result": "passed",
+        "detail": "1 file, 1 test"
+      },
+      {
+        "command": "git diff --check",
+        "result": "passed"
+      },
+      {
+        "command": "git diff --unified=0 | rg -n \"sk-|secret|token|password|api[_-]?key|bearer\"",
+        "result": "passed",
+        "detail": "no matches"
+      }
+    ],
+    "browser": {
+      "localServer": "next start on http://127.0.0.1:3000 after production build",
+      "flow": "visible reset -> load sample week -> refresh persistence -> primary nav Capture/Patterns/Experiments/Profile -> Profile Open privacy -> desktop Today",
+      "screenshots": [
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-today-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-capture-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-patterns-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-privacy-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-today-desktop-1280.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-capture-list-mobile-390.png",
+        "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-sample-week-pattern-trend-mobile-390.png"
+      ],
+      "mobileConsoleErrors": [],
+      "desktopConsoleErrors": [],
+      "noHorizontalOverflow": "390px mobile and 1280px desktop scrollWidth <= clientWidth in captured proof"
+    },
+    "labBoundary": {
+      "localPreflight": "red: local MCP health unknown; life safety state and Grok context brief not loaded; fetch failed",
+      "bootPacket": "red: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports",
+      "generatedAt": "2026-06-20T11:45:21Z"
+    },
+    "qualityGate": "codex-quality-gate script rerun after Q3 fields added"
+  },
+  "approvalStatus": "Approved for production deployment by user message: PRODUCTION_DEPLOY_APPROVED=true promote. No credential/auth/DNS/backend/service mutation approved or performed.",
+  "preActionEvidence": {
+    "gitStatusBeforeCommit": "main...origin/main with scoped app/report changes only",
+    "localProof": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-sample-week-proof-2026-06-20.json",
+    "checksPassedBeforeDeploy": [
+      "npm run typecheck",
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run test:fixtures",
+      "npm run test:pwa",
+      "git diff --check",
+      "git diff --unified=0 | rg -n \"sk-|secret|token|password|api[_-]?key|bearer\""
+    ],
+    "bootBoundary": {
+      "localPreflight": "red: local MCP health unknown; life safety state and Grok context brief not loaded; fetch failed",
+      "bootPacket": "red: safe_to_claim_daily_usable false; local preflight red; stale shared-context reports",
+      "generatedAt": "2026-06-20T11:45:21Z"
+    }
+  },
+  "rollbackPath": [
+    "Git rollback path: revert the commit that adds the sample-week loader and privacy proof labels, then redeploy the previous Vercel production commit if needed.",
+    "Runtime rollback path: Vercel dashboard/CLI can promote the prior production deployment; no database/auth/credential migration is part of this slice.",
+    "User data rollback is not needed for backend records because this feature writes only browser-local demo state."
+  ],
+  "postActionEvidence": {
+    "local": "Local post-action proof passed; deployment post-action smoke pending until Vercel deploy finishes.",
+    "deployment": {
+      "status": "pending",
+      "approval": "PRODUCTION_DEPLOY_APPROVED=true promote"
+    }
+  },
+  "secretsRedacted": true,
+  "noSecretsHandling": "No secrets printed or edited. Diff scan for sk-/secret/token/password/api-key/bearer patterns returned no matches."
+}
