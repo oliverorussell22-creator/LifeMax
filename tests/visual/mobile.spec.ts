@@ -382,6 +382,46 @@ test("local focus block completes a generated plan item and creates a capture", 
   });
 });
 
+test("today can save and archive a full local day review", async ({ page }) => {
+  mkdirSync(highFunctionalityDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  await page.getByTestId("save-checkin").click();
+  await page.getByTestId("generate-local-plan").click();
+  await page.goto("/capture");
+  await page.getByTestId("capture-kind-habit").click();
+  await page.getByRole("button", { name: "Helped" }).click();
+  await page.getByLabel("Label", { exact: true }).fill("first block protected");
+  await page.getByLabel("Note", { exact: true }).fill("small start made the day easier");
+  await page.getByTestId("save-capture").click();
+
+  await page.goto("/today");
+  await page.getByLabel("What got done").fill("Kept the first block small");
+  await page.getByLabel("What slipped").fill("Second optional move moved");
+  await page.getByLabel("Why").fill("Energy was steady but messages pulled attention.");
+  await page.getByLabel("Tomorrow hint").fill("Protect first block before messages");
+  await page.getByTestId("save-evening-close").click();
+  const review = page.getByLabel("Local day review");
+  await expect(review.getByRole("heading", { name: "Local day review ready." })).toBeVisible();
+  await review.getByTestId("save-review-checkpoint").click();
+  await expect(review.getByRole("status")).toContainText("Review checkpoint saved in this browser");
+  await review.getByTestId("archive-day").click();
+  await expect(review.getByRole("status")).toContainText("Day saved to browser-local history from Today");
+  await expect(review.getByText("1 archived local day")).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel("Local day review").getByText("1 archived local day")).toBeVisible();
+  await page.locator('section[aria-label="Local day review"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Local day review"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-today-day-review-archive-mobile-390.png")
+  });
+
+  await page.goto("/patterns");
+  await expect(page.getByLabel("Local day history").getByRole("heading", { name: "1 local day archived" })).toBeVisible();
+});
+
 test("sample week loader makes high-level local state visible and persistent", async ({ page }) => {
   mkdirSync(highFunctionalityDir, { recursive: true });
   await page.setViewportSize({ width: 390, height: 844 });

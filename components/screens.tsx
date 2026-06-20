@@ -145,6 +145,7 @@ export function TodayScreen() {
   const today = useMemo(() => deriveTodayView(state), [state]);
   const activePlan = state.daily_plan ?? today.suggested_plan;
   const [planMessage, setPlanMessage] = useState("");
+  const [dayReviewMessage, setDayReviewMessage] = useState("");
   const [draft, setDraft] = useState({
     energy: "ok" as SignalLevel,
     mood: "ok" as SignalLevel,
@@ -382,6 +383,50 @@ export function TodayScreen() {
       ].slice(0, 20),
       updated_at: now
     }));
+  }
+
+  function saveTodayReviewCheckpoint() {
+    if (today.day_review.status === "locked") return;
+
+    const now = new Date().toISOString();
+    const review = today.day_review;
+    setLocalState((current) => ({
+      ...current,
+      reviewed_at: now,
+      memory_candidates: [
+        {
+          id: `memory-review-today-${Date.now()}`,
+          title: review.tomorrow_cue,
+          detail: review.summary,
+          source: "pattern" as const,
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
+        },
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "pattern" || candidate.status !== "candidate")
+      ].slice(0, 20),
+      updated_at: now
+    }));
+    setDayReviewMessage("Review checkpoint saved in this browser. Nothing was sent to a server.");
+  }
+
+  function saveTodayDayHistory() {
+    if (today.day_review.status === "locked") return;
+
+    const now = new Date().toISOString();
+    setLocalState((current) => {
+      const review = deriveTodayView(current).day_review;
+      const archive = createDayArchive(current, review, now);
+
+      return {
+        ...current,
+        day_archives: [archive, ...current.day_archives].slice(0, 20),
+        reviewed_at: current.reviewed_at ?? now,
+        updated_at: now
+      };
+    });
+    setDayReviewMessage("Day saved to browser-local history from Today. Nothing was sent to a server.");
   }
 
   function saveMiddayRescue(rescue: {
@@ -640,6 +685,13 @@ export function TodayScreen() {
             onSave={saveMiddayRescue}
           />
           <EveningClosePanel key={getEveningCloseSyncKey(state.evening_close)} close={state.evening_close} onSave={saveEveningClose} />
+          <DayReviewPanel
+            archiveMessage={dayReviewMessage}
+            historyCount={state.day_archives.length}
+            onArchive={saveTodayDayHistory}
+            onSave={saveTodayReviewCheckpoint}
+            review={today.day_review}
+          />
         </div>
 
         <aside className="screen-aside" aria-label="Today state">

@@ -1,0 +1,126 @@
+{
+  "schema": "lifemax.high-functionality-proof.v1",
+  "createdAt": "2026-06-20T13:06:24Z",
+  "updatedAt": "2026-06-20T13:06:24Z",
+  "objective": "Make Today feel more like the full local daily loop by letting the user save a browser-local day review checkpoint and archive the day from Today, without navigating to Patterns.",
+  "riskClass": "Q3 because this goal lane includes approved production deployment after local proof; app code itself is Q2 browser-local frontend state.",
+  "status": "local_verified_pending_git_push_and_vercel_deploy",
+  "approvalStatus": "Production promotion was previously approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote. This slice does not edit credentials, auth, DNS, backend services, n8n, Telegram, Postgres, public MCP, or WHOOP settings.",
+  "changedFiles": [
+    "components/screens.tsx",
+    "tests/visual/mobile.spec.ts",
+    "reports/lifemax-today-day-review-proof-2026-06-20.json"
+  ],
+  "truthBoundary": [
+    "Today day review and archive are browser-local demo behavior only.",
+    "No WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Postgres, backend writes, reminders, timers, or cross-device sync are connected or claimed.",
+    "The separate LifeMax lab/source boot reports remain red, so connected daily usability is not claimed."
+  ],
+  "defectsFound": [
+    "A user could run most of the daily loop on Today, but the save review/archive day ending lived under Patterns, making Today feel less like the actual operating surface.",
+    "The visible end-of-day proof path required navigation to Patterns even though the action describes today's completed loop.",
+    "Initial in-app browser smoke attempted to read textarea values as rendered text/attributes; the smoke was repaired to verify visible capture state and downstream archive behavior instead."
+  ],
+  "repairsMade": [
+    "Added Today-local review checkpoint and archive handlers that reuse deriveTodayView and createDayArchive.",
+    "Rendered the existing DayReviewPanel on Today after the evening close, so the daily loop can be saved and archived from the main screen.",
+    "Added Today-specific status messages that explicitly say the review/history write stays in this browser and is not sent to a server.",
+    "Added a visual smoke test covering check-in, generated plan, capture, evening close, Today review save, Today archive, refresh persistence, and Patterns history visibility."
+  ],
+  "verification": {
+    "localChecks": [
+      {
+        "command": "npm run typecheck",
+        "result": "passed"
+      },
+      {
+        "command": "npm test",
+        "result": "passed",
+        "detail": "3 test files, 19 tests"
+      },
+      {
+        "command": "npm run lint",
+        "result": "passed"
+      },
+      {
+        "command": "npm run build",
+        "result": "passed",
+        "detail": "Next.js 16.2.7 static build generated 10 routes including /today, /capture, /patterns, /experiments, /profile, /privacy"
+      },
+      {
+        "command": "npm run test:fixtures",
+        "result": "passed",
+        "detail": "1 test file, 2 tests"
+      },
+      {
+        "command": "npm run test:pwa",
+        "result": "passed",
+        "detail": "1 test file, 1 test"
+      },
+      {
+        "command": "git diff --check",
+        "result": "passed"
+      },
+      {
+        "command": "rg secret-pattern scan over changed source/test files",
+        "result": "passed",
+        "detail": "no matches"
+      }
+    ],
+    "browserLocal": {
+      "server": "npm run start -- --hostname 127.0.0.1 --port 3000 after production build",
+      "tool": "Codex in-app browser",
+      "mobileViewport": "390x844",
+      "desktopViewport": "1280x800",
+      "flow": [
+        "Reset browser-local demo state from /profile.",
+        "Open /today, save check-in, and generate a browser-local plan.",
+        "Open /capture, save a helped habit capture, and verify the capture record exists.",
+        "Return to /today, save the evening close, and verify Local day review ready.",
+        "Click Save review checkpoint from Today and verify the browser-local status message.",
+        "Click Save to history from Today and verify the browser-local archive status message.",
+        "Refresh /today and verify 1 archived local day persists.",
+        "Open /patterns and verify Local day history shows 1 local day archived.",
+        "Open /today at 1280x800 and verify no horizontal overflow."
+      ],
+      "result": "passed",
+      "consoleErrors": [],
+      "desktopOverflow": {
+        "clientWidth": 1280,
+        "scrollWidth": 1280,
+        "passed": true
+      }
+    },
+    "labBoundary": {
+      "localPreflight": "red at 2026-06-20T12:59:45.356Z: local-mcp-health-red, life-safety-state-not-loaded, grok-context-brief-not-loaded, fetch failed",
+      "bootPacket": "red at 2026-06-20T12:59:51.707Z: safe_to_claim_daily_usable false; local preflight red; shared-context reports stale"
+    },
+    "deployment": {
+      "status": "pending_after_local_proof"
+    }
+  },
+  "screenshots": [
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-day-review-archive-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-archive-patterns-history-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-today-day-review-archive-desktop-1280.png"
+  ],
+  "residualRisks": [
+    "This is still browser-local demo behavior; real backend/account/integration readiness is unverified and currently red in lab boot artifacts.",
+    "Today is more end-to-end, but broader progress-board hierarchy and memory provenance are still candidate future improvements.",
+    "Production smoke is still pending in this packet and must be added before claiming the deployed slice is proven."
+  ],
+  "rollbackPath": [
+    "Git rollback: revert the Today day-review commit and redeploy the previous production commit if needed.",
+    "Runtime rollback: promote the previous Vercel production deployment. No database/auth/credential migration is part of this slice.",
+    "User-data rollback is not needed for backend records because this feature writes only browser-local demo state."
+  ],
+  "sidecarEvidence": {
+    "contextScout": {
+      "agentId": "019ee51d-e2a6-7fb1-86eb-4e43394bd546",
+      "topGap": "Make /today feel like a real progress board/full daily loop rather than a stack of cards.",
+      "decision": "Implemented the end-of-day review/archive action on Today as the smallest high-impact daily-loop closure."
+    }
+  },
+  "secretsRedacted": true,
+  "stopContinueDecision": "checkpoint_not_complete_until_git_push_vercel_deploy_and_production_smoke_finish"
+}
