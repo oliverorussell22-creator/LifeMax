@@ -4,6 +4,7 @@ import { useMemo, useState, useSyncExternalStore, type Dispatch, type SetStateAc
 import { AppShell } from "@/components/AppShell";
 import { ScreenHeader, StatusGrid } from "@/components/ui";
 import {
+  createDayArchive,
   deriveTodayView,
   formatShortTime,
   localDemoStorageKey,
@@ -16,6 +17,7 @@ import {
   type DayReview,
   type EveningClose,
   type ExperimentObservationSignal,
+  type LocalDayArchive,
   type LocalDemoState,
   type LocalDailyPlan,
   type MemoryCandidate,
@@ -1505,6 +1507,7 @@ function CaptureEventItem({
 export function PatternsScreen() {
   const { state, storageStatus, storageMessage, setLocalState } = useLocalDemoState();
   const today = useMemo(() => deriveTodayView(state), [state]);
+  const [archiveMessage, setArchiveMessage] = useState("");
 
   function setPatternDecision(patternId: string, status: PatternDecisionStatus) {
     const now = new Date().toISOString();
@@ -1553,6 +1556,24 @@ export function PatternsScreen() {
     }));
   }
 
+  function saveDayHistory() {
+    if (today.day_review.status === "locked") return;
+
+    const now = new Date().toISOString();
+    setLocalState((current) => {
+      const review = deriveTodayView(current).day_review;
+      const archive = createDayArchive(current, review, now);
+
+      return {
+        ...current,
+        day_archives: [archive, ...current.day_archives].slice(0, 20),
+        reviewed_at: current.reviewed_at ?? now,
+        updated_at: now
+      };
+    });
+    setArchiveMessage("Day saved to browser-local history. Nothing was sent to a server.");
+  }
+
   return (
     <AppShell active="patterns">
       <section className="screen two-column-screen" data-screen="patterns-functional">
@@ -1568,7 +1589,13 @@ export function PatternsScreen() {
             <h2 className="panel-title">{today.pattern_summary.title}</h2>
             <p className="panel-copy">{today.pattern_summary.detail}</p>
           </section>
-          <DayReviewPanel review={today.day_review} onSave={saveReviewCheckpoint} />
+          <DayReviewPanel
+            archiveMessage={archiveMessage}
+            historyCount={state.day_archives.length}
+            onArchive={saveDayHistory}
+            onSave={saveReviewCheckpoint}
+            review={today.day_review}
+          />
           {today.pattern_summary.ready ? (
             <section className="panel" aria-label="Emerging pattern candidate">
               <div className="section-heading-row">
@@ -1626,6 +1653,7 @@ export function PatternsScreen() {
           )}
         </div>
         <aside className="screen-aside">
+          <DayHistoryPanel archives={state.day_archives} summary={today.day_history_summary} />
           <FreshnessPanel items={today.freshness_summary} />
         </aside>
       </section>
@@ -1635,8 +1663,17 @@ export function PatternsScreen() {
 
 function DayReviewPanel({
   review,
+  historyCount,
+  archiveMessage,
+  onArchive,
   onSave
-}: Readonly<{ review: DayReview; onSave: () => void }>) {
+}: Readonly<{
+  review: DayReview;
+  historyCount: number;
+  archiveMessage: string;
+  onArchive: () => void;
+  onSave: () => void;
+}>) {
   const canSave = review.status !== "locked";
 
   return (
@@ -1679,10 +1716,68 @@ function DayReviewPanel({
       ) : (
         <p className="field-help">Guardrails: {review.risk_flags.join(", ")}.</p>
       )}
-      <button className="primary-action full-width" type="button" disabled={!canSave} onClick={onSave} data-testid="save-review-checkpoint">
-        {review.status === "saved" ? "Update review checkpoint" : "Save review checkpoint"}
-      </button>
+      <div className="action-row data-action-row">
+        <button className="primary-action" type="button" disabled={!canSave} onClick={onSave} data-testid="save-review-checkpoint">
+          {review.status === "saved" ? "Update review checkpoint" : "Save review checkpoint"}
+        </button>
+        <button className="secondary-action" type="button" disabled={!canSave} onClick={onArchive} data-testid="archive-day">
+          Save to history
+        </button>
+      </div>
+      <p className="field-help">
+        {historyCount} archived local day{historyCount === 1 ? "" : "s"}. History is a browser-only checkpoint, not backend storage.
+      </p>
+      {archiveMessage ? (
+        <p className="export-status export-status-success" role="status">
+          {archiveMessage}
+        </p>
+      ) : null}
       {!canSave ? <p className="field-help">Locked until the local loop has check-in, plan, capture, and evening close.</p> : null}
+    </section>
+  );
+}
+
+function DayHistoryPanel({
+  archives,
+  summary
+}: Readonly<{ archives: LocalDayArchive[]; summary: ReturnType<typeof deriveTodayView>["day_history_summary"] }>) {
+  return (
+    <section className="panel history-panel" aria-label="Local day history">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">History</p>
+          <h2 className="panel-title">{summary.title}</h2>
+        </div>
+        <span className={summary.count ? "state-pill state-pill-good" : "state-pill"}>{summary.count}</span>
+      </div>
+      <p className="panel-copy">{summary.detail}</p>
+      {archives.length ? (
+        <ul className="event-list history-list">
+          {archives.slice(0, 5).map((archive) => (
+            <li className="event-item history-item" key={archive.id} aria-label={`Archived day: ${archive.day_label}`}>
+              <div className="section-heading-row">
+                <span className="event-kind">{archive.day_label}</span>
+                <span className="event-impact">{archive.confidence}</span>
+              </div>
+              <strong>{archive.tomorrow_cue}</strong>
+              <span>{archive.review_summary}</span>
+              <div className="history-meta-grid" aria-label={`History metrics: ${archive.day_label}`}>
+                <span>{archive.plan_progress}</span>
+                <span>{archive.evidence_count} evidence</span>
+                <span>{archive.capture_count} captures</span>
+                <span>{archive.experiment_observation_count} observations</span>
+              </div>
+              <p className="field-help">
+                {archive.rescue_used ? "Rescue used. " : ""}
+                {archive.restart_used ? "Restart used. " : ""}
+                Archived {formatShortTime(archive.archived_at)} in this browser.
+              </p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="field-help">Complete the local loop, save the review, then archive it here for a lightweight trend trail.</p>
+      )}
     </section>
   );
 }
@@ -1962,6 +2057,7 @@ export function ProfileScreen() {
                 { label: "Active memories", value: String(today.memory_summary.count) },
                 { label: "Kept memories", value: String(today.memory_summary.kept_count) },
                 { label: "Rejected memories", value: String(today.memory_summary.rejected_count) },
+                { label: "Day history", value: String(state.day_archives.length) },
                 { label: "Experiment", value: state.experiment?.status ?? "none" },
                 { label: "Experiment observations", value: String(state.experiment?.observations.length ?? 0) },
                 { label: "Review", value: state.reviewed_at ? "saved" : "open" }
@@ -2001,6 +2097,7 @@ export function ProfileScreen() {
         </div>
 
         <aside className="screen-aside">
+          <DayHistoryPanel archives={state.day_archives} summary={today.day_history_summary} />
           <section className="panel" aria-label="Source status">
             <p className="kicker">Sources</p>
             <h2 className="panel-title">Not connected by design</h2>
@@ -2043,7 +2140,7 @@ export function PrivacyScreen() {
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, and its observation log. These are browser-local records.
+              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, and local day history checkpoints. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">

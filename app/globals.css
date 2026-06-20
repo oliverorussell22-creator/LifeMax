@@ -987,6 +987,33 @@ button:disabled {
   color: var(--red);
 }
 
+.history-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  gap: 8px;
+}
+
+.history-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.history-meta-grid span {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 740;
+  overflow-wrap: anywhere;
+}
+
 .export-panel {
   overflow: hidden;
 }

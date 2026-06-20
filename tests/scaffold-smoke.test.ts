@@ -4,6 +4,7 @@ import commandMatrix from "../command-matrix.json";
 import { forbiddenWave0Dependencies, tabs, wave0CommandIds } from "../lib/contracts";
 import { emptyTodayState } from "../lib/demo-state";
 import {
+  createDayArchive,
   createInitialLocalDemoState,
   createLocalDemoExport,
   createSuggestedPlan,
@@ -61,6 +62,7 @@ describe("Wave 0 scaffold contract", () => {
       memory_candidates: [],
       pattern_decisions: [],
       experiment: null,
+      day_archives: [],
       reviewed_at: null,
       plan_done: false,
       lowered_today: false,
@@ -177,6 +179,7 @@ describe("Wave 0 scaffold contract", () => {
           }
         ]
       },
+      day_archives: [],
       reviewed_at: null,
       plan_done: false,
       lowered_today: false,
@@ -202,6 +205,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.day_review.risk_flags).toContain("midday rescue used");
     expect(view.day_review.tomorrow_cue).toBe("Walk before messages");
     expect(view.day_review.risk_flags).toContain("health integrations disabled");
+    expect(view.day_history_summary.count).toBe(0);
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
   });
 
@@ -239,10 +243,75 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.summary.rescue).toBe("open");
     expect(localExport.summary.restart).toBe("open");
     expect(localExport.summary.review).toBe("open");
+    expect(localExport.summary.day_archives).toBe(0);
     expect(localExport.summary.experiment_observations).toBe(0);
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
     expect(localExport.state.captures[0]?.label).toBe("export proof");
+  });
+
+  test("archives a completed local day without implying backend storage", () => {
+    const plan = createSuggestedPlan(false, "2026-06-19T18:00:00.000Z");
+    const state: LocalDemoState = {
+      ...createInitialLocalDemoState(),
+      check_in: {
+        energy: "ok",
+        mood: "ok",
+        stress: "medium",
+        body: "ok",
+        friction_tags: ["schedule friction"],
+        note: "archive proof",
+        saved_at: "2026-06-19T18:00:00.000Z"
+      },
+      captures: [
+        {
+          id: "capture-archive-test",
+          kind: "habit",
+          label: "morning walk",
+          note: "felt easier",
+          impact: "helped",
+          created_at: "2026-06-19T18:05:00.000Z",
+          updated_at: "2026-06-19T18:05:00.000Z"
+        }
+      ],
+      daily_plan: {
+        ...plan,
+        must_do: "Draft the client note",
+        item_statuses: {
+          must_do: "done",
+          optional_1: "open",
+          optional_2: "skipped"
+        }
+      },
+      evening_close: {
+        completed: "Client note drafted",
+        missed: "Walk moved",
+        why: "Afternoon friction",
+        recovery_impact: "neutral",
+        tomorrow_hint: "Walk before messages",
+        saved_at: "2026-06-19T20:30:00.000Z"
+      },
+      updated_at: "2026-06-19T20:30:00.000Z"
+    };
+    const view = deriveTodayView(state);
+    const archive = createDayArchive(state, view.day_review, "2026-06-20T05:30:00.000Z");
+    const stored = readStoredLocalDemoState(
+      JSON.stringify({
+        ...state,
+        day_archives: [archive]
+      })
+    );
+    const localExport = createLocalDemoExport(stored, "2026-06-20T05:35:00.000Z");
+
+    expect(view.day_review.status).toBe("ready");
+    expect(archive.tomorrow_cue).toBe("Walk before messages");
+    expect(archive.plan_progress).toBe("1/3 done");
+    expect(archive.capture_count).toBe(1);
+    expect(stored.day_archives[0]?.review_summary).toContain("1 capture");
+    expect(deriveTodayView(stored).day_history_summary.count).toBe(1);
+    expect(deriveTodayView(stored).day_history_summary.detail).toContain("Walk before messages");
+    expect(localExport.summary.day_archives).toBe(1);
+    expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
   });
 
   test("normalizes legacy and malformed capture records into editable local evidence", () => {

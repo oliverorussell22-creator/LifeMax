@@ -118,6 +118,26 @@ export interface LocalExperiment {
   observations: ExperimentObservation[];
 }
 
+export interface LocalDayArchive {
+  id: string;
+  archived_at: string;
+  day_label: string;
+  review_title: string;
+  review_summary: string;
+  tomorrow_cue: string;
+  follow_through: string;
+  evidence_count: number;
+  confidence: Confidence;
+  plan_progress: string;
+  capture_count: number;
+  kept_memory_count: number;
+  rejected_memory_count: number;
+  experiment_status: ExperimentStatus | "none";
+  experiment_observation_count: number;
+  rescue_used: boolean;
+  restart_used: boolean;
+}
+
 export interface LocalDemoState {
   schema_version: "lifemax.local_demo.v1";
   check_in: LocalCheckIn | null;
@@ -129,6 +149,7 @@ export interface LocalDemoState {
   memory_candidates: MemoryCandidate[];
   pattern_decisions: PatternDecision[];
   experiment: LocalExperiment | null;
+  day_archives: LocalDayArchive[];
   reviewed_at: string | null;
   plan_done: boolean;
   lowered_today: boolean;
@@ -155,6 +176,7 @@ export interface LocalDemoExport {
     pattern_decisions: number;
     experiment: ExperimentStatus | "none";
     experiment_observations: number;
+    day_archives: number;
     review: "saved" | "open";
   };
   state: LocalDemoState;
@@ -227,6 +249,12 @@ export interface DerivedTodayView {
     detail: string;
   };
   day_review: DayReview;
+  day_history_summary: {
+    count: number;
+    latest: LocalDayArchive | null;
+    title: string;
+    detail: string;
+  };
 }
 
 export interface PatternCard {
@@ -266,6 +294,7 @@ export function createInitialLocalDemoState(): LocalDemoState {
     memory_candidates: [],
     pattern_decisions: [],
     experiment: null,
+    day_archives: [],
     reviewed_at: null,
     plan_done: false,
     lowered_today: false,
@@ -300,6 +329,7 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       pattern_decisions: state.pattern_decisions.length,
       experiment: state.experiment?.status ?? "none",
       experiment_observations: state.experiment?.observations.length ?? 0,
+      day_archives: state.day_archives.length,
       review: state.reviewed_at ? "saved" : "open"
     },
     state
@@ -328,6 +358,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
       memory_candidates: normalizeMemoryCandidates(parsed.memory_candidates),
       pattern_decisions: Array.isArray(parsed.pattern_decisions) ? parsed.pattern_decisions.slice(0, 20) : [],
       experiment: normalizeExperiment(parsed.experiment, parsed.experiment_started_at ?? null),
+      day_archives: normalizeDayArchives(parsed.day_archives),
       reviewed_at: parsed.reviewed_at ?? null,
       plan_done: Boolean(parsed.plan_done),
       lowered_today: Boolean(parsed.lowered_today),
@@ -354,6 +385,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const rescueSummary = summarizeMiddayRescue(state.midday_rescue, planSummary, hasCheckIn);
   const restartSummary = summarizeQuickRestart(state.quick_restart);
   const dayReview = buildDayReview(state, planSummary);
+  const dayHistorySummary = summarizeDayHistory(state.day_archives);
 
   if (!hasCheckIn) {
     return {
@@ -399,7 +431,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
         ready: false
       },
       experiment_summary: summarizeExperiment(state.experiment, false),
-      day_review: dayReview
+      day_review: dayReview,
+      day_history_summary: dayHistorySummary
     };
   }
 
@@ -451,9 +484,35 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
             title: "Check-in saved; capture still empty",
             detail: "Add one capture so Patterns and Experiments have something to derive from.",
             ready: false
-          },
+    },
     experiment_summary: summarizeExperiment(state.experiment, captureCount > 0),
-    day_review: dayReview
+    day_review: dayReview,
+    day_history_summary: dayHistorySummary
+  };
+}
+
+export function createDayArchive(state: LocalDemoState, review: DayReview, archivedAt: string): LocalDayArchive {
+  const planSummary = summarizePlan(state.daily_plan);
+  const memorySummary = summarizeMemoryCandidates(state.memory_candidates);
+
+  return {
+    id: `day-archive-${Date.parse(archivedAt) || Date.now()}`,
+    archived_at: archivedAt,
+    day_label: formatArchiveDayLabel(archivedAt),
+    review_title: review.title,
+    review_summary: review.summary,
+    tomorrow_cue: review.tomorrow_cue,
+    follow_through: review.follow_through,
+    evidence_count: review.evidence_count,
+    confidence: review.confidence,
+    plan_progress: planSummary.progress_label,
+    capture_count: state.captures.length,
+    kept_memory_count: memorySummary.kept_count,
+    rejected_memory_count: memorySummary.rejected_count,
+    experiment_status: state.experiment?.status ?? "none",
+    experiment_observation_count: state.experiment?.observations.length ?? 0,
+    rescue_used: Boolean(state.midday_rescue),
+    restart_used: Boolean(state.quick_restart)
   };
 }
 
@@ -634,6 +693,46 @@ function normalizeMemorySource(value: unknown): MemoryCandidate["source"] {
 
 function normalizeMemoryStatus(value: unknown): MemoryStatus {
   return value === "candidate" || value === "kept" || value === "rejected" ? value : "candidate";
+}
+
+function normalizeDayArchives(value: unknown): LocalDayArchive[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .slice(0, 20)
+    .map((item) => item as Partial<LocalDayArchive>)
+    .filter((item) => item.id && item.archived_at && item.review_summary)
+    .map((item) => ({
+      id: item.id as string,
+      archived_at: item.archived_at as string,
+      day_label: item.day_label?.trim() || formatArchiveDayLabel(item.archived_at as string),
+      review_title: item.review_title?.trim() || "Local day archived",
+      review_summary: item.review_summary?.trim() || "No review summary saved.",
+      tomorrow_cue: item.tomorrow_cue?.trim() || "No tomorrow cue saved.",
+      follow_through: item.follow_through?.trim() || "No follow-through summary saved.",
+      evidence_count: normalizeNonNegativeNumber(item.evidence_count),
+      confidence: normalizeConfidence(item.confidence),
+      plan_progress: item.plan_progress?.trim() || "No plan progress",
+      capture_count: normalizeNonNegativeNumber(item.capture_count),
+      kept_memory_count: normalizeNonNegativeNumber(item.kept_memory_count),
+      rejected_memory_count: normalizeNonNegativeNumber(item.rejected_memory_count),
+      experiment_status: normalizeExperimentStatus(item.experiment_status),
+      experiment_observation_count: normalizeNonNegativeNumber(item.experiment_observation_count),
+      rescue_used: Boolean(item.rescue_used),
+      restart_used: Boolean(item.restart_used)
+    }));
+}
+
+function normalizeNonNegativeNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+}
+
+function normalizeConfidence(value: unknown): Confidence {
+  return value === "medium" || value === "high" ? value : "low";
+}
+
+function normalizeExperimentStatus(value: unknown): ExperimentStatus | "none" {
+  return value === "active" || value === "stopped" || value === "inconclusive" || value === "none" ? value : "none";
 }
 
 function normalizeSignalLevel(value: unknown): SignalLevel {
@@ -1017,6 +1116,25 @@ function summarizeExperiment(
   };
 }
 
+function summarizeDayHistory(archives: LocalDayArchive[]): DerivedTodayView["day_history_summary"] {
+  const latest = archives[0] ?? null;
+  if (!latest) {
+    return {
+      count: 0,
+      latest: null,
+      title: "No archived days yet",
+      detail: "Save a local day review to create a browser-only history checkpoint."
+    };
+  }
+
+  return {
+    count: archives.length,
+    latest,
+    title: `${archives.length} local day${archives.length === 1 ? "" : "s"} archived`,
+    detail: `${latest.day_label}: ${latest.plan_progress}; ${latest.evidence_count} evidence point${latest.evidence_count === 1 ? "" : "s"}. Next cue: ${latest.tomorrow_cue}`
+  };
+}
+
 function formatObservationCount(count: number) {
   return `${count} observation${count === 1 ? "" : "s"}`;
 }
@@ -1049,4 +1167,10 @@ export function formatShortTime(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "recently";
   return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function formatArchiveDayLabel(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Local day";
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
 }
