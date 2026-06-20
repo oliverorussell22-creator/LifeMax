@@ -72,6 +72,10 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByText("Local captures")).toBeVisible();
   await expect(page.getByLabel("Today command center").getByText("Walk before opening messages")).toBeVisible();
   await expect(page.getByLabel("Current state summary").getByText("1/3 done")).toBeVisible();
+  await expect(page.getByLabel("Must-do")).toHaveValue("Draft the client note");
+  await expect(page.getByLabel("Optional move 1")).toHaveValue("Ten minute walk");
+  await expect(page.getByLabel("Optional move 2")).toHaveValue("Capture caffeine timing");
+  await expect(page.getByLabel("Avoid today")).toHaveValue("No second priority after lunch");
 
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,

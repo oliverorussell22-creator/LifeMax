@@ -75,6 +75,7 @@ const recoveryImpactOptions: Array<{ value: RecoveryImpact; label: string }> = [
 export function TodayScreen() {
   const { state, storageStatus, storageMessage, setLocalState } = useLocalDemoState();
   const today = useMemo(() => deriveTodayView(state), [state]);
+  const activePlan = state.daily_plan ?? today.suggested_plan;
   const [draft, setDraft] = useState({
     energy: "ok" as SignalLevel,
     mood: "ok" as SignalLevel,
@@ -245,7 +246,8 @@ export function TodayScreen() {
             onSave={saveCheckIn}
           />
           <DailyPlanPanel
-            plan={state.daily_plan ?? today.suggested_plan}
+            key={getPlanSyncKey(activePlan)}
+            plan={activePlan}
             summary={today.plan_summary}
             onSave={savePlan}
             onStatusChange={updatePlanItemStatus}
@@ -485,6 +487,21 @@ function DailyPlanPanel({
       <p className="field-help">Plan edits stay local. Completion changes Today, Patterns, and the evening close context.</p>
     </section>
   );
+}
+
+function getPlanSyncKey(plan: LocalDailyPlan) {
+  return [
+    plan.accepted_at,
+    plan.updated_at,
+    plan.must_do,
+    plan.optional_1,
+    plan.optional_2,
+    plan.avoid_today,
+    plan.shutdown_target,
+    plan.item_statuses.must_do,
+    plan.item_statuses.optional_1,
+    plan.item_statuses.optional_2
+  ].join("|");
 }
 
 function PlanInput({
