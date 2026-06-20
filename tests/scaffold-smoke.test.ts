@@ -51,6 +51,7 @@ describe("Wave 0 scaffold contract", () => {
       memory_candidates: [],
       pattern_decisions: [],
       experiment: null,
+      reviewed_at: null,
       plan_done: false,
       lowered_today: false,
       experiment_started_at: null,
@@ -61,6 +62,8 @@ describe("Wave 0 scaffold contract", () => {
     expect(signalView.confidence).toBe("medium");
     expect(signalView.pattern_summary.ready).toBe(true);
     expect(signalView.plan_summary.status).toBe("missing");
+    expect(signalView.day_review.status).toBe("locked");
+    expect(signalView.day_review.missing_inputs).toContain("saved plan");
     expect(signalView.pattern_cards[0]?.evidence_count).toBeGreaterThanOrEqual(2);
     expect(signalView.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
   });
@@ -134,6 +137,7 @@ describe("Wave 0 scaffold contract", () => {
         stopped_at: null,
         result_note: null
       },
+      reviewed_at: null,
       plan_done: false,
       lowered_today: false,
       experiment_started_at: "2026-06-19T20:32:00.000Z",
@@ -147,6 +151,10 @@ describe("Wave 0 scaffold contract", () => {
     expect(view.memory_summary.latest?.title).toBe("Walk before messages");
     expect(view.pattern_cards.find((card) => card.id === "local-pattern-energy")?.decision).toBe("watching");
     expect(view.experiment_summary.status).toBe("active");
+    expect(view.day_review.status).toBe("ready");
+    expect(view.day_review.evidence_count).toBeGreaterThanOrEqual(5);
+    expect(view.day_review.tomorrow_cue).toBe("Walk before messages");
+    expect(view.day_review.risk_flags).toContain("health integrations disabled");
     expect(view.freshness_summary.find((source) => source.label === "Health integrations")?.status).toBe("disabled");
   });
 
@@ -180,6 +188,7 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.schema_version).toBe("lifemax.local_demo_export.v1");
     expect(localExport.summary.check_in).toBe("saved");
     expect(localExport.summary.captures).toBe(1);
+    expect(localExport.summary.review).toBe("open");
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
     expect(localExport.state.captures[0]?.label).toBe("export proof");

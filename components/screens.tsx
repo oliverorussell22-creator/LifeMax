@@ -12,6 +12,7 @@ import {
   type BodyLevel,
   type CaptureImpact,
   type CaptureKind,
+  type DayReview,
   type EveningClose,
   type LocalDemoState,
   type LocalDailyPlan,
@@ -786,6 +787,28 @@ export function PatternsScreen() {
     }));
   }
 
+  function saveReviewCheckpoint() {
+    if (today.day_review.status === "locked") return;
+
+    const now = new Date().toISOString();
+    const review = today.day_review;
+    setLocalState((current) => ({
+      ...current,
+      reviewed_at: now,
+      memory_candidates: [
+        {
+          id: `memory-review-${Date.now()}`,
+          title: review.tomorrow_cue,
+          detail: review.summary,
+          source: "pattern" as const,
+          created_at: now
+        },
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "pattern")
+      ].slice(0, 20),
+      updated_at: now
+    }));
+  }
+
   return (
     <AppShell active="patterns">
       <section className="screen two-column-screen" data-screen="patterns-functional">
@@ -801,6 +824,7 @@ export function PatternsScreen() {
             <h2 className="panel-title">{today.pattern_summary.title}</h2>
             <p className="panel-copy">{today.pattern_summary.detail}</p>
           </section>
+          <DayReviewPanel review={today.day_review} onSave={saveReviewCheckpoint} />
           {today.pattern_summary.ready ? (
             <section className="panel" aria-label="Emerging pattern candidate">
               <div className="section-heading-row">
@@ -862,6 +886,60 @@ export function PatternsScreen() {
         </aside>
       </section>
     </AppShell>
+  );
+}
+
+function DayReviewPanel({
+  review,
+  onSave
+}: Readonly<{ review: DayReview; onSave: () => void }>) {
+  const canSave = review.status !== "locked";
+
+  return (
+    <section className="panel review-panel" aria-label="Local day review">
+      <div className="section-heading-row">
+        <div>
+          <p className="kicker">Local day review</p>
+          <h2 className="panel-title">{review.title}</h2>
+        </div>
+        <span className={review.status === "saved" ? "state-pill state-pill-good" : "state-pill"}>{review.status}</span>
+      </div>
+      <p className="panel-copy">{review.summary}</p>
+      <div className="command-grid review-grid">
+        <span>
+          <strong>Evidence</strong>
+          {review.evidence_count} local point{review.evidence_count === 1 ? "" : "s"}
+        </span>
+        <span>
+          <strong>Confidence</strong>
+          {review.confidence}
+        </span>
+        <span>
+          <strong>Follow-through</strong>
+          {review.follow_through}
+        </span>
+        <span>
+          <strong>Tomorrow cue</strong>
+          {review.tomorrow_cue}
+        </span>
+      </div>
+      <p className="field-help">Next: {review.next_action}</p>
+      {review.missing_inputs.length ? (
+        <div className="chip-row" aria-label="Missing review inputs">
+          {review.missing_inputs.map((input) => (
+            <span className="source-pill source-pill-missing" key={input}>
+              {input}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="field-help">Guardrails: {review.risk_flags.join(", ")}.</p>
+      )}
+      <button className="primary-action full-width" type="button" disabled={!canSave} onClick={onSave} data-testid="save-review-checkpoint">
+        {review.status === "saved" ? "Update review checkpoint" : "Save review checkpoint"}
+      </button>
+      {!canSave ? <p className="field-help">Locked until the local loop has check-in, plan, capture, and evening close.</p> : null}
+    </section>
   );
 }
 
@@ -1041,7 +1119,8 @@ export function ProfileScreen() {
                 { label: "Close", value: state.evening_close ? "saved" : "open" },
                 { label: "Captures", value: String(state.captures.length) },
                 { label: "Memories", value: String(state.memory_candidates.length) },
-                { label: "Experiment", value: state.experiment?.status ?? "none" }
+                { label: "Experiment", value: state.experiment?.status ?? "none" },
+                { label: "Review", value: state.reviewed_at ? "saved" : "open" }
               ]}
             />
           </section>

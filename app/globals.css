@@ -222,7 +222,7 @@ button:disabled {
 .workspace {
   min-width: 0;
   display: grid;
-  grid-template-columns: 196px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .side-nav {
@@ -1033,6 +1033,10 @@ button:disabled {
 
   .side-nav {
     display: block;
+  }
+
+  .workspace {
+    grid-template-columns: 196px minmax(0, 1fr);
   }
 
   .bottom-nav {

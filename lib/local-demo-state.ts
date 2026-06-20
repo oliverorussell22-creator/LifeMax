@@ -89,6 +89,7 @@ export interface LocalDemoState {
   memory_candidates: MemoryCandidate[];
   pattern_decisions: PatternDecision[];
   experiment: LocalExperiment | null;
+  reviewed_at: string | null;
   plan_done: boolean;
   lowered_today: boolean;
   experiment_started_at: string | null;
@@ -108,6 +109,7 @@ export interface LocalDemoExport {
     memories: number;
     pattern_decisions: number;
     experiment: ExperimentStatus | "none";
+    review: "saved" | "open";
   };
   state: LocalDemoState;
 }
@@ -161,6 +163,7 @@ export interface DerivedTodayView {
     title: string;
     detail: string;
   };
+  day_review: DayReview;
 }
 
 export interface PatternCard {
@@ -174,6 +177,20 @@ export interface PatternCard {
   decision: PatternDecisionStatus | null;
 }
 
+export interface DayReview {
+  status: "locked" | "ready" | "saved";
+  title: string;
+  confidence: Confidence;
+  evidence_count: number;
+  follow_through: string;
+  summary: string;
+  tomorrow_cue: string;
+  next_action: string;
+  missing_inputs: string[];
+  risk_flags: string[];
+  reviewed_at: string | null;
+}
+
 export function createInitialLocalDemoState(): LocalDemoState {
   return {
     schema_version: "lifemax.local_demo.v1",
@@ -184,6 +201,7 @@ export function createInitialLocalDemoState(): LocalDemoState {
     memory_candidates: [],
     pattern_decisions: [],
     experiment: null,
+    reviewed_at: null,
     plan_done: false,
     lowered_today: false,
     experiment_started_at: null,
@@ -208,7 +226,8 @@ export function createLocalDemoExport(state: LocalDemoState, generatedAt: string
       captures: state.captures.length,
       memories: state.memory_candidates.length,
       pattern_decisions: state.pattern_decisions.length,
-      experiment: state.experiment?.status ?? "none"
+      experiment: state.experiment?.status ?? "none",
+      review: state.reviewed_at ? "saved" : "open"
     },
     state
   };
@@ -243,6 +262,7 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
       memory_candidates: Array.isArray(parsed.memory_candidates) ? parsed.memory_candidates.slice(0, 25) : [],
       pattern_decisions: Array.isArray(parsed.pattern_decisions) ? parsed.pattern_decisions.slice(0, 20) : [],
       experiment: normalizeExperiment(parsed.experiment, parsed.experiment_started_at ?? null),
+      reviewed_at: parsed.reviewed_at ?? null,
       plan_done: Boolean(parsed.plan_done),
       lowered_today: Boolean(parsed.lowered_today),
       experiment_started_at: parsed.experiment_started_at ?? null,
@@ -265,6 +285,7 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
   const planSummary = summarizePlan(state.daily_plan);
   const patternCards = buildPatternCards(state);
   const latestMemory = state.memory_candidates[0] ?? null;
+  const dayReview = buildDayReview(state, planSummary);
 
   if (!hasCheckIn) {
     return {
@@ -303,7 +324,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
         detail: "Save a check-in and at least one capture before LifeMax shows a local pattern.",
         ready: false
       },
-      experiment_summary: summarizeExperiment(state.experiment, false)
+      experiment_summary: summarizeExperiment(state.experiment, false),
+      day_review: dayReview
     };
   }
 
@@ -350,7 +372,8 @@ export function deriveTodayView(state: LocalDemoState): DerivedTodayView {
             detail: "Add one capture so Patterns and Experiments have something to derive from.",
             ready: false
           },
-    experiment_summary: summarizeExperiment(state.experiment, captureCount > 0)
+    experiment_summary: summarizeExperiment(state.experiment, captureCount > 0),
+    day_review: dayReview
   };
 }
 
@@ -488,6 +511,78 @@ function summarizePlan(plan: LocalDailyPlan | null): DerivedTodayView["plan_summ
     next_item: nextItem,
     avoid_today: plan.avoid_today,
     shutdown_target: plan.shutdown_target
+  };
+}
+
+function buildDayReview(state: LocalDemoState, planSummary: DerivedTodayView["plan_summary"]): DayReview {
+  const missingInputs = [
+    state.check_in ? null : "check-in",
+    state.daily_plan ? null : "saved plan",
+    state.captures.length ? null : "capture",
+    state.evening_close ? null : "evening close"
+  ].filter((item): item is string => Boolean(item));
+  const evidenceCount =
+    (state.check_in ? 1 : 0) +
+    (state.daily_plan ? 1 : 0) +
+    state.captures.length +
+    (state.evening_close ? 1 : 0) +
+    (state.experiment ? 1 : 0);
+  const ready = missingInputs.length === 0;
+  const latestCapture = state.captures[0] ?? null;
+  const tomorrowCue =
+    state.evening_close?.tomorrow_hint ||
+    planSummary.next_item ||
+    latestCapture?.label ||
+    "Capture before changing tomorrow's plan.";
+  const followThrough = state.daily_plan
+    ? `${planSummary.progress_label}; ${planSummary.active_count} open item${planSummary.active_count === 1 ? "" : "s"}`
+    : "No saved plan yet";
+  const riskFlags = [
+    "manual-only confidence",
+    "health integrations disabled",
+    state.check_in?.stress === "high" ? "high stress check-in" : null,
+    state.check_in?.body === "rough" ? "rough body signal" : null,
+    state.evening_close?.recovery_impact === "draining" ? "draining close" : null
+  ].filter((item): item is string => Boolean(item));
+
+  if (!ready) {
+    return {
+      status: "locked",
+      title: "Review unlocks after the full local loop.",
+      confidence: "low",
+      evidence_count: evidenceCount,
+      follow_through: followThrough,
+      summary: `Needs ${missingInputs.join(", ")} before LifeMax can save a local day review.`,
+      tomorrow_cue: tomorrowCue,
+      next_action: `Add ${missingInputs[0]} without raising intensity.`,
+      missing_inputs: missingInputs,
+      risk_flags: riskFlags,
+      reviewed_at: state.reviewed_at
+    };
+  }
+
+  const status: DayReview["status"] = state.reviewed_at ? "saved" : "ready";
+  const confidence: Confidence = state.captures.length >= 2 && state.evening_close ? "medium" : "low";
+  const completionLanguage =
+    planSummary.completed_count > 0
+      ? `${planSummary.completed_count} plan item${planSummary.completed_count === 1 ? "" : "s"} moved.`
+      : "No plan item is marked done yet.";
+
+  return {
+    status,
+    title: status === "saved" ? "Review checkpoint saved." : "Local day review ready.",
+    confidence,
+    evidence_count: evidenceCount,
+    follow_through: followThrough,
+    summary: `${completionLanguage} ${state.captures.length} capture${state.captures.length === 1 ? "" : "s"} and the evening close are enough for a cautious local review, not a causal claim.`,
+    tomorrow_cue: tomorrowCue,
+    next_action:
+      state.experiment?.status === "active"
+        ? "Keep the experiment window intact and capture what changes."
+        : "Save the review checkpoint, then decide whether one pattern deserves a small experiment.",
+    missing_inputs: [],
+    risk_flags: riskFlags,
+    reviewed_at: state.reviewed_at
   };
 }
 

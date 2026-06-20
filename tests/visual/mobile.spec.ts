@@ -18,6 +18,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
   await expect(page.getByText("Local cache ready")).toBeVisible();
   await expect(page.getByText("WHOOP, accounts, AI, and backend sync are not connected in this app shell.")).toBeVisible();
+  const mobileContentBox = await page.locator("main.content").boundingBox();
+  expect(mobileContentBox?.width).toBeGreaterThan(340);
 
   await page.getByTestId("save-checkin").click();
   await expect(page.getByText("The local check-in is enough to choose one next action.")).toBeVisible();
@@ -52,8 +54,17 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.goto("/patterns");
   await expect(page.getByRole("heading", { name: "Manual evidence worth watching" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Manual signals are starting to cluster" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Local day review ready." })).toBeVisible();
+  await expect(page.getByLabel("Local day review").getByText("Tomorrow cue")).toBeVisible();
   await page.getByTestId("pattern-watch-local-pattern-energy").click();
   await expect(page.getByText("Decision: watching")).toBeVisible();
+  await page.getByTestId("save-review-checkpoint").click();
+  await expect(page.getByRole("heading", { name: "Review checkpoint saved." })).toBeVisible();
+  await expect(page.getByLabel("Local day review").getByText("health integrations disabled")).toBeVisible();
+  await page.locator('section[aria-label="Local day review"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await page.locator('section[aria-label="Local day review"]').screenshot({
+    path: path.join(highFunctionalityDir, "local-day-review-mobile-390.png")
+  });
 
   await page.goto("/experiments");
   await page.getByTestId("start-experiment").click();
@@ -101,6 +112,8 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.goto("/profile");
   await expect(page.getByRole("heading", { name: "Local app truth and data controls." })).toBeVisible();
   await expect(page.getByText("Export and reset apply only to this browser demo state.")).toBeVisible();
+  await expect(page.getByLabel("Local data summary").getByText("Review")).toBeVisible();
+  await expect(page.getByLabel("Local data summary").getByText("saved")).toHaveCount(3);
   const downloadPromise = page.waitForEvent("download");
   await page.getByTestId("download-local-export").click();
   const download = await downloadPromise;
@@ -109,6 +122,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.getByText("View local export preview").click();
   await expect(page.getByLabel("Local export preview").getByText("lifemax.local_demo_export.v1")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("Draft the client note")).toBeVisible();
+  await expect(page.getByLabel("Local export preview").getByText("reviewed_at")).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: path.join(highFunctionalityDir, "local-profile-export-mobile-390.png"),
