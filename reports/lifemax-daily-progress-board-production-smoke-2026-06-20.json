@@ -1,0 +1,81 @@
+{
+  "schema": "lifemax.production-smoke.v1",
+  "createdAt": "2026-06-20T13:59:00Z",
+  "slice": "daily_progress_board",
+  "status": "passed",
+  "approvalStatus": "Production promotion was approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote.",
+  "deployment": {
+    "command": "npm exec -- vercel deploy --prod -y",
+    "lifemaxWeb": {
+      "project": "lifemax-web",
+      "alias": "https://lifemax-web.vercel.app",
+      "deploymentId": "dpl_TLLaXjfb3WnQj7cREFX9MfYPekuT",
+      "deploymentUrl": "https://lifemax-6as8jssf9-olivers-projects-25fda214.vercel.app",
+      "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/TLLaXjfb3WnQj7cREFX9MfYPekuT",
+      "readyState": "READY",
+      "target": "production",
+      "inspectStatus": "Ready",
+      "created": "Sat Jun 20 2026 06:54:17 GMT-0700 (Pacific Daylight Time)"
+    },
+    "lifeMaxOmega": {
+      "project": "life-max",
+      "alias": "https://life-max-omega.vercel.app",
+      "deploymentId": "dpl_7Zb9JYS1J2N5oWgz31gNyMsQRsnd",
+      "deploymentUrl": "https://life-af0f3u0g9-olivers-projects-25fda214.vercel.app",
+      "readyState": "READY",
+      "target": "production",
+      "inspectStatus": "Ready",
+      "created": "Sat Jun 20 2026 06:53:01 GMT-0700 (Pacific Daylight Time)",
+      "note": "Updated by the git-linked life-max production deployment after origin/main push."
+    }
+  },
+  "browserSmoke": {
+    "tool": "Codex in-app browser",
+    "viewport": "390x844",
+    "targets": [
+      {
+        "alias": "https://lifemax-web.vercel.app",
+        "flow": [
+          "Reset local demo data through Profile.",
+          "Open Today and verify Daily progress board starts at 0/5.",
+          "Save check-in and generate local plan; verify 2/5.",
+          "Load sample week; verify 5/5 and weekly board ready.",
+          "Open Privacy; verify policy heading.",
+          "Return to Today and screenshot the board."
+        ],
+        "result": "passed",
+        "mobileOverflow": {
+          "clientWidth": 390,
+          "scrollWidth": 390,
+          "passed": true
+        },
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-daily-progress-board-mobile-390.png"
+      },
+      {
+        "alias": "https://life-max-omega.vercel.app",
+        "flow": [
+          "Reset local demo data through Profile.",
+          "Open Today and verify Daily progress board starts at 0/5.",
+          "Save check-in and generate local plan; verify 2/5.",
+          "Load sample week; verify 5/5 and weekly board ready.",
+          "Open Privacy; verify policy heading.",
+          "Return to Today and screenshot the board."
+        ],
+        "result": "passed",
+        "mobileOverflow": {
+          "clientWidth": 390,
+          "scrollWidth": 390,
+          "passed": true
+        },
+        "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-daily-progress-board-mobile-390.png"
+      }
+    ],
+    "consoleErrors": [],
+    "truthBoundaryObserved": "Statuses come from this browser only. No live health integration, assistant, reminder, or backend write is running here."
+  },
+  "notClaimed": [
+    "No WHOOP connection is claimed.",
+    "No account/auth, hosted AI, Telegram, n8n, public MCP, Postgres, backend writes, reminders, timers, or cross-device sync are claimed.",
+    "The LifeMax lab/source boot remains red and connected daily usability remains unproved."
+  ]
+}

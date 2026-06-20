@@ -1,15 +1,17 @@
 {
   "schema": "lifemax.high-functionality-proof.v1",
   "createdAt": "2026-06-20T13:50:58Z",
+  "updatedAt": "2026-06-20T13:59:00Z",
   "objective": "Make the first Today viewport feel like a credible local operating surface by turning the generic workflow rail into a Daily progress board with visible local evidence, next action, completion count, and step states.",
   "riskClass": "Q3 because this goal lane includes approved production deployment after local proof; app code itself is Q2 browser-local frontend state.",
-  "status": "local_proof_passed_pending_commit_push_deploy",
+  "status": "production_deployed_and_smoked_checkpoint_not_full_connected_lifemax",
   "approvalStatus": "Production promotion was previously approved by user message: PRODUCTION_DEPLOY_APPROVED=true promote. This slice does not edit credentials, auth, DNS, backend services, n8n, Telegram, Postgres, public MCP, or WHOOP settings.",
   "changedFiles": [
     "app/globals.css",
     "components/screens.tsx",
     "tests/visual/mobile.spec.ts",
-    "reports/lifemax-daily-progress-board-proof-2026-06-20.json"
+    "reports/lifemax-daily-progress-board-proof-2026-06-20.json",
+    "reports/lifemax-daily-progress-board-production-smoke-2026-06-20.json"
   ],
   "truthBoundary": [
     "The Daily progress board derives only from browser-local demo state.",
@@ -145,15 +147,59 @@
       "bootPacket": "red at 2026-06-20T13:26:46.011Z: safe_to_claim_daily_usable false; local preflight red; public MCP and Grok connector proof stale/red"
     },
     "deployment": {
-      "status": "pending_after_local_proof",
-      "note": "Deploy after commit/push and then append production smoke evidence."
+      "status": "production_deployed_and_smoked",
+      "git": {
+        "commit": "ef048e0",
+        "push": "origin/main updated from 43c6516 to ef048e0"
+      },
+      "command": "npm exec -- vercel deploy --prod -y",
+      "lifemaxWeb": {
+        "deploymentId": "dpl_TLLaXjfb3WnQj7cREFX9MfYPekuT",
+        "deploymentUrl": "https://lifemax-6as8jssf9-olivers-projects-25fda214.vercel.app",
+        "alias": "https://lifemax-web.vercel.app",
+        "inspectorUrl": "https://vercel.com/olivers-projects-25fda214/lifemax-web/TLLaXjfb3WnQj7cREFX9MfYPekuT",
+        "readyState": "READY",
+        "target": "production"
+      },
+      "lifeMaxOmega": {
+        "deploymentId": "dpl_7Zb9JYS1J2N5oWgz31gNyMsQRsnd",
+        "deploymentUrl": "https://life-af0f3u0g9-olivers-projects-25fda214.vercel.app",
+        "alias": "https://life-max-omega.vercel.app",
+        "readyState": "READY",
+        "target": "production",
+        "note": "Updated by the git-linked life-max production deployment after origin/main push."
+      },
+      "productionSmokePath": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/lifemax-daily-progress-board-production-smoke-2026-06-20.json",
+      "browserProduction": {
+        "result": "passed",
+        "targets": [
+          "https://lifemax-web.vercel.app",
+          "https://life-max-omega.vercel.app"
+        ],
+        "flow": "reset local state -> /today board 0/5 -> save check-in and generated plan -> board 2/5 -> load sample week -> board 5/5 -> /privacy policy heading -> /today screenshot",
+        "consoleErrors": [],
+        "mobileOverflow": {
+          "lifemaxWeb": {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "passed": true
+          },
+          "lifeMaxOmega": {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "passed": true
+          }
+        }
+      }
     }
   },
   "screenshots": [
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-daily-progress-board-offset-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-daily-progress-board-focused-mobile-390.png",
     "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-daily-progress-board-top-mobile-390.png",
-    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-daily-progress-board-desktop-viewport-1280.png"
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-daily-progress-board-desktop-viewport-1280.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/lifemax-web-daily-progress-board-mobile-390.png",
+    "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-production/omega-daily-progress-board-mobile-390.png"
   ],
   "plannerCritic": {
     "agentId": "019ee537-0dc0-70c1-9152-8d82d007ac95",
@@ -170,5 +216,5 @@
     "User-data rollback is not needed for backend records because this feature writes only browser-local demo state."
   ],
   "secretsRedacted": true,
-  "stopContinueDecision": "checkpoint_pending_deploy: local proof passed for the Daily progress board; next step is commit, push, deploy/promote, production browser smoke, update proof, and independent verifier checkpoint."
+  "stopContinueDecision": "checkpoint_not_complete: Daily progress board is committed, pushed, deployed, and smoked on both production aliases; larger connected LifeMax readiness remains red and unproved."
 }
