@@ -241,7 +241,7 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
 
   await page.goto("/profile");
   await expect(page.getByRole("heading", { name: "Local app truth and data controls." })).toBeVisible();
-  await expect(page.getByText("Export and reset apply only to this browser demo state.")).toBeVisible();
+  await expect(page.getByText("Export, import, and reset apply only to this browser demo state.")).toBeVisible();
   await expect(page.getByLabel("Local data summary").getByText("Review")).toBeVisible();
   await expect(page.getByLabel("Restart: saved")).toBeVisible();
   await expect(page.getByLabel("Rescue: saved")).toBeVisible();
@@ -282,6 +282,31 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(page.getByLabel("Local export preview").getByText("\"kept_memories\": 1")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("\"rejected_memories\": 0")).toBeVisible();
   await expect(page.getByLabel("Local export preview").getByText("\"memory_candidates\": 4")).toBeVisible();
+  const exportJson = await page.getByLabel("Local export preview").locator("pre").innerText();
+  await expect(page.getByTestId("import-local-export")).toBeDisabled();
+  await page.getByTestId("import-local-json").fill("{ not valid json");
+  await page.getByTestId("import-local-export").click();
+  await expect(page.locator(".export-status")).toContainText("Import JSON could not be parsed");
+  await page.getByTestId("reset-local").click();
+  await expect(page.getByLabel("Confirm local reset")).toBeVisible();
+  await page.getByTestId("cancel-reset-local").click();
+  await expect(page.getByLabel("Confirm local reset")).toHaveCount(0);
+  await expect(page.getByLabel("Check-in: saved")).toBeVisible();
+  await page.getByTestId("reset-local").click();
+  await page.getByTestId("confirm-reset-local").click();
+  await expect(page.locator(".export-status")).toContainText("Local demo data cleared");
+  await expect(page.getByLabel("Check-in: empty")).toBeVisible();
+  await page.getByTestId("import-local-json").fill(exportJson);
+  await page.getByTestId("import-local-export").click();
+  await expect(page.locator(".export-status")).toContainText("Imported browser-local demo data");
+  await expect(page.getByLabel("Captures: 1")).toBeVisible();
+  await expect(page.getByLabel("Active memories: 4")).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel("Local data summary").getByText("Draft the client note")).toHaveCount(0);
+  await expect(page.getByLabel("Captures: 1")).toBeVisible();
+  await expect(page.getByLabel("Experiment observations: 1")).toBeVisible();
+  await page.getByText("View local export preview").click();
+  await expect(page.getByLabel("Local export preview").getByText("morning walk after breakfast")).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: path.join(highFunctionalityDir, "local-profile-export-mobile-390.png"),

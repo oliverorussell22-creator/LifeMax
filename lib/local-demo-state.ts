@@ -186,6 +186,18 @@ export interface LocalDemoExport {
   state: LocalDemoState;
 }
 
+export type LocalDemoImportResult =
+  | {
+      ok: true;
+      accepted_schema: "export" | "state";
+      state: LocalDemoState;
+      summary: LocalDemoExport["summary"];
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
 export interface DerivedTodayView {
   state: LifeState;
   confidence: Confidence;
@@ -363,6 +375,38 @@ export function serializeLocalDemoExport(state: LocalDemoState, generatedAt: str
   return JSON.stringify(createLocalDemoExport(state, generatedAt), null, 2);
 }
 
+export function parseLocalDemoImport(raw: string): LocalDemoImportResult {
+  if (!raw.trim()) {
+    return { ok: false, error: "Paste a LifeMax local export JSON before importing." };
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!isRecord(parsed)) {
+      return { ok: false, error: "Import must be a JSON object from a LifeMax local export." };
+    }
+
+    const schema = parsed.schema_version;
+    const acceptedSchema = schema === "lifemax.local_demo_export.v1" ? "export" : schema === "lifemax.local_demo.v1" ? "state" : null;
+    const stateCandidate = acceptedSchema === "export" ? parsed.state : parsed;
+
+    if (!acceptedSchema || !isRecord(stateCandidate) || stateCandidate.schema_version !== "lifemax.local_demo.v1") {
+      return { ok: false, error: "This is not a LifeMax browser-local demo export." };
+    }
+
+    const state = readStoredLocalDemoState(JSON.stringify(stateCandidate));
+
+    return {
+      ok: true,
+      accepted_schema: acceptedSchema,
+      state,
+      summary: createLocalDemoExport(state, new Date().toISOString()).summary
+    };
+  } catch {
+    return { ok: false, error: "Import JSON could not be parsed. Check that the pasted export is complete." };
+  }
+}
+
 export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
   if (!raw) return createInitialLocalDemoState();
 
@@ -391,6 +435,10 @@ export function readStoredLocalDemoState(raw: string | null): LocalDemoState {
   } catch {
     return createInitialLocalDemoState();
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 export function deriveTodayView(state: LocalDemoState): DerivedTodayView {

@@ -9,6 +9,7 @@ import {
   createLocalDemoExport,
   createSuggestedPlan,
   deriveTodayView,
+  parseLocalDemoImport,
   readStoredLocalDemoState,
   type LocalDemoState
 } from "../lib/local-demo-state";
@@ -311,6 +312,46 @@ describe("Wave 0 scaffold contract", () => {
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");
     expect(localExport.truth_boundary.join(" ")).toContain("does not include WHOOP");
     expect(localExport.state.captures[0]?.label).toBe("export proof");
+  });
+
+  test("imports only validated LifeMax browser-local JSON", () => {
+    const state: LocalDemoState = {
+      ...createInitialLocalDemoState(),
+      check_in: {
+        energy: "ok",
+        mood: "ok",
+        stress: "medium",
+        body: "ok",
+        friction_tags: [],
+        note: "restore proof",
+        saved_at: "2026-06-19T18:00:00.000Z"
+      },
+      captures: [
+        {
+          id: "capture-import-test",
+          kind: "note",
+          label: "import proof",
+          note: "restored locally",
+          impact: "uncertain",
+          created_at: "2026-06-19T18:05:00.000Z",
+          updated_at: "2026-06-19T18:05:00.000Z"
+        }
+      ],
+      updated_at: "2026-06-19T18:05:00.000Z"
+    };
+    const exported = JSON.stringify(createLocalDemoExport(state, "2026-06-20T05:30:00.000Z"));
+    const imported = parseLocalDemoImport(exported);
+    const malformed = parseLocalDemoImport(JSON.stringify({ schema_version: "not-lifemax", state }));
+    const rawStateImport = parseLocalDemoImport(JSON.stringify(state));
+
+    expect(imported.ok).toBe(true);
+    if (imported.ok) {
+      expect(imported.accepted_schema).toBe("export");
+      expect(imported.state.captures[0]?.label).toBe("import proof");
+      expect(imported.summary.captures).toBe(1);
+    }
+    expect(rawStateImport.ok).toBe(true);
+    expect(malformed.ok).toBe(false);
   });
 
   test("archives a completed local day without implying backend storage", () => {

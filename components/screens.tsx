@@ -8,6 +8,7 @@ import {
   deriveTodayView,
   formatShortTime,
   localDemoStorageKey,
+  parseLocalDemoImport,
   readStoredLocalDemoState,
   serializeLocalDemoExport,
   type BodyLevel,
@@ -2103,11 +2104,13 @@ export function ExperimentsScreen() {
 }
 
 export function ProfileScreen() {
-  const { state, storageStatus, storageMessage, resetLocalState } = useLocalDemoState();
+  const { state, storageStatus, storageMessage, setLocalState, resetLocalState } = useLocalDemoState();
   const [exportStatus, setExportStatus] = useState<{ tone: "idle" | "success" | "error"; message: string }>({
     tone: "idle",
     message: "Export stays on this device until you choose where to save it."
   });
+  const [importText, setImportText] = useState("");
+  const [resetArmed, setResetArmed] = useState(false);
   const today = useMemo(() => deriveTodayView(state), [state]);
   const exportPreview = useMemo(() => serializeLocalDemoExport(state, state.updated_at ?? "not-exported-yet"), [state]);
 
@@ -2146,6 +2149,38 @@ export function ProfileScreen() {
     } catch {
       setExportStatus({ tone: "error", message: "Copy failed in this browser. Use Download local JSON instead." });
     }
+  }
+
+  function importLocalExport() {
+    const result = parseLocalDemoImport(importText);
+    if (!result.ok) {
+      setExportStatus({ tone: "error", message: result.error });
+      return;
+    }
+
+    const now = new Date().toISOString();
+    setLocalState(() => ({
+      ...result.state,
+      updated_at: now
+    }));
+    setImportText("");
+    setResetArmed(false);
+    setExportStatus({
+      tone: "success",
+      message: `Imported browser-local demo data: ${result.summary.captures} captures, ${result.summary.memory_candidates} memory records, ${result.summary.day_archives} history checkpoints.`
+    });
+  }
+
+  function askForResetConfirmation() {
+    setResetArmed(true);
+    setExportStatus({ tone: "idle", message: "Reset is staged. Confirm below to clear only this browser's demo data." });
+  }
+
+  function confirmLocalReset() {
+    resetLocalState();
+    setImportText("");
+    setResetArmed(false);
+    setExportStatus({ tone: "success", message: "Local demo data cleared from this browser only. No backend records were touched." });
   }
 
   return (
@@ -2188,7 +2223,7 @@ export function ProfileScreen() {
               <span className="state-pill">local only</span>
             </div>
             <p className="panel-copy">
-              Export and reset apply only to this browser demo state. They do not touch Postgres, Telegram, n8n, WHOOP, Grok, public MCP, or backend records.
+              Export, import, and reset apply only to this browser demo state. They do not touch Postgres, Telegram, n8n, WHOOP, Grok, public MCP, or backend records.
             </p>
             <div className="action-row data-action-row">
               <button className="primary-action" type="button" onClick={downloadLocalExport} data-testid="download-local-export">
@@ -2197,13 +2232,54 @@ export function ProfileScreen() {
               <button className="secondary-action" type="button" onClick={() => void copyLocalExport()} data-testid="copy-local-export">
                 Copy JSON
               </button>
-              <button className="secondary-action" type="button" onClick={resetLocalState} data-testid="reset-local">
+              <button className="secondary-action danger-action" type="button" onClick={askForResetConfirmation} data-testid="reset-local">
                 Reset local demo
               </button>
               <a className="secondary-action" href="/privacy">
                 Open privacy
               </a>
             </div>
+            {resetArmed ? (
+              <section className="reset-confirmation" aria-label="Confirm local reset">
+                <div>
+                  <h3>Confirm browser-local reset</h3>
+                  <p>This clears only the LifeMax demo data stored in this browser. It cannot touch WHOOP, Telegram, n8n, Grok, Postgres, public MCP, or backend records.</p>
+                </div>
+                <div className="action-row">
+                  <button className="primary-action danger-primary" type="button" onClick={confirmLocalReset} data-testid="confirm-reset-local">
+                    Confirm reset
+                  </button>
+                  <button className="secondary-action" type="button" onClick={() => setResetArmed(false)} data-testid="cancel-reset-local">
+                    Cancel
+                  </button>
+                </div>
+              </section>
+            ) : null}
+            <section className="control-section import-control" aria-label="Import local JSON">
+              <div className="section-heading-row">
+                <div>
+                  <p className="kicker">Restore</p>
+                  <h3>Import a local export</h3>
+                </div>
+                <span className="state-pill">validated JSON</span>
+              </div>
+              <label className="stacked-input">
+                <span>Paste local export JSON</span>
+                <textarea
+                  className="text-area import-text-area"
+                  value={importText}
+                  onChange={(event) => setImportText(event.target.value)}
+                  placeholder='Paste JSON with "schema_version": "lifemax.local_demo_export.v1"'
+                  data-testid="import-local-json"
+                />
+              </label>
+              <div className="action-row">
+                <button className="primary-action" type="button" disabled={!importText.trim()} onClick={importLocalExport} data-testid="import-local-export">
+                  Validate and import
+                </button>
+              </div>
+              <p className="field-help">Import replaces only the local demo state in this browser after schema validation. Nothing is uploaded or synced.</p>
+            </section>
             <p className={`export-status export-status-${exportStatus.tone}`} role="status">
               {exportStatus.message}
             </p>
@@ -2255,7 +2331,7 @@ export function PrivacyScreen() {
           <section className="panel legal-panel">
             <h2 className="panel-title">Local product data</h2>
             <p className="panel-copy">
-              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, its local decision note, and local day history checkpoints. These are browser-local records.
+              The higher-functionality demo can store a daily plan, missed-day quick restart, midday rescue, evening close, kept or rejected memory candidates, pattern decisions, one local experiment, its observation log, its local decision note, local day history checkpoints, and pasted local export restores. These are browser-local records.
             </p>
           </section>
           <section className="panel legal-panel">

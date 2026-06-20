@@ -1,0 +1,149 @@
+{
+  "schema": "lifemax.proof_packet.v1",
+  "generated_at": "2026-06-20T09:34:08Z",
+  "objective": "Make the LifeMax public app more credible by adding a browser-local import/restore workflow, two-step local reset confirmation, and proof that local export, reset, restore, and refresh persistence work without backend claims.",
+  "riskClass": "Q2 app/frontend product-functionality upgrade with Q3 production deployment already approved by PRODUCTION_DEPLOY_APPROVED=true promote",
+  "status": "checkpoint_local_verified_pending_deploy_and_independent_verifier",
+  "completion_ok": false,
+  "completion_blocker": "The public browser-local app slice is verified locally, but the separate LifeMax lab/shared-context boot packet remains red, so this cannot be claimed as full LifeMax daily usability.",
+  "repo": {
+    "path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
+    "branch": "main",
+    "base_commit": "c1cfc227e355a76aeb0beda5dfb9f375403c13dd",
+    "feature_commit": null,
+    "pushed_to": null
+  },
+  "changes": [
+    {
+      "path": "lib/local-demo-state.ts",
+      "summary": "Adds validated LifeMax local export/import parsing and normalized restore output."
+    },
+    {
+      "path": "components/screens.tsx",
+      "summary": "Adds Profile import/restore UI, invalid JSON status, two-step reset confirmation, and updated local-only Privacy copy."
+    },
+    {
+      "path": "app/globals.css",
+      "summary": "Adds restrained import and reset-confirmation styling for a credible local data-control surface."
+    },
+    {
+      "path": "tests/scaffold-smoke.test.ts",
+      "summary": "Covers valid local export import, raw local state import, and malformed JSON rejection."
+    },
+    {
+      "path": "tests/visual/mobile.spec.ts",
+      "summary": "Covers export preview capture, invalid import error, cancelable reset confirmation, confirmed reset, import restore, refresh persistence, and restored export visibility."
+    }
+  ],
+  "functional_flows_proven": [
+    "Profile import button stays disabled until local JSON is pasted.",
+    "Invalid pasted JSON shows an honest parse error.",
+    "Reset local demo stages a confirmation panel instead of clearing immediately.",
+    "Cancel reset preserves existing local state.",
+    "Confirm reset clears only this browser's demo state.",
+    "A prior local export can be pasted back into Profile and restored.",
+    "Restored capture, memory, experiment, and history summary state persists after refresh."
+  ],
+  "truth_boundaries_preserved": [
+    "Import, export, and reset are browser-local only.",
+    "No backend records, WHOOP data, account sync, hosted AI, Telegram, n8n, public MCP, Grok, or Postgres writes are touched or claimed.",
+    "Import accepts only LifeMax local demo export/state schemas and normalizes legacy records before storing."
+  ],
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "result": "failed_then_passed",
+      "details": "First run failed on react/no-unescaped-entities in new import helper copy; copy was repaired and lint reran clean."
+    },
+    {
+      "command": "npm test",
+      "result": "passed",
+      "details": "3 files, 16 tests"
+    },
+    {
+      "command": "npm run test:fixtures",
+      "result": "passed",
+      "details": "1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "result": "passed",
+      "details": "1 file, 1 test"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "details": "Routes generated: /, /capture, /experiments, /manifest.webmanifest, /patterns, /privacy, /profile, /today"
+    },
+    {
+      "command": "npm run screenshot:mobile",
+      "result": "failed_then_passed",
+      "details": "First run failed because the old Profile copy assertion did not include import; test was updated to the new contract and reran with 2 Playwright tests passing."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "secret-pattern scan over app/components/lib/tests/reports/package surfaces",
+      "result": "passed",
+      "details": "No matches for common token/secret patterns."
+    }
+  ],
+  "browser_evidence": {
+    "local_in_app_browser": {
+      "result": "passed",
+      "proved": [
+        "Profile import panel renders",
+        "Validate and import is disabled before JSON input",
+        "Reset opens confirmation panel",
+        "Cancel removes confirmation panel",
+        "Invalid JSON shows parse error status"
+      ]
+    },
+    "local_playwright": {
+      "result": "passed",
+      "screenshots": [
+        "reports/screenshots/high-functionality/local-profile-export-mobile-390.png",
+        "reports/screenshots/high-functionality/local-high-functionality-mobile-390.png",
+        "reports/screenshots/high-functionality/local-high-functionality-desktop-1280.png"
+      ]
+    }
+  },
+  "loop_evidence": [
+    {
+      "cycle": "inspect",
+      "result": "Rendered Profile showed export and immediate reset, but no local restore/import path; scout independently ranked import/restore as the top visible gap."
+    },
+    {
+      "cycle": "functionality",
+      "result": "Added validated local import/restore and two-step reset confirmation without adding packages or backend claims."
+    },
+    {
+      "cycle": "verification_repair",
+      "defects_found": [
+        "Lint failed on unescaped apostrophe in new helper copy.",
+        "Mobile Playwright proof still asserted the old export/reset copy after the import copy changed."
+      ],
+      "repairs_made": [
+        "Reworded helper copy to avoid JSX escape issue.",
+        "Updated the mobile proof assertion to the new export/import/reset contract."
+      ],
+      "checks_rerun": [
+        "npm run lint",
+        "npm run screenshot:mobile"
+      ]
+    }
+  ],
+  "residual_risks": [
+    "This remains browser-local demo functionality only.",
+    "No real backend, WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, or Postgres integration was connected or verified.",
+    "Lab boot/preflight remains red and blocks full LifeMax daily-usability completion.",
+    "Vercel deployment and independent verification are still pending for this proof packet at creation time."
+  ],
+  "next_exact_action": "Run quality gate for this packet, commit/push the feature, deploy production under the existing approval, smoke the deployed import/restore flow, then run independent verification before checkpointing."
+}

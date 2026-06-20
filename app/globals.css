@@ -525,6 +525,26 @@ button:disabled {
   color: var(--accent-strong);
 }
 
+.danger-action {
+  border-color: rgba(155, 44, 44, 0.36);
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.danger-action:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.danger-primary {
+  border-color: var(--red);
+  background: var(--red);
+}
+
+.danger-primary:hover {
+  background: #7f2222;
+}
+
 .full-width {
   width: 100%;
 }
@@ -1090,6 +1110,48 @@ button:disabled {
   background: #111816;
   color: #e5f2ea;
   font-size: 11px;
+  line-height: 1.4;
+}
+
+.control-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.control-section h3,
+.reset-confirmation h3,
+.reset-confirmation p {
+  margin: 0;
+}
+
+.control-section h3,
+.reset-confirmation h3 {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.import-text-area {
+  min-height: 142px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.reset-confirmation {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  border-left: 4px solid var(--red);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--red-soft);
+}
+
+.reset-confirmation p {
+  color: var(--muted);
+  font-size: 13px;
   line-height: 1.4;
 }
 
