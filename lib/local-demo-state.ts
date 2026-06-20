@@ -590,6 +590,30 @@ export function createDayArchive(state: LocalDemoState, review: DayReview, archi
   };
 }
 
+export function createPlanFromHistoryArchive(
+  archive: LocalDayArchive,
+  currentPlan: LocalDailyPlan | null,
+  timestamp: string
+): LocalDailyPlan {
+  const cue = archive.tomorrow_cue.trim() || "Use the most useful local history cue";
+  const fallbackOptional = currentPlan?.must_do && currentPlan.must_do !== cue ? currentPlan.must_do : "Capture whether the cue helped today";
+
+  return {
+    must_do: cue,
+    optional_1: fallbackOptional,
+    optional_2: "Close the loop and archive the result",
+    avoid_today: "Do not treat one archived day as a trend",
+    shutdown_target: currentPlan?.shutdown_target || "8:30 PM",
+    item_statuses: {
+      must_do: "open",
+      optional_1: "open",
+      optional_2: "open"
+    },
+    accepted_at: timestamp,
+    updated_at: timestamp
+  };
+}
+
 function summarizeMemoryCandidates(candidates: MemoryCandidate[]): DerivedTodayView["memory_summary"] {
   const active = candidates.filter((candidate) => candidate.status !== "rejected");
   const candidateCount = candidates.filter((candidate) => candidate.status === "candidate").length;

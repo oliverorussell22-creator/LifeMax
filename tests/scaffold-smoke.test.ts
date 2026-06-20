@@ -7,6 +7,7 @@ import {
   createDayArchive,
   createInitialLocalDemoState,
   createLocalDemoExport,
+  createPlanFromHistoryArchive,
   createSuggestedPlan,
   deriveTodayView,
   parseLocalDemoImport,
@@ -454,6 +455,11 @@ describe("Wave 0 scaffold contract", () => {
     expect(trendView.history_insight.status).toBe("trend");
     expect(trendView.history_insight.detail).toContain("plan items completed");
     expect(trendView.history_insight.next_action).toContain("Walk before messages");
+    const carriedPlan = createPlanFromHistoryArchive(archive, state.daily_plan, "2026-06-20T06:00:00.000Z");
+    expect(carriedPlan.must_do).toBe("Walk before messages");
+    expect(carriedPlan.optional_1).toBe("Draft the client note");
+    expect(carriedPlan.avoid_today).toContain("one archived day");
+    expect(carriedPlan.item_statuses.must_do).toBe("open");
     expect(localExport.summary.day_archives).toBe(1);
     expect(localExport.summary.history_insight).toBe("checkpoint");
     expect(localExport.truth_boundary.join(" ")).toContain("browser-local LifeMax demo data only");

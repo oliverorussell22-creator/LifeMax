@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { ScreenHeader, StatusGrid } from "@/components/ui";
 import {
   createDayArchive,
+  createPlanFromHistoryArchive,
   deriveTodayView,
   formatShortTime,
   localDemoStorageKey,
@@ -1521,6 +1522,7 @@ export function PatternsScreen() {
   const { state, storageStatus, storageMessage, setLocalState } = useLocalDemoState();
   const today = useMemo(() => deriveTodayView(state), [state]);
   const [archiveMessage, setArchiveMessage] = useState("");
+  const [historyMessage, setHistoryMessage] = useState("");
 
   function setPatternDecision(patternId: string, status: PatternDecisionStatus) {
     const now = new Date().toISOString();
@@ -1585,6 +1587,30 @@ export function PatternsScreen() {
       };
     });
     setArchiveMessage("Day saved to browser-local history. Nothing was sent to a server.");
+  }
+
+  function useHistoryCue(archive: LocalDayArchive) {
+    const now = new Date().toISOString();
+    setLocalState((current) => ({
+      ...current,
+      daily_plan: createPlanFromHistoryArchive(archive, current.daily_plan, now),
+      plan_done: false,
+      memory_candidates: [
+        {
+          id: `memory-history-${Date.now()}`,
+          title: `History cue: ${archive.tomorrow_cue}`,
+          detail: `${archive.day_label}: ${archive.review_summary}`,
+          source: "pattern" as const,
+          status: "candidate" as const,
+          created_at: now,
+          updated_at: now,
+          rejection_reason: null
+        },
+        ...current.memory_candidates.filter((candidate) => candidate.source !== "pattern" || candidate.status !== "candidate")
+      ].slice(0, 20),
+      updated_at: now
+    }));
+    setHistoryMessage(`Moved "${archive.tomorrow_cue}" into Today's browser-local plan.`);
   }
 
   return (
@@ -1667,7 +1693,12 @@ export function PatternsScreen() {
         </div>
         <aside className="screen-aside">
           <HistoryInsightPanel insight={today.history_insight} />
-          <DayHistoryPanel archives={state.day_archives} summary={today.day_history_summary} />
+          <DayHistoryPanel
+            archives={state.day_archives}
+            cueMessage={historyMessage}
+            onUseCue={useHistoryCue}
+            summary={today.day_history_summary}
+          />
           <FreshnessPanel items={today.freshness_summary} />
         </aside>
       </section>
@@ -1783,8 +1814,15 @@ function HistoryInsightPanel({ insight }: Readonly<{ insight: ReturnType<typeof 
 
 function DayHistoryPanel({
   archives,
+  cueMessage,
+  onUseCue,
   summary
-}: Readonly<{ archives: LocalDayArchive[]; summary: ReturnType<typeof deriveTodayView>["day_history_summary"] }>) {
+}: Readonly<{
+  archives: LocalDayArchive[];
+  cueMessage?: string;
+  onUseCue?: (archive: LocalDayArchive) => void;
+  summary: ReturnType<typeof deriveTodayView>["day_history_summary"];
+}>) {
   return (
     <section className="panel history-panel" aria-label="Local day history">
       <div className="section-heading-row">
@@ -1816,12 +1854,22 @@ function DayHistoryPanel({
                 {archive.restart_used ? "Restart used. " : ""}
                 Archived {formatShortTime(archive.archived_at)} in this browser.
               </p>
+              {onUseCue ? (
+                <button className="secondary-action full-width" type="button" onClick={() => onUseCue(archive)} data-testid={`use-history-cue-${archive.id}`}>
+                  Use cue in Today plan
+                </button>
+              ) : null}
             </li>
           ))}
         </ul>
       ) : (
         <p className="field-help">Complete the local loop, save the review, then archive it here for a lightweight trend trail.</p>
       )}
+      {cueMessage ? (
+        <p className="export-status export-status-success" role="status">
+          {cueMessage}
+        </p>
+      ) : null}
     </section>
   );
 }

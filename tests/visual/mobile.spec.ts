@@ -113,6 +113,16 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.reload();
   await expect(page.getByLabel("Local history insight").getByRole("heading", { name: "One checkpoint, not a trend yet" })).toBeVisible();
   await expect(page.getByLabel("Local day history").getByRole("heading", { name: "1 local day archived" })).toBeVisible();
+  await page.getByTestId(/^use-history-cue-/).click();
+  await expect(page.getByLabel("Local day history").getByRole("status")).toContainText("Moved \"Walk before opening messages\" into Today's browser-local plan.");
+  await page.goto("/today");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Walk before opening messages");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Optional move 1")).toHaveValue("Draft the client note");
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Avoid today")).toHaveValue("Do not treat one archived day as a trend");
+  await page.reload();
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Walk before opening messages");
+  await page.goto("/patterns");
+  await expect(page.getByLabel("Local day history").getByRole("heading", { name: "1 local day archived" })).toBeVisible();
   await page.locator('section[aria-label="Local history insight"]').evaluate((node) => node.scrollIntoView({ block: "center" }));
   await page.locator('section[aria-label="Local history insight"]').screenshot({
     path: path.join(highFunctionalityDir, "local-history-insight-mobile-390.png")
@@ -169,9 +179,9 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await page.reload();
   await expect(page.getByText("Saved locally")).toBeVisible();
   await expect(page.getByText("Local captures")).toBeVisible();
-  await expect(page.getByLabel("Today command center").getByText("Walk before opening messages")).toBeVisible();
+  await expect(page.getByLabel("Daily plan editor").getByLabel("Must-do")).toHaveValue("Walk before opening messages");
   await expect(page.getByLabel("Today command center").getByText("Ten minute walk without phone")).toBeVisible();
-  await expect(page.getByLabel("Current state summary").getByText("1/3 done")).toBeVisible();
+  await expect(page.getByLabel("Current state summary").getByText("0/3 done")).toBeVisible();
   await expect(page.getByLabel("Rescue: saved")).toBeVisible();
   await expect(page.getByLabel("Restart: saved")).toBeVisible();
   const memoryInbox = page.getByLabel("Memory inbox");
@@ -194,10 +204,10 @@ test("local demo loop works on mobile and persists after refresh", async ({ page
   await expect(memoryCounts.getByText("3 candidates")).toBeVisible();
   await expect(page.getByLabel("One restart priority")).toHaveValue("Open the client draft");
   await expect(page.getByLabel("What changed")).toHaveValue("Missed yesterday after travel");
-  await expect(page.getByLabel("Must-do")).toHaveValue("Draft the client note");
-  await expect(page.getByLabel("Optional move 1")).toHaveValue("Ten minute walk");
-  await expect(page.getByLabel("Optional move 2")).toHaveValue("Capture caffeine timing");
-  await expect(page.getByLabel("Avoid today")).toHaveValue("No second priority after lunch");
+  await expect(page.getByLabel("Must-do")).toHaveValue("Walk before opening messages");
+  await expect(page.getByLabel("Optional move 1")).toHaveValue("Draft the client note");
+  await expect(page.getByLabel("Optional move 2")).toHaveValue("Close the loop and archive the result");
+  await expect(page.getByLabel("Avoid today")).toHaveValue("Do not treat one archived day as a trend");
   await expect(page.getByLabel("Next lower-intensity move")).toHaveValue("Ten minute walk without phone");
   await expect(page.getByLabel("Defer until")).toHaveValue("after lunch");
   await expect(page.getByLabel("Rescue note")).toHaveValue("Messages scattered the plan");
