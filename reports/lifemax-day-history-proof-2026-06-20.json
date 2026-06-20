@@ -1,0 +1,158 @@
+{
+  "schema": "lifemax.day_history_checkpoint_proof.v1",
+  "generated_at": "2026-06-20T08:25:46Z",
+  "status": "checkpoint_deployed_smoked_and_verified",
+  "objective": "Make LifeMax feel more like a credible private operating loop by letting a completed local day become browser-local history that persists, appears in Profile/export, and is visible on deployed public aliases without backend claims.",
+  "riskClass": "Q3",
+  "approvalStatus": "Production promotion was explicitly approved earlier in this goal thread with PRODUCTION_DEPLOY_APPROVED=true promote; this slice made no credential, auth, DNS, backend service, Telegram, n8n, public MCP, Grok, or destructive changes.",
+  "preActionEvidence": [
+    "Public repo was clean at 38ba201 before the feature branch work in /Users/oliverrussell/Desktop/LifeMax-vercel-ready.",
+    "Fresh LifeMax lab preflight was red at 2026-06-20T08:16:56.605Z, with local MCP health unknown and get_life_safety_state/get_grok_context_brief not loaded.",
+    "Fresh LifeMax boot packet was red at 2026-06-20T08:16:56.703Z, with safe_to_claim_daily_usable=false.",
+    "The prior public app had many single-day local workflows, but no persistent day-history checkpoint proving the day could become a higher-level local record."
+  ],
+  "changedFiles": [
+    "lib/local-demo-state.ts",
+    "components/screens.tsx",
+    "app/globals.css",
+    "tests/scaffold-smoke.test.ts",
+    "tests/visual/mobile.spec.ts"
+  ],
+  "postActionEvidence": [
+    "Added LocalDayArchive state, normalization, export summary count, day-history derivation, and createDayArchive helper.",
+    "Patterns can save a ready local day review into browser-local history without resetting data or claiming backend storage.",
+    "Profile shows Local day history and export preview includes day_archives plus the archived tomorrow cue.",
+    "Feature commit 53bad3b was pushed to origin/main.",
+    "lifemax-web production deploy dpl_CriNYsrkGNUkBudytZZyBTYb1uoK reached READY.",
+    "life-max-omega production alias resolved to READY deployment dpl_3Ycxk19iSEpng2CFA2aUJpXmWtMQ after Git/Vercel integration.",
+    "Live smoke on both public aliases saved check-in, plan, capture, close, review, archived the day, refreshed, verified Profile/export, and observed no runtime errors or mobile overflow.",
+    "Independent verifier 019ee424-454b-75e3-92f7-908a1b539433 returned CHECKPOINT_OK and COMPLETE_OK=false."
+  ],
+  "verification": [
+    "npm run typecheck pass",
+    "npm run lint pass",
+    "npm run test pass: 3 files, 14 tests",
+    "npm run test:fixtures pass: 1 file, 2 tests",
+    "npm run test:pwa pass: 1 file, 1 test",
+    "npm run build pass",
+    "npm run screenshot:mobile pass: build plus 2 Playwright tests",
+    "git diff --check pass",
+    "changed-file diff scan for secret-shaped values pass",
+    "in-app browser local /patterns inspection pass: Local day history and Freshness sections present, 1280/1280 width, no console errors",
+    "live Playwright smoke pass on https://life-max-omega.vercel.app and https://lifemax-web.vercel.app for day-history archive persistence and export propagation",
+    "quality_verifier 019ee424-454b-75e3-92f7-908a1b539433 pass for checkpoint, not complete"
+  ],
+  "defects_found_and_repaired": [
+    {
+      "defect": "Initial live smoke script mixed CommonJS require with top-level await under Node 25.",
+      "repair": "Reran the smoke as an ESM script with import statements.",
+      "rerun": "Live deployed smoke passed on both aliases."
+    },
+    {
+      "defect": "The first visual-smoke history assertion matched both the history summary and archive row tomorrow cue.",
+      "repair": "Scoped the assertion to .history-item with exact text.",
+      "rerun": "npm run screenshot:mobile passed."
+    }
+  ],
+  "browser_evidence": {
+    "local": {
+      "in_app_browser": {
+        "url": "http://localhost:3001/patterns",
+        "result": "pass",
+        "checks": [
+          "Local day history present",
+          "Source freshness present",
+          "desktop scrollWidth/clientWidth 1280/1280",
+          "console error logs empty"
+        ]
+      },
+      "playwright": {
+        "result": "pass",
+        "flow": "Save review checkpoint, archive day, refresh, verify Local day history persists, verify Profile summary and export preview include day_archives."
+      }
+    },
+    "deployed_smoke": {
+      "result": "pass",
+      "generated_at": "2026-06-20T08:25:46.561Z",
+      "targets": [
+        {
+          "name": "omega",
+          "base": "https://life-max-omega.vercel.app",
+          "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-history-mobile-390.png",
+          "dimensions": {
+            "scrollWidth": 390,
+            "clientWidth": 390
+          },
+          "errors": []
+        },
+        {
+          "name": "lifemax-web",
+          "base": "https://lifemax-web.vercel.app",
+          "screenshot": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-day-history-mobile-390.png",
+          "dimensions": {
+            "scrollWidth": 390,
+            "clientWidth": 390
+          },
+          "errors": []
+        }
+      ]
+    },
+    "screenshots": [
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/high-functionality/local-day-history-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/omega-day-history-mobile-390.png",
+      "/Users/oliverrussell/Desktop/LifeMax-vercel-ready/reports/screenshots/deployed-preview/lifemax-web-day-history-mobile-390.png"
+    ]
+  },
+  "deployment": {
+    "status": "production_deployed_and_smoked",
+    "approval": "PRODUCTION_DEPLOY_APPROVED=true promote was provided earlier in this goal thread.",
+    "lifemax_web": {
+      "alias": "https://lifemax-web.vercel.app",
+      "deployment_id": "dpl_CriNYsrkGNUkBudytZZyBTYb1uoK",
+      "deployment_url": "https://lifemax-hgn3hz7tx-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "life_max_omega": {
+      "alias": "https://life-max-omega.vercel.app",
+      "deployment_id": "dpl_3Ycxk19iSEpng2CFA2aUJpXmWtMQ",
+      "deployment_url": "https://life-94fewt37r-olivers-projects-25fda214.vercel.app",
+      "status": "READY"
+    },
+    "deployment_id_note": "Deployment IDs are point-in-time details. The public aliases are the user-facing proof targets."
+  },
+  "lab_truth_boundary": {
+    "local_preflight_ok": false,
+    "local_preflight_generated_at": "2026-06-20T08:16:56.605Z",
+    "boot_packet_ok": false,
+    "boot_packet_generated_at": "2026-06-20T08:16:56.703Z",
+    "failures": [
+      "local-mcp-health-red",
+      "life-safety-state-not-loaded",
+      "grok-context-brief-not-loaded",
+      "local-agent-context-preflight-error",
+      "status_summary_current",
+      "local_agent_preflight_green",
+      "life_safety_state_loaded",
+      "grok_context_brief_loaded",
+      "abnormally_tired_readiness_current"
+    ]
+  },
+  "residualRisks": [
+    "This slice is browser-local only and does not prove WHOOP, accounts, hosted AI, Telegram, n8n, public MCP, Grok, Postgres, backend writes, reminders, or cross-device sync.",
+    "LifeMax lab boot/preflight remains red, so the broader daily shared-context goal is not complete.",
+    "The new history archive does not create multi-day analytics or trend scoring beyond a local checkpoint list."
+  ],
+  "rollbackPath": "Revert or redeploy the previous public app commit 38ba201 if the local day-history archive regresses; no credentials, auth settings, DNS, custom-domain settings, or backend services were changed by this slice.",
+  "secretsRedacted": true,
+  "stop_continue_decision": "checkpoint, not complete: day history product code is pushed/deployed/smoked on both public aliases; shared-context/Wave 1 readiness remains red and unproved.",
+  "independent_verification": {
+    "agent_id": "019ee424-454b-75e3-92f7-908a1b539433",
+    "verdict": "CHECKPOINT_OK",
+    "complete_ok": false,
+    "notes": [
+      "Verifier independently inspected current repo state, proof packet, screenshots, Vercel alias readiness, and lab boot/preflight evidence.",
+      "Verifier accepted the Day History checkpoint and rejected COMPLETE_OK for the broader goal because LifeMax lab boot/preflight remains red.",
+      "Verifier flagged stale proof-index fields, which this proof refresh corrects before final proof commit."
+    ]
+  }
+}
