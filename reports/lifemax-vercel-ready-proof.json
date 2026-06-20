@@ -1,17 +1,21 @@
 {
-  "schema": "lifemax.vercel_ready_proof.v1",
-  "version": 1,
-  "generated_at": "2026-06-19T18:04:42.234Z",
+  "schema": "lifemax.vercel_ready_proof.v2",
+  "version": 2,
+  "generated_at": "2026-06-20T02:00:14Z",
   "risk_class": "Q3",
-  "approval_summary": "Oliver approved local clean repo packaging, Vercel-readiness edits, local commit creation, and push to the specified GitHub remote after verification. Approval excludes Vercel deployment, DNS changes, WHOOP OAuth activation, secret creation, external service mutation, and force-push over unrelated history.",
+  "approval_summary": "Oliver asked to push the public LifeMax repo to GitHub and deploy on Vercel. This packet records the preview deployment path; production promotion, domain/alias mutation, credential changes, and backend/service activation are not part of this update.",
   "source_repo": "/Users/oliverrussell/Desktop/LifeMax",
   "clean_repo_path": "/Users/oliverrussell/Desktop/LifeMax-vercel-ready",
   "target_remote": "https://github.com/oliverorussell22-creator/LifeMax.git",
   "remote_state": {
-    "checked_with": "git ls-remote",
+    "checked_with": "git push origin main and git ls-remote",
     "exists": true,
-    "refs_found": 0,
-    "assessment": "empty remote; safe to push main without overwriting existing history"
+    "branch": "main",
+    "status": "origin/main matched local main after push before this proof refresh",
+    "pushed_commits": [
+      "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9 feat: make LifeMax app shell functional",
+      "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e chore: ignore local vercel linkage"
+    ]
   },
   "git_identity_summary": {
     "user_name": "Oliver Russell",
@@ -38,6 +42,8 @@
     "command-matrix.json",
     "README.md",
     ".gitignore",
+    ".vercelignore",
+    "vercel.json",
     "reports/lifemax-vercel-ready-proof.json"
   ],
   "files_excluded_summary": [
@@ -65,74 +71,59 @@
   ],
   "verification_commands": [
     {
-      "command": "npm install",
-      "status": "pass",
-      "summary": "installed 387 packages; npm audit reported 2 moderate dependency findings; no forced upgrades applied"
-    },
-    {
-      "command": "npm run build",
-      "status": "pass",
-      "summary": "Next production build passed; static routes include / and /privacy"
-    },
-    {
       "command": "npm run typecheck",
       "status": "pass",
-      "summary": "tsc --noEmit passed"
+      "summary": "tsc --noEmit passed in the clean public repo"
     },
     {
       "command": "npm run lint",
       "status": "pass",
-      "summary": "eslint passed"
+      "summary": "eslint passed in the clean public repo"
     },
     {
-      "command": "npm test",
+      "command": "npm run test",
       "status": "pass",
-      "summary": "3 Vitest files passed, 7 tests passed after stale command-stage assertion repair"
-    },
-    {
-      "command": "npm run test:pwa",
-      "status": "pass",
-      "summary": "PWA manifest test passed"
+      "summary": "Vitest passed: 3 files, 9 tests"
     },
     {
       "command": "npm run test:fixtures",
       "status": "pass",
-      "summary": "fixture contract tests passed"
+      "summary": "fixture contract tests passed: 1 file, 2 tests"
+    },
+    {
+      "command": "npm run test:pwa",
+      "status": "pass",
+      "summary": "PWA manifest test passed: 1 file, 1 test"
     },
     {
       "command": "npm run screenshot:mobile",
       "status": "pass",
-      "summary": "Playwright mobile smoke passed for / and /privacy at 390px with no horizontal scroll assertions"
+      "summary": "Next build plus Playwright visual smoke passed: 2 tests; screenshots written under reports/screenshots/"
     },
     {
-      "command": "curl -I http://127.0.0.1:3100/",
+      "command": "npm run build",
       "status": "pass",
-      "summary": "HTTP 200 from local production server"
+      "summary": "Next production build passed; static routes include /, /today, /capture, /patterns, /experiments, /profile, and /privacy"
     },
     {
-      "command": "curl -I http://127.0.0.1:3100/privacy",
+      "command": "changed-file no-secrets scan",
       "status": "pass",
-      "summary": "HTTP 200 from local production server"
+      "summary": "changed and untracked public files scanned for obvious secret patterns; only README boundary text matched secret-related words"
     },
     {
-      "command": "in-app browser smoke at 390x844",
+      "command": "quality_verifier sidecar",
       "status": "pass",
-      "summary": "headings visible on / and /privacy; console error count 0 for both pages; screenshots captured"
+      "summary": "independent read-only verifier passed Git push and Vercel preview deployment gate, with production explicitly out of scope"
     },
     {
-      "command": "git diff --check",
+      "command": "git push origin main",
       "status": "pass",
-      "summary": "no whitespace errors in unstaged diff"
+      "summary": "pushed functional app commit and .vercel ignore safeguard to origin/main"
     },
     {
-      "command": "git diff --cached --check",
+      "command": "npx --yes vercel deploy -y",
       "status": "pass",
-      "summary": "no whitespace errors in staged diff"
-    },
-    {
-      "command": "staged-file no-secrets scan",
-      "status": "pass",
-      "summary": "31 staged files scanned including proof packet; no violations found"
+      "summary": "Vercel preview deployment reached READY"
     }
   ],
   "pages_verified": [
@@ -170,22 +161,37 @@
     "install_command": "npm install",
     "build_command": "npm run build",
     "output": "Vercel default for Next.js",
-    "environment_variables": "none required for app shell and privacy page",
-    "vercel_json": "not required"
+    "environment_variables": "none required for browser-local demo app shell",
+    "vercel_json": "present: vercel.json sets Next.js framework, install command, and build command"
   },
-  "commit_hash": "5a5aa89846311d6dd23661512445d1289959b50c",
-  "commit_hash_note": "Final pushed commit hash is recorded in the final done packet. Embedding a same-commit hash inside a tracked file is self-referential and would change the hash.",
-  "push_status": "pushed_to_origin_main",
+  "commit_hash": "see git_state",
+  "commit_hash_note": "This proof packet is tracked, so the final commit hash that contains this packet is recorded in the final Codex response rather than embedded self-referentially here.",
+  "push_status": "pushed_to_origin_main_before_proof_refresh",
   "residual_risks": [
-    "No Vercel deployment was performed by request.",
-    "WHOOP OAuth activation and live data connection were not performed.",
-    "The app shell is not the full LifeMax dogfood product.",
-    "npm install reported 2 moderate dependency audit findings; no forced dependency upgrades were applied.",
-    "Local shared-context preflight was red, so no wellness intensity or daily-usability claims are made."
+    "Preview deployment only; no production promotion, alias/domain mutation, DNS change, credential change, or backend/service activation was performed.",
+    "This is still a browser-local demo shell, not the full LifeMax dogfood product.",
+    "WHOOP OAuth, account connection, hosted AI, Telegram, n8n, public MCP, Grok, database persistence, and backend writes are not connected.",
+    "npm install/build output reported 2 moderate dependency audit findings; no forced dependency upgrades were applied.",
+    "The lab repo shared-context preflight has previously been red, so no broader daily-usability or wellness-intensity claims are made."
   ],
   "next_actions": [
-    "Import the GitHub repo into Vercel using the README settings.",
+    "Browser-smoke the preview in a signed-in browser if Vercel protection or account context blocks public inspection.",
+    "Promote to production only after an explicit current production instruction and a fresh preview smoke pass.",
     "Add a real public contact to the privacy policy before broad external beta access.",
-    "Configure WHOOP Developer app privacy URL after Vercel deployment is completed by Oliver."
-  ]
+    "Configure real integrations only through separate approval-gated work."
+  ],
+  "git_state": {
+    "pushed_app_commit": "84923f0c9446d035ba09adefbf3a3c8ff84ce7d9",
+    "pushed_ignore_commit": "5a6c80bb2c9c78c9c4d750672b6d68b78d5cf76e",
+    "final_proof_packet_commit_note": "This proof packet is tracked, so the final commit hash that contains this packet is recorded in the final Codex response rather than embedded self-referentially here."
+  },
+  "vercel_deployment": {
+    "status": "ready",
+    "type": "preview",
+    "production_promoted": false,
+    "deployment_id": "dpl_92KUjcgsByk83HsKqCureUw53Ty1",
+    "preview_url": "https://lifemax-ai67lebl1-olivers-projects-25fda214.vercel.app",
+    "inspector_url": "https://vercel.com/olivers-projects-25fda214/lifemax-web/92KUjcgsByk83HsKqCureUw53Ty1",
+    "cli_summary": "Build completed and Vercel CLI returned readyState READY for the preview deployment."
+  }
 }
